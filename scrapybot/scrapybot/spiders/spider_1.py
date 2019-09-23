@@ -27,4 +27,3 @@ class MitreAttackSpider(Spider):
         return items
 
 # $ scrapy runspider sample_07.py -o mitreAttack.csv -t csv
-
