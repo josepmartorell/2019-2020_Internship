@@ -10,5 +10,11 @@ import scrapy
 
 class ScrapybotItem(scrapy.Item):
     # define the fields for your item here like:
-    # name = scrapy.Field()
+    title = scrapy.Field()
+    link = scrapy.Field()
+    content = scrapy.Field()
+    time = scrapy.Field()
+    advertisment = scrapy.Field()
+    course = scrapy.Field()
+    id = scrapy.Field()
     pass
