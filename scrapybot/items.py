@@ -9,12 +9,16 @@ import scrapy
 
 
 class ScrapybotItem(scrapy.Item):
-    # define the fields for your item here like:
-    title = scrapy.Field()
-    link = scrapy.Field()
-    content = scrapy.Field()
-    time = scrapy.Field()
-    advertisment = scrapy.Field()
-    course = scrapy.Field()
+# define the fields for your item here like:
+#
+    url = scrapy.Field()
     id = scrapy.Field()
+    job_title = scrapy.Field()
+#    location = scrapy.Field()
+#    date = scrapy.Field()
+    link = scrapy.Field()
+#    job_attributes = scrapy.Field()
+#    job_description = scrapy.Field()
+#    course_title = scrapy.Field()
+
     pass
