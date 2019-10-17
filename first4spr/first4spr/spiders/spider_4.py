@@ -1,8 +1,11 @@
 #!/usr/bin/env python3.7
 # -*- coding: utf-8 -*-
+# url to be scratched: https://www.lemonde.fr/international/
+# This is a simple vertical and horizontal crawling essay on a job search portal,
+# extracting news content of the news crawling the pages vertically and horizontally
+# using beautifoulsoup package.
+# standalone commands: scrapy runspider spider_4.py
 
-# extracting the title of the news and the content of the news
-# from different tags to crawl the pages vertically and horizontally
 
 
 import scrapy
@@ -16,7 +19,7 @@ from scrapybot.items import ScrapybotItem
 
 # type of spider and mechanisms
 class LeMondeCrawler(CrawlSpider):
-    name = 'leMondecrawler'
+    name = 'lemondecrawler'
     allowed_domains = ['lemonde.fr']
     start_urls = ['https://www.lemonde.fr/international/']
 
@@ -40,7 +43,6 @@ class LeMondeCrawler(CrawlSpider):
         article = soup.find(id='habillagepub')
         content = article.text
         item.add_value('content', content)
-
         yield item.load_item()
 
 # scrapy runspider spider_4.py -o lemonde.csv -t csv
