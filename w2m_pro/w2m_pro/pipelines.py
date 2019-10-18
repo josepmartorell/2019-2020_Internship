@@ -6,6 +6,6 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 
-class First4SprPipeline(object):
+class W2MProPipeline(object):
     def process_item(self, item, spider):
         return item

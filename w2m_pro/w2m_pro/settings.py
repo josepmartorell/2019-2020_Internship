@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Scrapy settings for first4spr project
+# Scrapy settings for w2m_pro project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -9,14 +9,14 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'first4spr'
+BOT_NAME = 'w2m_pro'
 
-SPIDER_MODULES = ['first4spr.spiders']
-NEWSPIDER_MODULE = 'first4spr.spiders'
+SPIDER_MODULES = ['w2m_pro.spiders']
+NEWSPIDER_MODULE = 'w2m_pro.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'first4spr (+http://www.yourdomain.com)'
+#USER_AGENT = 'w2m_pro (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -47,13 +47,13 @@ ROBOTSTXT_OBEY = True
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'first4spr.middlewares.First4SprSpiderMiddleware': 543,
+#    'w2m_pro.middlewares.W2MProSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    'first4spr.middlewares.First4SprDownloaderMiddleware': 543,
+#    'w2m_pro.middlewares.W2MProDownloaderMiddleware': 543,
 #}
 
 # Enable or disable extensions
@@ -65,7 +65,7 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 #ITEM_PIPELINES = {
-#    'first4spr.pipelines.First4SprPipeline': 300,
+#    'w2m_pro.pipelines.W2MProPipeline': 300,
 #}
 
 # Enable and configure the AutoThrottle extension (disabled by default)

@@ -8,7 +8,7 @@
 import scrapy
 
 
-class First4SprItem(scrapy.Item):
+class W2MProItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     pass
