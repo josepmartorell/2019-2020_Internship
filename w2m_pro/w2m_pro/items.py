@@ -3,12 +3,12 @@
 # Define here the models for your scraped items
 #
 # See documentation in:
-# https://doc.scrapy.org/en/latest/topics/items.html
+# https://docs.scrapy.org/en/latest/topics/items.html
 
 import scrapy
 
 
-class AtrapaloItem(scrapy.Item):
+class W2MProItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     pass
