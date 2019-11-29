@@ -12,14 +12,14 @@ class TravelbotPipeline(object):
         return item
 
 
-class TravelbotPricePipeline(object):
+class TravelbotDuplicatesPipeline(object):
 
-    vat_factor = 1.15
+    def __init__(self):
+        self.ids_seen = set()
 
     def process_item(self, item, spider):
-        if item.get('price'):
-            if item.get('price_excludes_vat'):
-                item['price'] = item['price'] * self.vat_factor
-            return item
+        if item['id'] in self.ids_seen:
+            raise DropItem("Duplicate item found: %s" % item)
         else:
-            raise DropItem("Missing price in %s" % item)
+            self.ids_seen.add(item['id'])
+            return item
