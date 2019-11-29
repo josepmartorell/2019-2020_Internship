@@ -66,7 +66,7 @@ ROBOTSTXT_OBEY = True
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'travelbot.pipelines.TravelbotPipeline': 300,
-    'travelbot.pipelines.TravelbotPricePipeline': 800,
+    'travelbot.pipelines.TravelbotDuplicatesPipeline': 800,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
