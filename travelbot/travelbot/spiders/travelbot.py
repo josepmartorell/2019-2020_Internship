@@ -12,9 +12,11 @@ class ToScrapeSpiderXPath(scrapy.Spider):
     def parse(self, response):
         for element in response.xpath('//ul[@id="owl-carousel-caribe"]'):
             yield {
-#                'destination': element.xpath('./span[@class="text"]/text()').extract_first(),
-#                'stay': element.xpath('.//small[@class="author"]/text()').extract_first(),
-                'price': element.xpath('//li/div/div[4]/p/text()').extract()
+#                'text-nodes': element.xpath('string(string(//body))').extract_first()
+                'paragraphs': element.xpath('count(//p)').extract_first(),
+#                'price': element.xpath('//li/div/div[4]/p/text()').extract()
+                'element': element.xpath('//li/div/div[4]/p/text()').extract()
+
             }
 
         next_page_url = response.xpath('//li[@class="next"]/a/@href').extract_first()
