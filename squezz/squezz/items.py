@@ -10,5 +10,6 @@ import scrapy
 
 class SquezzItem(scrapy.Item):
     # define the fields for your item here like:
-    title = scrapy.Field()
+    link = scrapy.Field()
+    price = scrapy.Field()
     pass
