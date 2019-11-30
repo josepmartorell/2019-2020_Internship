@@ -36,7 +36,12 @@ class ToScrapeSpiderXPath(scrapy.Spider):
 #                'attributes': element.xpath('count(//@*)').extract_first(),
 #                ...paths found...
                 'caribe_pack_destination': element.xpath('//li/div/h2/a/text()').extract_first(),
-                'price': element.xpath('//li/div/div[4]/p[@class="frnv-price"]/text()').extract_first()
+                'price': element.xpath('//li/div/div[4]/p[@class="frnv-price"]/text()').extract_first(),
+#                'cruise_itinerary': element.css('body:nth-child(2)').extract(), # todo
+                'port_of_destination': element.xpath('(//div[4]/p[2]/text())').extract_first(),
+                'starting_price': element.xpath('string(//li/div/p)').extract_first(),
+                'price': element.xpath('//li/div/p/text()').extract_first(),
+
             }
 
         next_page_url = response.xpath('//li[@class="next"]/a/@href').extract_first()

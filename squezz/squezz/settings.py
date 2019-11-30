@@ -66,7 +66,8 @@ ROBOTSTXT_OBEY = True
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'squezz.pipelines.SquezzPipeline': 300,
-#    'squezz.pipelines.DuplicatesPipeline': 800,
+    'squezz.pipelines.DuplicatesPipeline': 500,
+    'squezz.pipelines.PricePipeline': 800,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
