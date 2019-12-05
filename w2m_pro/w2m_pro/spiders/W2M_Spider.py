@@ -1,14 +1,24 @@
 import scrapy
 
-class W2M_Spider(scrapy.Spider):
-    name = 'W2M_Spider'
+def authentication_failed(response):
+    # TODO: Check the contents of the response and return True if it failed
+    # or False if it succeeded.
+    pass
 
-    def start_requests(self):
-        return [scrapy.FormRequest("http://www.example.com/login",
-                                   formdata={'user': 'john', 'pass': 'secret'},
-                                   callback=self.logged_in)]
+class LoginSpider(scrapy.Spider):
+    name = 'w2m'
+    start_urls = ['https://pro.w2m.travel']
 
-    def logged_in(self, response):
-        # here you would extract links to follow and return Requests for
-        # each of them, with another callback
-        pass
+    def parse(self, response):
+        return scrapy.FormRequest.from_response(
+            response,
+            formdata={'username': 'business.travel', 'password': 'secret'},
+            callback=self.after_login
+        )
+
+    def after_login(self, response):
+        if authentication_failed(response):
+            self.logger.error("Login failed")
+            return
+
+        # continue scraping with authenticated session...
