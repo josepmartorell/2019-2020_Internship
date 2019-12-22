@@ -13,18 +13,18 @@ from selenium.webdriver.support import expected_conditions as EC
 
 url = "https://pro.w2m.travel"
 
-options = Options()
-options.add_argument("window-size=1400,600")
+# options = Options()
+# options.add_argument("window-size=1400,600")
 
+# ua = UserAgent()
+# user_agent = ua.random
 
-ua = UserAgent()
-a = ua.random
-user_agent = ua.random
+# print(user_agent)
 
-print(user_agent)
+# options.add_argument(f'user-agent={user_agent}')
+# browser = webdriver.Firefox(executable_path="/usr/local/bin/geckodriver", options=options)
 
-options.add_argument(f'user-agent={user_agent}')
-browser = webdriver.Firefox(executable_path="/usr/local/bin/geckodriver", options=options)
+browser = webdriver.Firefox(executable_path="/usr/local/bin/geckodriver")
 browser.get(url)
 
 inputElement = browser.find_element_by_id("email")
@@ -50,7 +50,7 @@ login_attempt = element.find_element_by_xpath("/html/body/form/div[1]/header/div
 login_attempt.click()
 
 
-
 print(browser.current_url)  # TRACER
-
-# browser.quit()
+import time
+time.sleep(20)
+browser.quit()
