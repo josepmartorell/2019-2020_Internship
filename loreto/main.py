@@ -23,19 +23,15 @@ browser.get(url)
 
 # TODO: data extraction
 # front page prices
-box = []
 prices = []
 elements = browser.find_elements_by_xpath('//div[1]/div[2]/div[2]/span')
 for element in elements:
     price = element.get_attribute("textContent").strip('€')
-    box.append(price)
+    if len(price) == 6:
+        price = " " + price
     if not ',' in price:
         price = price.strip(" ") + ",00 "
     prices.append(price)
-
-# price length tracking
-# for x in box:
-#     print(len(x))
 
 # front page travels
 counter = 1
