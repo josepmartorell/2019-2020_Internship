@@ -23,13 +23,19 @@ browser.get(url)
 
 # TODO: data extraction
 # front page prices
+box = []
+prices = []
 elements = browser.find_elements_by_xpath('//div[1]/div[2]/div[2]/span')
 for element in elements:
     price = element.get_attribute("textContent").strip('€')
+    box.append(price)
     if not ',' in price:
-        price = price.strip(" ") + ",00"
+        price = price.strip(" ") + ",00 "
+    prices.append(price)
 
-    print(str(price))
+# price length tracking
+# for x in box:
+#     print(len(x))
 
 # front page travels
 counter = 1
@@ -37,9 +43,9 @@ elements = browser.find_elements_by_xpath('//div[1]/div[2]/h2/a')
 for element in elements:
     if counter < 21:
         if counter < 10:
-            print("", counter, element.get_attribute("textContent"))
+            print("", counter, str(prices[counter - 1]), element.get_attribute("textContent"))
         else:
-            print(counter, element.get_attribute("textContent"))
+            print(counter, str(prices[counter - 1]), element.get_attribute("textContent"))
 
     counter = counter+1
 #    print("Trip:\n", element.text)
@@ -51,4 +57,5 @@ browser.quit()
 
 # FIXME:
 # remove blanks in prices
-
+# clear and order the prices list
+# format prices adding whitespaces
