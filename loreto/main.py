@@ -6,6 +6,7 @@
 
 
 import time
+import operator
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 
@@ -38,8 +39,10 @@ for element in elements:
     prices.append(price)
 
 print("\nDisplay (homepage offers):\n")
+
 # display (homepage offers)
 counter = 1
+places = []
 elements = browser.find_elements_by_xpath('//div[1]/div[2]/h2/a')
 for element in elements:
     if counter < 21:
@@ -47,46 +50,25 @@ for element in elements:
             print("", counter, str(display[counter - 1]), element.get_attribute("textContent"))
         else:
             print(counter, str(display[counter - 1]), element.get_attribute("textContent"))
+        places.append(element.get_attribute("textContent"))
     counter = counter+1
 
 print("\n\nRanking (homepage offers):\n")
-# ranking manager
-prices = []
-elements = browser.find_elements_by_xpath('//div[1]/div[2]/div[2]/span')
-# price list
-for element in elements:
-    element = element.get_attribute("textContent").strip('€')
-    if not ',' in element:
-        element = element.strip(" ") + ",00"
-    element = element.replace(',', '.')
-    prices.append(element)
+
+# float cast
 new_prices = []
-# convert to float
 for element in prices:
     rank = float(element)
     new_prices.append(rank)
-counter = 1
-places = []
-travels = browser.find_elements_by_css_selector('.package-title > a:nth-child(1)')
-counter = 1
-# travel list
-for travel in travels:
-    if counter < 21:
-        places.append(travel.get_attribute("textContent"))
-#        print(element.get_attribute("textContent"))
-    counter = counter + 1
+
 # final list
-list = dict(zip(prices, places))
-# todo: sorting list
-ranking = sorted(list.items())
+list = dict(zip(places, new_prices))
+ranking = sorted(list.items(), key=operator.itemgetter(1))
 for k, v in ranking:
-#    print("{0:.2f}".format(element))
-    print(k, v)
-
-
-
-#ranking = dict(zip(list, list2))
-#print(ranking)
+    if v < 100.00:
+        print("", "{0:.2f}".format(v), k)
+    else:
+        print("{0:.2f}".format(v), k)
 
 # close navigation session
 time.sleep(2)
