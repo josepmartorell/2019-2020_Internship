@@ -8,7 +8,6 @@ import time
 import operator
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
-import smtplib, ssl
 
 
 # implement headless webdriver
@@ -223,33 +222,6 @@ for k, v in ranking_4:
     else:
         print("{0:.2f}".format(v), k)
 
-
-def send_alert():
-    port = 465  # For SSL
-    smtp_server = "smtp.gmail.com"
-    sender_email = "jetro4100@gmail.com"  # Enter your address
-    receiver_email = "martorelljosep@gmail.com"  # Enter receiver address
-    password = input("\n\nType your password and press enter:\n\n ")
-    message = """\
-    Subject: Hi there Josep,
-    
-    I have just obtained the updated price lists for the new travel offers 
-    on the website requested. If you wish to contact me in the next few hours,
-    I would like to propose my web domain tracking planning for next season.
-   
-    Yours,
-
-    J.M.
-    
-    This message is sent from Python."""
-
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-        server.login(sender_email, password)
-        server.sendmail(sender_email, receiver_email, message)
-
-
-send_alert()
 
 
 # close navigation session
