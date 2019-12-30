@@ -11,7 +11,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-
 # TODO: screen all steps to control the process...
 
 # driver version
@@ -24,9 +23,9 @@ driver = webdriver.Firefox(executable_path="/usr/local/bin/geckodriver")
 driver.get(url)
 assert "NAUTALIA VIAJES" in driver.title
 currentTime = datetime.datetime.now()
-print("\nSITE ",driver.current_url,  "\nDATE ",currentTime)
+print("\nSITE ", driver.current_url, "\nDATE ", currentTime)
 
-# todo: insert variables VAR1,VAR2 to catch elements that need to be visible in this method...
+# todo: method to catch elements that need time to be load to be visible...
 
 var_id = By.ID
 var_name = By.NAME
@@ -34,6 +33,7 @@ var_class = By.CLASS_NAME
 var_link = By.LINK_TEXT
 var_xpath = By.XPATH
 var_css = By.CSS_SELECTOR
+
 
 def element_wait(var_selected, route, wait=6):
     try:
@@ -48,19 +48,26 @@ def element_wait(var_selected, route, wait=6):
                         "'var_css'."
                         )
 
+
 # todo: crossing the search engine...
 
 # dealing with popup windows
 driver.find_element_by_xpath('//*[@id="id_boton_cerrar_aviso_pc"]').click()
 driver.find_element_by_xpath('//*[@id="onesignal-popover-cancel-button"]').click()
 
-# todo: driver.find_element_by_xpath('/html/body/div[7]/div/span').click()
-# raise exception_class(message, screen, stacktrace)
-# selenium.common.exceptions.NoSuchElementException:
-# Message: Unable to locate element: /html/body/div[7]/div/span
-# todo: driver.find_element_by_class_name('close-modal').click()
-# raise exception_class(message, screen, stacktrace)
-# selenium.common.exceptions.NoSuchElementException: Message: Unable to locate element: .close-modal
+well_come_window = element_wait(var_xpath, "/html/body/div[7]/div/span")
+# well_come_window.click()
+
+try:
+    alert = driver.switch_to.alert()
+    print(alert.text)
+    alert.accept()
+except:
+    print("no alert to accept")
+
+javaScript = "document.getElementsByClassName('close-modal')[0].click();"
+driver.execute_script(javaScript)
+
 
 # driver.find_element_by_xpath('').click()
 # driver.find_element_by_xpath('').click()
@@ -73,8 +80,5 @@ time.sleep(10)
 driver.quit()
 
 # FIXME:
-# https://programacion.net/articulo/10_consejos_y_trucos_avanzados_de_webdriver_1319 review
-# python-selenium/util/selse_feng.py set visible elements function
-# .py", line 242, in check_response
-#     raise exception_class(message, screen, stacktrace)
-# selenium.common.exceptions.NoSuchElementException: Message: Unable to locate element: /html/body/div[7]/div/span
+# https://unipython.com/navegando-con-selenium/
+# https://dzone.com/articles/perform-actions-using-javascript-in-python-seleniu
