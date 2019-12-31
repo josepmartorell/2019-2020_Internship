@@ -7,7 +7,9 @@ import os
 import time
 import datetime
 from selenium import webdriver
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -68,6 +70,16 @@ except:
 javaScript = "document.getElementsByClassName('close-modal')[0].click();"
 driver.execute_script(javaScript)
 
+# search box
+element_wait(var_id, 'hoteles_destino')
+element = driver.find_element_by_id('hoteles_destino')
+element.clear()
+element.send_keys("london", Keys.ARROW_DOWN)
+
+actions = ActionChains(driver)
+for _ in range(3):
+    actions.send_keys(Keys.PAGE_DOWN).perform()
+    time.sleep(1)
 
 # driver.find_element_by_xpath('').click()
 # driver.find_element_by_xpath('').click()
