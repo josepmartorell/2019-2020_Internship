@@ -8,29 +8,34 @@ import shutil
 
 
 class App:
-    def __init__(self, username='BUSINESS', password='459116RS'):
+    def __init__(self, username='BUSINESS', password='459116RS', target_city='Londres'):
         self.username = username
         self.password = password
+        self.target_city = target_city
         self.driver = webdriver.Firefox(
             executable_path='/usr/local/bin/geckodriver')  # Change this to your FirefoxDriver path.
         self.error = False
-        self.main_url = 'http://www.restel.es/rsb2b/web/'
+        self.main_url = 'http://www.restel.es'
         self.driver.get(self.main_url)
         sleep(3)
         self.log_in()
         if self.error is False:
-            self.close_dialog_box()
-            self.open_target_profile()
+            # self.close_dialog_box()
+            # todo: REF:
+            # https://es.stackoverflow.com/questions/109086/esperar-respuestas-para-continuar-selenium-python
+            # The explicit wait, unlike an implicit one or what time.sleep does (although this is blocking)
+            # however it was the solution for this search engine (compare with solole project where at this point sleep was useless)
+            sleep(3) #### fixme: explicit wait
+            self.search_target_profile()
         if self.error is False:
             self.scroll_down()
         if self.error is False:
             sleep(3)
-        self.driver.close()
+        # self.driver.close()
 
     def log_in(self, ):
         try:
-            user_name_input = self.driver.find_element_by_css_selector(
-                '#loginUser')
+            user_name_input = self.driver.find_element_by_css_selector('#loginUser')
             user_name_input.send_keys(self.username)
             sleep(1)
 
@@ -41,13 +46,24 @@ class App:
             user_name_input.submit()
             sleep(1)
 
-            #self.close_settings_window_if_there()
+            # self.close_settings_window_if_there()
         except Exception:
             print('Some exception occurred while trying to find username or password field')
             self.error = True
 
+    def search_target_profile(self):
+        try:
+            search_bar = self.driver.find_element_by_css_selector('#city')
+            search_bar.send_keys(self.target_city)
+            # target_profile_url = self.main_url + '/' + self.target_city + '/'
+            # self.driver.get(target_profile_url)
+            sleep(3)
 
-"""
+        except Exception:
+            self.error = True
+            print('Could not find search bar')
+
+    """
     def write_captions_to_excel_file(self, images, caption_path):
         print('writing to excel')
         workbook = Workbook(os.path.join(caption_path, 'captions.xlsx'))
@@ -127,19 +143,6 @@ class App:
             print('Could not find no of posts while trying to scroll down')
             self.error = True
 
-
-    def open_target_profile(self):
-        try:
-            search_bar = self.driver.find_element_by_xpath('//input[@placeholder="Search"]')
-            search_bar.send_keys(self.target_username)
-            target_profile_url = self.main_url + '/' + self.target_username + '/'
-            self.driver.get(target_profile_url)
-            sleep(3)
-
-        except Exception:
-            self.error = True
-            print('Could not find search bar')
-
     def close_dialog_box(self):
         # reload page
         sleep(2)
@@ -164,7 +167,8 @@ class App:
             self.driver.switch_to.window(self.driver.window_handles[0])
         except Exception as e:
             pass
-"""
+    """
+
 
 if __name__ == '__main__':
     app = App()
