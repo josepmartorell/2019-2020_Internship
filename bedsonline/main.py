@@ -27,13 +27,13 @@ class App:
         self.driver = webdriver.Firefox(
             executable_path="/usr/local/bin/geckodriver")  # Change this to your FirefoxDriver path.
         self.error = False
-        self.main_url = 'https://www.bedsonline.com/login'
+        self.main_url = 'https://www.bedsonline.com/home/es-es'
         self.all_images = []
         self.driver.get(self.main_url)
         sleep(1)
         self.log_in()
         if self.error is False:
-            sleep(3)  # fixme: implicit wait!
+            sleep(4)  # fixme: implicit wait!
             # self.close_dialog_box()
             self.search_target_profile()
         # if self.error is False:
@@ -46,42 +46,48 @@ class App:
         # self.driver.close()
 
     def log_in(self, ):
-        '''try:
+        try:
             # todo: dealing with popup windows
             # cookies popup
             self.driver.find_element_by_xpath('/html/body/div[4]/div/div/div[2]/button[1]').click()
-            sleep(1)
+            # sleep(1)
 
         except Exception:
             self.error = True
-            print('Unable to close popup window')'''
+            print('Unable to close popup window')
+        else:
+            try:
+                # Press button to access the login fields
+                sleep(1)
+                login_button = self.driver.find_element_by_xpath(
+                    '/html/body/div[2]/header/section[2]/div[1]/div/section[2]/a[1]')
+                login_button.click()
+                sleep(1)
 
-        try:
-            '''# Press button to access the login fields
-            login_button = self.driver.find_element_by_xpath(
-                '/html/body/div[2]/header/section[2]/div[1]/div/section[2]/a[1]')
-            login_button.click()
-            sleep(1)
-            # self.driver.implicitly_wait(10)  # seconds'''
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((
-                By.XPATH, '//*[@id="username"]')))
-            user_name_input = self.driver.find_element_by_xpath('//*[@id="username"]')
-            user_name_input.send_keys(self.username)
-            sleep(3)
+                # todo: switch window
+                #  https://sqa.stackexchange.com/questions/13792/how-to-proceed-after-clicking-a-link-to-new-page-in-selenium-in-python
+                window_after = self.driver.window_handles[1]
+                self.driver.switch_to.window(window_after)
 
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((
-                By.XPATH, '//*[@id="password"]')))
-            password_input = self.driver.find_element_by_xpath('//*[@id="password"]')
-            password_input.send_keys(self.password)
-            sleep(1)
+                WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((
+                    By.XPATH, '//*[@id="username"]')))
+                user_name_input = self.driver.find_element_by_xpath('//*[@id="username"]')
+                user_name_input.send_keys(self.username)
+                sleep(3)
 
-            user_name_input.submit()
-            sleep(1)
+                WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((
+                    By.XPATH, '//*[@id="password"]')))
+                password_input = self.driver.find_element_by_xpath('//*[@id="password"]')
+                password_input.send_keys(self.password)
+                sleep(1)
 
-            # self.close_settings_window_if_there()
-        except Exception as e:
-            print(e)
-            self.error = True
+                user_name_input.submit()
+                sleep(1)
+
+                # self.close_settings_window_if_there()
+            except Exception as e:
+                print(e)
+                self.error = True
 
     def search_target_profile(self):
         try:
