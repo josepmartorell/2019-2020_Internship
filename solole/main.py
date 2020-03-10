@@ -50,12 +50,12 @@ class App:
         if self.error is False:
             # self.close_dialog_box()
             self.search_target_profile()
-        if self.error is False:
-            self.scroll_down()
+        # if self.error is False:
+            # self.scroll_down()
         if self.error is False:
             if not os.path.exists(path):
                 os.mkdir(path)
-            self.downloading_images()
+            # self.downloading_images()
         sleep(3)
         # self.driver.close()
 
@@ -85,6 +85,15 @@ class App:
             # target_profile_url = self.main_url + '/' + self.target_city + '/'
             # self.driver.get(target_profile_url)
             sleep(3)
+            # todo: accessing a drop-down menu item directly with xpath
+            # element = self.driver.find_element_by_xpath('//iboosy-hotelzone/div[2]/div/button[2]/div')
+            # element.click()
+            # todo: accessing a drop-down menu item by position within the list
+            #  https://selenium-python.readthedocs.io/navigating.html#interacting-with-the-page
+            all_options = self.driver.find_elements_by_class_name('dropdown-item')
+            all_options[1].click()
+
+
         except Exception:
             self.error = True
             print('Could not find search bar')
