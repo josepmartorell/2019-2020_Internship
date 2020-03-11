@@ -81,15 +81,15 @@ for _ in range(3):
     actions.send_keys(Keys.PAGE_DOWN).perform()
     time.sleep(1)
 
-# driver.find_element_by_xpath('').click()
-# driver.find_element_by_xpath('').click()
-# driver.find_element_by_xpath('').click()
-# driver.find_element_by_xpath('').click()
+driver.find_element_by_xpath('/html/body/ul/li[4]/a/table/tbody/tr/td[2]').click()
+driver.find_element_by_xpath('//*[@id="hoteles_start_date"]').click()
+driver.find_element_by_xpath('//table/tbody/tr[4]/td[1]/a').click()
+driver.find_element_by_xpath('//*[@id="btnSend"]').click()
 
 
 # close navigation session
 time.sleep(10)
-driver.quit()
+# driver.quit()
 
 # FIXME:
 # https://unipython.com/navegando-con-selenium/

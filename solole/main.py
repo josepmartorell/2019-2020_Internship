@@ -92,7 +92,15 @@ class App:
             #  https://selenium-python.readthedocs.io/navigating.html#interacting-with-the-page
             all_options = self.driver.find_elements_by_class_name('dropdown-item')
             all_options[1].click()
+            sleep(1)
 
+            self.driver.find_element_by_css_selector('div.w-50:nth-child(1) > div:nth-child(2) > div:nth-child(1)').click()
+            # self.driver.find_element_by_css_selector('').click()
+            # self.driver.find_element_by_css_selector('').click()
+            # self.driver.find_element_by_css_selector('').click()
+
+            user_name_input = self.driver.find_element_by_xpath('//*[@id="nationalityPred"]')
+            user_name_input.send_keys('espa')
 
         except Exception:
             self.error = True
