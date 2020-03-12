@@ -34,7 +34,7 @@ element = browser.find_element_by_xpath(
 element.clear()
 
 # check access
-assert "Hotels | W2M" in browser.title
+assert "Hoteles | W2M" in browser.title
 print(browser.current_url)
 
 # enter data in input field
@@ -47,14 +47,18 @@ for _ in range(3):
     actions.send_keys(Keys.ARROW_DOWN).perform()
     time.sleep(1)
 
-# press button
+# enter destination city
+target_city = element.find_element_by_xpath("/html/body/form/div[1]/header/div[2]/div/div/div[2]/div[1]/div[1]/div[1]/div[2]/div/span[2]/div/div[3]/div[5]")
+target_city.click()
+
+# press the search button
 login_attempt = element.find_element_by_xpath("/html/body/form/div[1]/header/div[2]/div/div/div[2]/div[2]/button")
-login_attempt.submit()
+login_attempt.click()
 
 
 # close the browser
 time.sleep(6)
-browser.quit()
+# browser.quit()
 
 # FIXME:
 # when selecting from the drop down before moving three items down
