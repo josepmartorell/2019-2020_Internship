@@ -18,7 +18,7 @@ import shutil
 
 
 class App:
-    def __init__(self, username='BUSIN95C', password='020906Sm', target_username='paris',
+    def __init__(self, username='BUSIN95C', password='020906Sm', target_username='Paris (PAR) Francia',
                  path='/Users/Lazar/Desktop/bedsOnlineReport'):  # Change this to your search engine details and desired report path
         self.username = username
         self.password = password
@@ -33,7 +33,7 @@ class App:
         sleep(1)
         self.log_in()
         if self.error is False:
-            sleep(4)  # fixme: implicit wait!
+            sleep(2)  # fixme: implicit wait!
             # self.close_dialog_box()
             self.search_target_profile()
         # if self.error is False:
@@ -49,8 +49,8 @@ class App:
         try:
             # todo: dealing with popup windows
             # cookies popup
-            self.driver.find_element_by_xpath('/html/body/div[4]/div/div/div[2]/button[1]').click()
-            # sleep(1)
+            self.driver.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/button[1]').click()
+            sleep(1)
 
         except Exception:
             self.error = True
@@ -91,10 +91,15 @@ class App:
 
     def search_target_profile(self):
         try:
-            search_bar = self.driver.find_element_by_xpath('//*[@id="s-destination-search"]')
-            search_bar.send_keys(self.target_username).click()
-            # target_profile_url = self.main_url + '/' + self.target_username + '/'
-            # self.driver.get(target_profile_url)
+            # todo: filling the search bar
+            # search_bar.send_keys(self.target_username).click # this line is wrong, read below please
+            # fixme: you cannot enter text directly use the autocomplete square icon to the right of the field
+            self.driver.find_element_by_xpath('/html/body/main/article/div[3]/div['
+                                              '2]/section/div/form/fieldset[1]/div/a/span').click()
+
+            # search button
+            login_button = self.driver.find_element_by_xpath('//*[@id="mainsearch"]')
+            login_button.submit()
             sleep(3)
 
         except Exception:
