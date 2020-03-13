@@ -49,7 +49,7 @@ class App:
         try:
             # todo: dealing with popup windows
             # cookies popup
-            self.driver.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/button[1]').click()
+            self.driver.find_element_by_xpath('/html/body/div[4]/div/div/div[2]/button[1]').click()
             sleep(1)
 
         except Exception:
@@ -96,6 +96,21 @@ class App:
             # fixme: you cannot enter text directly use the autocomplete square icon to the right of the field
             self.driver.find_element_by_xpath('/html/body/main/article/div[3]/div['
                                               '2]/section/div/form/fieldset[1]/div/a/span').click()
+            sleep(1)
+
+            # todo: https://dzone.com/articles/perform-actions-using-javascript-in-python-seleniu
+            #  Method 1: Executing JavaScript at Document Root Level
+            #  javaScript = "document.getElementsByClassName('ui-dialog-titlebar-close ui-corner-all')[0].click();"
+            #  self.driver.execute_script(javaScript)
+            #  Method 2: Executing JavaScript at Element Level:
+            picker = self.driver.find_element_by_xpath("//section/article[1]/div/ul[1]/li[2]/a")
+            self.driver.execute_script("arguments[0].click();", picker)
+            sleep(2)
+            picker = self.driver.find_element_by_xpath("/html/body/div[8]/div[2]/div/section/article[2]/div/ul[1]/li[12]/a")
+            self.driver.execute_script("arguments[0].click();", picker)
+            sleep(2)
+            picker = self.driver.find_element_by_xpath("/html/body/div[8]/div[2]/div/section/article[3]/div/ul[1]/li[1]/a")
+            self.driver.execute_script("arguments[0].click();", picker)
 
             # search button
             login_button = self.driver.find_element_by_xpath('//*[@id="mainsearch"]')
