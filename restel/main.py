@@ -8,7 +8,7 @@ import shutil
 
 
 class App:
-    def __init__(self, username='BUSINESS', password='459116RS', target_city='Londres'):
+    def __init__(self, username='BUSINESS', password='459116RS', target_city='new york'):
         self.username = username
         self.password = password
         self.target_city = target_city
@@ -17,7 +17,7 @@ class App:
         self.error = False
         self.main_url = 'http://www.restel.es'
         self.driver.get(self.main_url)
-        sleep(3)
+        sleep(1)
         self.log_in()
         if self.error is False:
             # self.close_dialog_box()
@@ -25,21 +25,24 @@ class App:
             # https://es.stackoverflow.com/questions/109086/esperar-respuestas-para-continuar-selenium-python
             # The explicit wait, unlike an implicit one or what time.sleep does (although this is blocking)
             # however it was the solution for this search engine (compare with solole project where at this point sleep was useless)
-            sleep(3) #### fixme: explicit wait
+            sleep(1) #### fixme: explicit wait
             self.search_target_profile()
-        if self.error is False:
-            self.scroll_down()
+        # if self.error is False:
+            # self.scroll_down()
         if self.error is False:
             sleep(3)
         # self.driver.close()
 
     def log_in(self, ):
         try:
-            user_name_input = self.driver.find_element_by_css_selector('#loginUser')
+            # fixme: the xpath did not work selected with the right mouse button (neither with the css selector). The
+            #  solution has been to use the variable "placeholder" as xpath, taking it from the same script used in
+            #  solole.
+            user_name_input = self.driver.find_element_by_xpath('//input[@placeholder="Usuario"]')
             user_name_input.send_keys(self.username)
             sleep(1)
 
-            password_input = self.driver.find_element_by_css_selector('#loginPassword')
+            password_input = self.driver.find_element_by_xpath('//input[@placeholder="Contraseña"]')
             password_input.send_keys(self.password)
             sleep(1)
 
@@ -53,12 +56,30 @@ class App:
 
     def search_target_profile(self):
         try:
-            search_bar = self.driver.find_element_by_css_selector('#city')
+            search_bar = self.driver.find_element_by_css_selector('#filterHotels')
             search_bar.send_keys(self.target_city)
-            # target_profile_url = self.main_url + '/' + self.target_city + '/'
-            # self.driver.get(target_profile_url)
+            search_bar.click()
+            sleep(1)
+            # enter destination city
+            target_city = self.driver.find_element_by_css_selector(
+                "li.item:nth-child(1) > div:nth-child(2) > span:nth-child(1)")
+            target_city.click()
+            sleep(1)
+            # calendar picker
+            self.driver.find_element_by_css_selector('#calendarHotels').click()
+            sleep(1)
+            # todo: accessing a drop-down calendar item by position within the list
+            #  https://selenium-python.readthedocs.io/navigating.html#interacting-with-the-page
+            all_options = self.driver.find_elements_by_class_name('available')
+            all_options[24].click()
+            all_options = self.driver.find_elements_by_class_name('available')
+            all_options[29].click()
+            sleep(2)
+            # search button
+            login_button = self.driver.find_element_by_xpath('//*[@id="search-hotels"]')
+            # instead of submit it works with click
+            login_button.click()
             sleep(3)
-
         except Exception:
             self.error = True
             print('Could not find search bar')
