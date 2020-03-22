@@ -95,8 +95,15 @@ class App:
             sleep(1)
 
             self.driver.find_element_by_css_selector('div.w-50:nth-child(1) > div:nth-child(2) > div:nth-child(1)').click()
-            # self.driver.find_element_by_css_selector('').click()
-            # self.driver.find_element_by_css_selector('').click()
+            # todo: Within <div class = "ngb-dp-week ..."> the seven days of that week are stored each in a <div
+            #  class = "ngb-dp-day ...">. Secondary click on the inspector on the day that interests you and copy the
+            #  css selector, which you will use to click on in the calendar picker
+            self.driver.find_element_by_css_selector('div.ngb-dp-month:nth-child(2) > '
+                                                     'ngb-datepicker-month-view:nth-child(1) > div:nth-child(3) > '
+                                                     'div:nth-child(1)').click()
+            self.driver.find_element_by_css_selector('div.ngb-dp-month:nth-child(2) > '
+                                                     'ngb-datepicker-month-view:nth-child(1) > div:nth-child(3) > '
+                                                     'div:nth-child(7)').click()
             # self.driver.find_element_by_css_selector('').click()
 
             user_name_input = self.driver.find_element_by_xpath('//*[@id="nationalityPred"]')
@@ -108,6 +115,10 @@ class App:
                                                         '3]/iboosy-nationalities/div/div/ngb-typeahead-window/button'
                                                         '/div/span[2]')
             element.click()
+            login_button = self.driver.find_element_by_xpath('//*[@id="searchbtn"]')
+            # instead of submit it works with click
+            login_button.click()
+            sleep(3)
 
         except Exception:
             self.error = True
