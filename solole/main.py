@@ -101,6 +101,13 @@ class App:
 
             user_name_input = self.driver.find_element_by_xpath('//*[@id="nationalityPred"]')
             user_name_input.send_keys('espa')
+            sleep(2)
+            # todo: accessing a drop-down menu item directly with xpath
+            element = self.driver.find_element_by_xpath('/html/body/iboosy-app/div/div/ng-component/div/div[2]/div['
+                                                        '2]/iboosy-accommodations-search/div[1]/div/div/div['
+                                                        '3]/iboosy-nationalities/div/div/ngb-typeahead-window/button'
+                                                        '/div/span[2]')
+            element.click()
 
         except Exception:
             self.error = True
