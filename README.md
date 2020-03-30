@@ -19,10 +19,13 @@ git clone https://github.com/josepmartorell/Scrapy.git :smiley:
 # Links to tutorials
 
 - [x] https://scrapy.org :+1:
+- [x] https://www.crummy.com/software/BeautifulSoup/bs4/doc
+- [x] https://requests.readthedocs.io/en/master
 - [x] https://docs.scrapy.org/en/xpath-tutorial/topics/xpath-tutorial.html
 - [ ] https://scrapyd.readthedocs.io/en/latest/index.html
-- [ ] https://realpython.com/python-send-email
-- [ ] https://requests.readthedocs.io/en/master
+- [x] https://realpython.com/python-send-email
+
+
 
 # Scrapy architecture
 
