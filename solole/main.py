@@ -50,8 +50,8 @@ class App:
         if self.error is False:
             # self.close_dialog_box()
             self.search_target_profile()
-        # if self.error is False:
-            # self.scroll_down()
+        if self.error is False:
+            self.scroll_down()
         if self.error is False:
             if not os.path.exists(path):
                 os.mkdir(path)
@@ -94,7 +94,8 @@ class App:
             all_options[1].click()
             sleep(1)
 
-            self.driver.find_element_by_css_selector('div.w-50:nth-child(1) > div:nth-child(2) > div:nth-child(1)').click()
+            self.driver.find_element_by_css_selector(
+                'div.w-50:nth-child(1) > div:nth-child(2) > div:nth-child(1)').click()
             # todo: Within <div class = "ngb-dp-week ..."> the seven days of that week are stored each in a <div
             #  class = "ngb-dp-day ...">. Secondary click on the inspector on the day that interests you and copy the
             #  css selector, which you will use to click on in the calendar picker
@@ -124,6 +125,39 @@ class App:
             self.error = True
             print('Could not find search bar')
 
+    def scroll_down(self):
+        try:
+            self.driver.implicitly_wait(10)
+            # fixme: screen:
+            no_of_pages = self.driver.find_element_by_xpath('//pagination-template/ul/li[9]/a/span[2]').text
+            print("Quantity of pages:" + no_of_pages)
+
+            no_of_results = self.driver.find_element_by_xpath('//iboosy-accommodations-filter/div/div[1]/div[2]/h5').text
+            no_of_results = no_of_results.replace(' RESULTADOS ENCONTRADOS', '')
+            print("Quantity of results:" + no_of_results)
+            # no_of_results = str(no_of_results).replace(',', '')  # 15,483 --> 15483
+            # self.no_of_results = int(no_of_results)
+
+            self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')  # fixme: scroll
+
+            '''if self.no_of_pages > 0:
+                no_of_scrolls = int(self.no_of_pages / 10) + 1
+                try:
+                    for value in range(no_of_scrolls):
+                        soup = BeautifulSoup(self.driver.page_source, 'lxml')
+                        for image in soup.find_all('img'):
+                            self.all_images.append(image)
+                        self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+                        sleep(10)
+                except Exception as e:
+                    self.error = True
+                    print(e)
+                    print('Some error occurred while trying to scroll down')
+            sleep(10)'''
+        except Exception:
+            print('Could not find no of pages while trying to scroll down')
+            self.error = True
+
     """
     def write_captions_to_excel_file(self, images, caption_path):
         print('writing to excel')
@@ -144,22 +178,6 @@ class App:
             row += 1
         workbook.close()
 
-    def download_captions(self, images):
-        captions_folder_path = os.path.join(self.path, 'captions')
-        if not os.path.exists(captions_folder_path):
-            os.mkdir(captions_folder_path)
-        self.write_captions_to_excel_file(images, captions_folder_path)
-        '''for index, image in enumerate(images):
-            try:
-                caption = image['alt']
-            except KeyError:
-                caption = 'No caption exists for this image'
-            file_name = 'caption_' + str(index) + '.txt'
-            file_path = os.path.join(captions_folder_path, file_name)
-            link = image['src']
-            with open(file_path, 'wb') as file:
-                file.write(str('link:' + str(link) + '\n' + 'caption:' + caption).encode())'''
-
     def downloading_images(self):
         self.all_images = list(set(self.all_images))
         self.download_captions(self.all_images)
@@ -177,30 +195,6 @@ class App:
                 print(e)
                 print('Could not download image number ', index)
                 print('Image link -->', link)
-
-    def scroll_down(self):
-        try:
-            no_of_posts = self.driver.find_element_by_xpath('//span[text()=" posts"]').text
-            no_of_posts = no_of_posts.replace(' posts', '')
-            no_of_posts = str(no_of_posts).replace(',', '')  # 15,483 --> 15483
-            self.no_of_posts = int(no_of_posts)
-            if self.no_of_posts > 12:
-                no_of_scrolls = int(self.no_of_posts / 12) + 3
-                try:
-                    for value in range(no_of_scrolls):
-                        soup = BeautifulSoup(self.driver.page_source, 'lxml')
-                        for image in soup.find_all('img'):
-                            self.all_images.append(image)
-                        self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-                        sleep(2)
-                except Exception as e:
-                    self.error = True
-                    print(e)
-                    print('Some error occurred while trying to scroll down')
-            sleep(10)
-        except Exception:
-            print('Could not find no of posts while trying to scroll down')
-            self.error = True
 
     def close_dialog_box(self):
         # reload page
