@@ -20,6 +20,7 @@ git clone https://github.com/josepmartorell/Scrapy.git :smiley:
 
 - [x] https://scrapy.org :+1:
 - [x] https://docs.scrapy.org/en/xpath-tutorial/topics/xpath-tutorial.html
+- [ ] https://requests.readthedocs.io/en/master
 - [ ] https://scrapyd.readthedocs.io/en/latest/index.html
 - [ ] https://realpython.com/python-send-email
 
