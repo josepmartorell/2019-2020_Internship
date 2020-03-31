@@ -45,7 +45,7 @@ class App:
         self.main_url = 'https://b2b.solole.es'
         self.all_images = []
         self.driver.get(self.main_url)
-        sleep(3)
+        sleep(1)
         self.log_in()
         if self.error is False:
             # self.close_dialog_box()
@@ -55,9 +55,9 @@ class App:
         if self.error is False:
             if not os.path.exists(path):
                 os.mkdir(path)
-            # self.downloading_images()
+            self.downloading_images()
         sleep(3)
-        # self.driver.close()
+        self.driver.close()
 
     def log_in(self, ):
 
@@ -84,7 +84,7 @@ class App:
             search_bar.send_keys(self.target_city)
             # target_profile_url = self.main_url + '/' + self.target_city + '/'
             # self.driver.get(target_profile_url)
-            sleep(3)
+            sleep(1)
             # todo: accessing a drop-down menu item directly with xpath
             # element = self.driver.find_element_by_xpath('//iboosy-hotelzone/div[2]/div/button[2]/div')
             # element.click()
@@ -109,7 +109,7 @@ class App:
 
             user_name_input = self.driver.find_element_by_xpath('//*[@id="nationalityPred"]')
             user_name_input.send_keys('espa')
-            sleep(2)
+            sleep(1)
             # todo: accessing a drop-down menu item directly with xpath
             element = self.driver.find_element_by_xpath('/html/body/iboosy-app/div/div/ng-component/div/div[2]/div['
                                                         '2]/iboosy-accommodations-search/div[1]/div/div/div['
@@ -119,7 +119,7 @@ class App:
             login_button = self.driver.find_element_by_xpath('//*[@id="searchbtn"]')
             # instead of submit it works with click
             login_button.click()
-            sleep(3)
+            sleep(1)
 
         except Exception:
             self.error = True
@@ -137,7 +137,17 @@ class App:
             print("Quantity of results:" + no_of_results)
             # no_of_results = str(no_of_results).replace(',', '')  # 15,483 --> 15483
             # self.no_of_results = int(no_of_results)
-
+            try:
+                soup = BeautifulSoup(self.driver.page_source, 'lxml')  # todo: bs4
+                for image in soup.find_all('img'):
+                    self.all_images.append(image)
+                # regular expression to get images
+                images = self.all_images
+                print('images % found' % len(images))
+            except IOError as e:
+                print("I/O error occurred: ", os.strerror(e.errno))
+                print("Connection Error ")
+                pass
             self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')  # fixme: scroll
 
             '''if self.no_of_pages > 0:
@@ -158,7 +168,6 @@ class App:
             print('Could not find no of pages while trying to scroll down')
             self.error = True
 
-    """
     def write_captions_to_excel_file(self, images, caption_path):
         print('writing to excel')
         workbook = Workbook(os.path.join(caption_path, 'captions.xlsx'))
@@ -177,6 +186,22 @@ class App:
             worksheet.write(row, 1, caption)
             row += 1
         workbook.close()
+        
+    def download_captions(self, images):
+        captions_folder_path = os.path.join(self.path, 'captions')
+        if not os.path.exists(captions_folder_path):
+            os.mkdir(captions_folder_path)
+        self.write_captions_to_excel_file(images, captions_folder_path)
+        '''for index, image in enumerate(images):
+            try:
+                caption = image['alt']
+            except KeyError:
+                caption = 'No caption exists for this image'
+            file_name = 'caption_' + str(index) + '.txt'
+            file_path = os.path.join(captions_folder_path, file_name)
+            link = image['src']
+            with open(file_path, 'wb') as file:
+                file.write(str('link:' + str(link) + '\n' + 'caption:' + caption).encode())'''
 
     def downloading_images(self):
         self.all_images = list(set(self.all_images))
@@ -195,7 +220,7 @@ class App:
                 print(e)
                 print('Could not download image number ', index)
                 print('Image link -->', link)
-
+    """
     def close_dialog_box(self):
         # reload page
         sleep(2)
