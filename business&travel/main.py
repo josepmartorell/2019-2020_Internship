@@ -2,8 +2,9 @@
 """
 @author: jmartorell
 """
-
+import os
 from time import sleep
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -13,7 +14,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 
 class App:
-    def __init__(self, username='business.travel', password='Busi2016', target_destination='london',
+    def __init__(self, username='business.travel', password='Busi2016', target_destination='tokio',
                  path='/home/jmartorell/Imágenes/business&travelPhotos'):
         self.username = username
         self.password = password
@@ -25,17 +26,17 @@ class App:
         self.url = 'https://pro.w2m.travel'
         self.all_images = []
         self.browser.get(self.url)
-        sleep(3)
+        sleep(1)
         self.log_in()
         if self.error is False:
             # self.close_dialog_box()
-            self.search_engine_target()
+            self.search_engine_insert()
         '''if self.error is False:
-            self.scroll_down()
+            self.scroll_down()'''
         if self.error is False:
             if not os.path.exists(path):
                 os.mkdir(path)
-            self.downloading_images()'''
+            self.reach_target()
         # close the browser
         sleep(6)
         self.browser.quit()
@@ -53,7 +54,7 @@ class App:
             print('Some exception occurred while trying to find username or password field')
             self.error = True
 
-    def search_engine_target(self):
+    def search_engine_insert(self):
         # wait to load the search engine
         element = WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((
             By.XPATH,
@@ -67,7 +68,7 @@ class App:
         print(self.browser.current_url)
 
         # enter data in input field
-        element.send_keys("london")
+        element.send_keys(self.target_destination)
 
         # TODO:
         # drop-down item selection
@@ -78,7 +79,7 @@ class App:
 
         # enter destination city
         target_city = element.find_element_by_xpath(
-            "/html/body/form/div[1]/header/div[2]/div/div/div[2]/div[1]/div[1]/div[1]/div[2]/div/span[2]/div/div[3]/div[5]")
+            "//header/div[2]/div/div/div[2]/div[1]/div[1]/div[1]/div[2]/div/span[2]/div/div[3]/div[5]")
         target_city.click()
 
         # press the search button
@@ -86,12 +87,17 @@ class App:
             "/html/body/form/div[1]/header/div[2]/div/div/div[2]/div[2]/button")
         login_attempt.click()
 
+    def reach_target(self):
+        element = WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((
+            By.XPATH,
+            '//main/div[1]/div/div[1]/article/div[1]/div[2]/h2'))).click()
+
 
 if __name__ == '__main__':
     app = App()
-# FIXME:
-# when selecting from the drop down before moving three items down
-# you have already slowed down two items !!??!?
-# or does not select the item or does not press the button, or both...
-# tentative solution: build a list with the itmes to then try on it in the for cycle
-# you can create a module to do it
+
+# FIXME: descending design
+# 1) init method initializes variables that will be accessible by self from any method of the class
+# 2) log in method allows us to log in to access the provider's services
+# 3) search engine insert method fills in the search engine fields and clicks on the search button
+# 4) the reach target method systematically selects the first objective by clicking on it
