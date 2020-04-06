@@ -54,7 +54,9 @@ def element_wait(var_selected, route, wait=6):
 # todo: crossing the search engine...
 
 # dealing with popup windows
+driver.implicitly_wait(10)
 driver.find_element_by_xpath('//*[@id="id_boton_cerrar_aviso_pc"]').click()
+element_wait(var_xpath, '//*[@id="onesignal-popover-cancel-button"]')
 driver.find_element_by_xpath('//*[@id="onesignal-popover-cancel-button"]').click()
 
 well_come_window = element_wait(var_xpath, "/html/body/div[7]/div/span")
@@ -74,14 +76,17 @@ driver.execute_script(javaScript)
 element_wait(var_id, 'hoteles_destino')
 element = driver.find_element_by_id('hoteles_destino')
 element.clear()
-element.send_keys("london", Keys.ARROW_DOWN)
+element.send_keys("Almaty", Keys.ARROW_DOWN)
 
 actions = ActionChains(driver)
-for _ in range(3):
+for _ in range(0):
     actions.send_keys(Keys.PAGE_DOWN).perform()
     time.sleep(1)
 
-driver.find_element_by_xpath('/html/body/ul/li[4]/a/table/tbody/tr/td[2]').click()
+javaScript = "document.getElementsByClassName('close-modal')[0].click();"
+driver.execute_script(javaScript)
+
+driver.find_element_by_xpath('/html/body/ul/li/a/table/tbody/tr/td[2]/strong').click()
 driver.find_element_by_xpath('//*[@id="hoteles_start_date"]').click()
 driver.find_element_by_xpath('//table/tbody/tr[4]/td[1]/a').click()
 driver.find_element_by_xpath('//*[@id="btnSend"]').click()
