@@ -58,8 +58,10 @@ class App:
         try:
             search_bar = self.driver.find_element_by_css_selector('#filterHotels')
             search_bar.send_keys(self.target_city)
-            search_bar.click()
+            # fixme: WARNING: immediately after entering the city in the field, in this case, we need an
+            #  explicit wait of at least one second before clicking to display correctly the drop-down menu:
             sleep(1)
+            search_bar.click()
             # enter destination city
             target_city = self.driver.find_element_by_css_selector(
                 "li.item:nth-child(1) > div:nth-child(2) > span:nth-child(1)")
@@ -71,9 +73,9 @@ class App:
             # todo: accessing a drop-down calendar item by position within the list
             #  https://selenium-python.readthedocs.io/navigating.html#interacting-with-the-page
             all_options = self.driver.find_elements_by_class_name('available')
-            all_options[24].click()
+            all_options[0].click()
             all_options = self.driver.find_elements_by_class_name('available')
-            all_options[29].click()
+            all_options[6].click()
             sleep(2)
             # search button
             login_button = self.driver.find_element_by_xpath('//*[@id="search-hotels"]')
