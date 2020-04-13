@@ -18,11 +18,12 @@ import shutil
 
 
 class App:
-    def __init__(self, username='BUSIN95C', password='020906Sm', target_username='Paris (PAR) Francia',
-                 path='/Users/Lazar/Desktop/bedsOnlineReport'):  # Change this to your search engine details and desired report path
+    def __init__(self, username='BUSIN95C', password='020906Sm', target_country='2', target_city='12',
+                 path='/Users/Lazar/Desktop/bedsOnlineReport'):  # Change this to your desired report path
         self.username = username
         self.password = password
-        self.target_username = target_username
+        self.target_country = target_country
+        self.target_city = target_city
         self.path = path
         self.driver = webdriver.Firefox(
             executable_path="/usr/local/bin/geckodriver")  # Change this to your FirefoxDriver path.
@@ -96,20 +97,20 @@ class App:
             # fixme: you cannot enter text directly use the autocomplete square icon to the right of the field
             self.driver.find_element_by_xpath('/html/body/main/article/div[3]/div['
                                               '2]/section/div/form/fieldset[1]/div/a/span').click()
-            sleep(1)
+            sleep(2)
 
             # todo: https://dzone.com/articles/perform-actions-using-javascript-in-python-seleniu
             #  Method 1: Executing JavaScript at Document Root Level
             #  javaScript = "document.getElementsByClassName('ui-dialog-titlebar-close ui-corner-all')[0].click();"
             #  self.driver.execute_script(javaScript)
             #  Method 2: Executing JavaScript at Element Level:
-            picker = self.driver.find_element_by_xpath("//section/article[1]/div/ul[1]/li[2]/a")
+            picker = self.driver.find_element_by_xpath("//section/article[1]/div/ul[1]/li["+self.target_country+"]/a")
             self.driver.execute_script("arguments[0].click();", picker)
             sleep(2)
-            picker = self.driver.find_element_by_xpath("/html/body/div[8]/div[2]/div/section/article[2]/div/ul[1]/li[12]/a")
+            picker = self.driver.find_element_by_xpath("//section/article[2]/div/ul[1]/li["+self.target_city+"]/a")
             self.driver.execute_script("arguments[0].click();", picker)
             sleep(2)
-            picker = self.driver.find_element_by_xpath("/html/body/div[8]/div[2]/div/section/article[3]/div/ul[1]/li[1]/a")
+            picker = self.driver.find_element_by_xpath("//section/article[3]/div/ul[1]/li[1]/a")
             self.driver.execute_script("arguments[0].click();", picker)
 
             # search button
