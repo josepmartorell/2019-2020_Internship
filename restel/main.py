@@ -16,6 +16,7 @@ class App:
             executable_path='/usr/local/bin/geckodriver')  # Change this to your FirefoxDriver path.
         self.error = False
         self.main_url = 'http://www.restel.es'
+        self.all_images = []
         self.driver.get(self.main_url)
         sleep(1)
         self.log_in()
@@ -27,8 +28,8 @@ class App:
             # however it was the solution for this search engine (compare with solole project where at this point sleep was useless)
             sleep(1) #### fixme: explicit wait
             self.search_target_profile()
-        # if self.error is False:
-            # self.scroll_down()
+        if self.error is False:
+            self.scroll_down()
         if self.error is False:
             sleep(3)
         # self.driver.close()
@@ -86,6 +87,33 @@ class App:
             self.error = True
             print('Could not find search bar')
 
+    def scroll_down(self):
+        soup = BeautifulSoup(self.driver.page_source, 'lxml')
+        try:
+            for image in soup.find_all('a'):
+                self.all_images.append(image)
+            print(self.all_images)
+
+            # todo REF: https://stackoverflow.com/questions/48006078/how-to-scroll-down-in-python-selenium-step-by-step
+            # FIXME 1: two ways to scroll down,
+            #  1) go down to the bottom of the page at once.
+            # self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+            # FIXME 2:
+            #  2) Descend from item to item to the bottom of the page.
+            # in this example and item is the text of the button "See options":
+            read_mores = self.driver.find_elements_by_xpath('//a[text()="Ver opciones"]')
+            for read_more in read_mores:
+                self.driver.execute_script("arguments[0].scrollIntoView();", read_more)
+                # read_more.click()
+
+            sleep(2)
+            self.driver.close()
+        except Exception as e:
+            self.error = True
+            print(e)
+            print('Some error occurred while trying to scroll down')
+        sleep(10)
+
     """
     def write_captions_to_excel_file(self, images, caption_path):
         print('writing to excel')
@@ -140,31 +168,6 @@ class App:
                 print(e)
                 print('Could not download image number ', index)
                 print('Image link -->', link)
-
-    def scroll_down(self):
-        try:
-            no_of_posts = self.driver.find_element_by_xpath('//span[text()=" posts"]').text
-            no_of_posts = no_of_posts.replace(' posts', '')
-            no_of_posts = str(no_of_posts).replace(',', '')  # 15,483 --> 15483
-            self.no_of_posts = int(no_of_posts)
-            if self.no_of_posts > 12:
-                no_of_scrolls = int(self.no_of_posts/12) + 3
-                try:
-                    for value in range(no_of_scrolls):
-                        soup = BeautifulSoup(self.driver.page_source, 'lxml')
-                        for image in soup.find_all('img'):
-                            self.all_images.append(image)
-
-                        self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-                        sleep(2)
-                except Exception as e:
-                    self.error = True
-                    print(e)
-                    print('Some error occurred while trying to scroll down')
-            sleep(10)
-        except Exception:
-            print('Could not find no of posts while trying to scroll down')
-            self.error = True
 
     def close_dialog_box(self):
         # reload page
