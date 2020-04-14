@@ -32,7 +32,7 @@ class App:
             self.scroll_down()
         if self.error is False:
             sleep(3)
-        # self.driver.close()
+        self.driver.close()
 
     def log_in(self, ):
         try:
@@ -89,12 +89,13 @@ class App:
 
     def scroll_down(self):
         soup = BeautifulSoup(self.driver.page_source, 'lxml')
-        hotel_list = soup.find_all('a', {'class': 'hotel-name'})
+        hotel_list = soup.find_all('div', {'class': 'element'})
         try:
             for i, hotel in enumerate(hotel_list):
-                hotel_name = hotel.getText()
+                hotel_name = hotel.find('a', {'class': 'hotel-name'}).getText()
+                hotel_price = hotel.find('span', {'class': 'final-price'}).getText()
                 self.all_hotels.append(hotel_name)
-                print("%d - %s" % (i + 1, hotel_name))
+                print("%d - %s %s" % (i + 1, hotel_price, hotel_name))
             # print(self.all_hotels)
 
             # todo REF: https://stackoverflow.com/questions/48006078/how-to-scroll-down-in-python-selenium-step-by-step
