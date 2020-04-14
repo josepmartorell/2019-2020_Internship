@@ -16,7 +16,7 @@ class App:
             executable_path='/usr/local/bin/geckodriver')  # Change this to your FirefoxDriver path.
         self.error = False
         self.main_url = 'http://www.restel.es'
-        self.all_images = []
+        self.all_hotels = []
         self.driver.get(self.main_url)
         sleep(1)
         self.log_in()
@@ -89,10 +89,13 @@ class App:
 
     def scroll_down(self):
         soup = BeautifulSoup(self.driver.page_source, 'lxml')
+        hotel_list = soup.find_all('a', {'class': 'hotel-name'})
         try:
-            for image in soup.find_all('a'):
-                self.all_images.append(image)
-            print(self.all_images)
+            for i, hotel in enumerate(hotel_list):
+                hotel_name = hotel.getText()
+                self.all_hotels.append(hotel_name)
+                print("%d - %s" % (i + 1, hotel_name))
+            # print(self.all_hotels)
 
             # todo REF: https://stackoverflow.com/questions/48006078/how-to-scroll-down-in-python-selenium-step-by-step
             # FIXME 1: two ways to scroll down,
@@ -107,7 +110,7 @@ class App:
                 # read_more.click()
 
             sleep(2)
-            self.driver.close()
+            # self.driver.close()
         except Exception as e:
             self.error = True
             print(e)
