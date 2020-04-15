@@ -32,7 +32,7 @@ class App:
             self.scroll_down()
         if self.error is False:
             sleep(3)
-        self.driver.close()
+        # self.driver.close()
 
     def log_in(self, ):
         try:
@@ -90,12 +90,21 @@ class App:
     def scroll_down(self):
         soup = BeautifulSoup(self.driver.page_source, 'lxml')
         hotel_list = soup.find_all('div', {'class': 'element'})
+        euro_symbol = '€'
         try:
             for i, hotel in enumerate(hotel_list):
                 hotel_name = hotel.find('a', {'class': 'hotel-name'}).getText()
-                hotel_price = hotel.find('span', {'class': 'final-price'}).getText()
+                hotel_price = hotel.find('span', {'class': 'final-price'}).getText().strip('€')
+                hotel_price = hotel_price.replace(',', '.')
+                if len(hotel_price) == 7:
+                    hotel_price = "   " + hotel_price
+                if len(hotel_price) == 9:
+                    hotel_price = " " + hotel_price
                 self.all_hotels.append(hotel_name)
-                print("%d - %s %s" % (i + 1, hotel_price, hotel_name))
+                if i < 9:
+                    print(" %d - %s%s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
+                else:
+                    print("%d - %s%s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
             # print(self.all_hotels)
 
             # todo REF: https://stackoverflow.com/questions/48006078/how-to-scroll-down-in-python-selenium-step-by-step
@@ -111,12 +120,12 @@ class App:
                 # read_more.click()
 
             sleep(2)
-            # self.driver.close()
         except Exception as e:
             self.error = True
             print(e)
             print('Some error occurred while trying to scroll down')
         sleep(10)
+        self.driver.close()
 
     """
     def write_captions_to_excel_file(self, images, caption_path):
