@@ -17,6 +17,7 @@ class App:
         self.error = False
         self.main_url = 'http://www.restel.es'
         self.all_hotels = []
+        self.all_prices = []
         self.driver.get(self.main_url)
         sleep(1)
         self.log_in()
@@ -95,16 +96,22 @@ class App:
             for i, hotel in enumerate(hotel_list):
                 hotel_name = hotel.find('a', {'class': 'hotel-name'}).getText()
                 hotel_price = hotel.find('span', {'class': 'final-price'}).getText().strip('€')
+                hotel_price = hotel_price.replace('.', '')
                 hotel_price = hotel_price.replace(',', '.')
+                hotel_price = float(hotel_price)
+                hotel_price = "{0:.2f}".format(hotel_price)
+                self.all_prices.append(hotel_price)
+
+                hotel_price = str(hotel_price)
+                if len(hotel_price) == 6:
+                    hotel_price = "  " + hotel_price
                 if len(hotel_price) == 7:
-                    hotel_price = "   " + hotel_price
-                if len(hotel_price) == 9:
                     hotel_price = " " + hotel_price
                 self.all_hotels.append(hotel_name)
                 if i < 9:
-                    print(" %d - %s%s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
+                    print(" %d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
                 else:
-                    print("%d - %s%s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
+                    print("%d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
             # print(self.all_hotels)
 
             # todo REF: https://stackoverflow.com/questions/48006078/how-to-scroll-down-in-python-selenium-step-by-step
