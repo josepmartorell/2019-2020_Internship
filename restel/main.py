@@ -1,3 +1,5 @@
+import operator
+
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from time import sleep
@@ -92,6 +94,7 @@ class App:
         soup = BeautifulSoup(self.driver.page_source, 'lxml')
         hotel_list = soup.find_all('div', {'class': 'element'})
         euro_symbol = '€'
+        print("\n\tdisplay:\n")
         try:
             for i, hotel in enumerate(hotel_list):
                 hotel_name = hotel.find('a', {'class': 'hotel-name'}).getText()
@@ -102,7 +105,6 @@ class App:
                 hotel_price = "{0:.2f}".format(hotel_price)
                 self.all_prices.append(hotel_price)
 
-                hotel_price = str(hotel_price)
                 if len(hotel_price) == 6:
                     hotel_price = "  " + hotel_price
                 if len(hotel_price) == 7:
@@ -112,7 +114,7 @@ class App:
                     print(" %d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
                 else:
                     print("%d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
-            # print(self.all_hotels)
+            print("\n\tranking:\n")
 
             # todo REF: https://stackoverflow.com/questions/48006078/how-to-scroll-down-in-python-selenium-step-by-step
             # FIXME 1: two ways to scroll down,
@@ -125,6 +127,23 @@ class App:
             for read_more in read_mores:
                 self.driver.execute_script("arguments[0].scrollIntoView();", read_more)
                 # read_more.click()
+
+            # float cast
+            new_prices_2 = []
+            for element in self.all_prices:
+                rank = float(element)
+                new_prices_2.append(rank)
+
+            # final list
+            list = dict(zip(self.all_hotels, new_prices_2))
+            ranking_2 = sorted(list.items(), key=operator.itemgetter(1))
+            for k, v in ranking_2:
+                if v < 1000.00:
+                    print("  ", "{0:.2f}".format(v), k)
+                if 999.00 < v < 10000.00:
+                    print(" ", "{0:.2f}".format(v), k)
+                if v > 9999.00:
+                    print("", "{0:.2f}".format(v), k)
 
             sleep(2)
         except Exception as e:
