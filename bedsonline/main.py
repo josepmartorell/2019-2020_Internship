@@ -50,7 +50,9 @@ class App:
         try:
             # todo: dealing with popup windows
             # cookies popup
-            self.driver.find_element_by_xpath('/html/body/div[4]/div/div/div[2]/button[1]').click()
+            WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
+                By.XPATH,
+                '/html/body/div[3]/div/div/div[2]/button[1]'))).click()
             sleep(1)
 
         except Exception:
@@ -104,7 +106,9 @@ class App:
             #  javaScript = "document.getElementsByClassName('ui-dialog-titlebar-close ui-corner-all')[0].click();"
             #  self.driver.execute_script(javaScript)
             #  Method 2: Executing JavaScript at Element Level:
-            picker = self.driver.find_element_by_xpath("//section/article[1]/div/ul[1]/li["+self.target_country+"]/a")
+            picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
+                By.XPATH,
+                "//section/article[1]/div/ul[1]/li["+self.target_country+"]/a")))
             self.driver.execute_script("arguments[0].click();", picker)
             sleep(2)
             picker = self.driver.find_element_by_xpath("//section/article[2]/div/ul[1]/li["+self.target_city+"]/a")
