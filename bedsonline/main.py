@@ -18,12 +18,15 @@ import shutil
 
 
 class App:
-    def __init__(self, username='BUSIN95C', password='020906Sm', target_country='2', target_city='12',
-                 path='/Users/Lazar/Desktop/bedsOnlineReport'):  # Change this to your desired report path
+    def __init__(self, username='BUSIN95C', password='020906Sm', target_continent='4', target_country_col='1',
+                 target_country_row='2', target_city_col='1', target_city_row='12', path='//home/jmartorell/Booking'):
         self.username = username
         self.password = password
-        self.target_country = target_country
-        self.target_city = target_city
+        self.target_continent = target_continent
+        self.target_country_col = target_country_col
+        self.target_country_row = target_country_row
+        self.target_city_col = target_city_col
+        self.target_city_row = target_city_row
         self.path = path
         self.driver = webdriver.Firefox(
             executable_path="/usr/local/bin/geckodriver")  # Change this to your FirefoxDriver path.
@@ -106,12 +109,14 @@ class App:
             #  javaScript = "document.getElementsByClassName('ui-dialog-titlebar-close ui-corner-all')[0].click();"
             #  self.driver.execute_script(javaScript)
             #  Method 2: Executing JavaScript at Element Level:
-            picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
-                By.XPATH,
-                "//section/article[1]/div/ul[1]/li["+self.target_country+"]/a")))
+            if self.target_continent == '4':
+                picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
+                    By.XPATH,
+                    "//section/article[1]/div/ul["+self.target_country_col+"]/li["+self.target_country_row+"]/a")))
             self.driver.execute_script("arguments[0].click();", picker)
             sleep(2)
-            picker = self.driver.find_element_by_xpath("//section/article[2]/div/ul[1]/li["+self.target_city+"]/a")
+            picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
+                By.XPATH, "//section/article[2]/div/ul["+self.target_city_col+"]/li["+self.target_city_row+"]/a")))
             self.driver.execute_script("arguments[0].click();", picker)
             sleep(2)
             picker = self.driver.find_element_by_xpath("//section/article[3]/div/ul[1]/li[1]/a")
