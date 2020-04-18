@@ -26,16 +26,17 @@ class App:
         if self.error is False:
             # self.close_dialog_box()
             # todo: REF:
-            # https://es.stackoverflow.com/questions/109086/esperar-respuestas-para-continuar-selenium-python
+            #  https://es.stackoverflow.com/questions/109086/esperar-respuestas-para-continuar-selenium-python
             # The explicit wait, unlike an implicit one or what time.sleep does (although this is blocking)
-            # however it was the solution for this search engine (compare with solole project where at this point sleep was useless)
-            sleep(1) #### fixme: explicit wait
+            # however it was the solution for this search engine (compare with solole project where at this
+            # point sleep was useless)
+            sleep(1)  #### fixme: explicit wait
             self.search_target_profile()
         if self.error is False:
             self.scroll_down()
         if self.error is False:
-            sleep(3)
-        # self.driver.close()
+            sleep(1)
+            self.driver.close()
 
     def log_in(self, ):
         try:
@@ -64,7 +65,7 @@ class App:
             search_bar.send_keys(self.target_city)
             # fixme: WARNING: immediately after entering the city in the field, in this case, we need an
             #  explicit wait of at least one second before clicking to display correctly the drop-down menu:
-            sleep(1)
+            sleep(2)
             search_bar.click()
             # enter destination city
             target_city = self.driver.find_element_by_css_selector(
@@ -94,6 +95,19 @@ class App:
         soup = BeautifulSoup(self.driver.page_source, 'lxml')
         hotel_list = soup.find_all('div', {'class': 'element'})
         euro_symbol = '€'
+
+        # todo REF: https://stackoverflow.com/questions/48006078/how-to-scroll-down-in-python-selenium-step-by-step
+        # FIXME 1: two ways to scroll down,
+        #  1) go down to the bottom of the page at once.
+        # self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+        # FIXME 2:
+        #  2) Descend from item to item to the bottom of the page.
+        # in this example and item is the text of the button "See options":
+        read_mores = self.driver.find_elements_by_xpath('//a[text()="Ver opciones"]')
+        for read_more in read_mores:
+            self.driver.execute_script("arguments[0].scrollIntoView();", read_more)
+            # read_more.click()
+
         print("\n\tdisplay:\n")
         try:
             for i, hotel in enumerate(hotel_list):
@@ -115,18 +129,6 @@ class App:
                 else:
                     print("%d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
             print("\n\tranking:\n")
-
-            # todo REF: https://stackoverflow.com/questions/48006078/how-to-scroll-down-in-python-selenium-step-by-step
-            # FIXME 1: two ways to scroll down,
-            #  1) go down to the bottom of the page at once.
-            # self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-            # FIXME 2:
-            #  2) Descend from item to item to the bottom of the page.
-            # in this example and item is the text of the button "See options":
-            read_mores = self.driver.find_elements_by_xpath('//a[text()="Ver opciones"]')
-            for read_more in read_mores:
-                self.driver.execute_script("arguments[0].scrollIntoView();", read_more)
-                # read_more.click()
 
             # float cast
             new_prices_2 = []
@@ -150,8 +152,6 @@ class App:
             self.error = True
             print(e)
             print('Some error occurred while trying to scroll down')
-        sleep(10)
-        self.driver.close()
 
     """
     def write_captions_to_excel_file(self, images, caption_path):
