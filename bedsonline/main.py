@@ -18,8 +18,8 @@ import shutil
 
 
 class App:
-    def __init__(self, username='BUSIN95C', password='020906Sm', target_continent='4', target_country_col='1',
-                 target_country_row='2', target_city_col='1', target_city_row='12', path='//home/jmartorell/Booking'):
+    def __init__(self, username='BUSIN95C', password='020906Sm', target_continent='2', target_country_col='3',
+                 target_country_row='1', target_city_col='4', target_city_row='94', path='//home/jmartorell/Booking'):
         self.username = username
         self.password = password
         self.target_continent = target_continent
@@ -109,10 +109,16 @@ class App:
             #  javaScript = "document.getElementsByClassName('ui-dialog-titlebar-close ui-corner-all')[0].click();"
             #  self.driver.execute_script(javaScript)
             #  Method 2: Executing JavaScript at Element Level:
-            if self.target_continent == '4':
+
+            if self.target_continent != '4':
                 picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
                     By.XPATH,
-                    "//section/article[1]/div/ul["+self.target_country_col+"]/li["+self.target_country_row+"]/a")))
+                    "/html/body/div[8]/div[2]/div/nav/ul/li["+self.target_continent+"]/a")))
+                self.driver.execute_script("arguments[0].click();", picker)
+                sleep(2)
+            picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
+                By.XPATH,
+                "//section/article[1]/div/ul["+self.target_country_col+"]/li["+self.target_country_row+"]/a")))
             self.driver.execute_script("arguments[0].click();", picker)
             sleep(2)
             picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
