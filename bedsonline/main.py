@@ -114,8 +114,8 @@ class App:
 
             if self.target_continent != '4':
                 picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
-                    By.XPATH,
-                    "/html/body/div[8]/div[2]/div/nav/ul/li[" + self.target_continent + "]/a")))
+                    By.CSS_SELECTOR,
+                    "#continent-picker-tab > li:nth-child(" + self.target_continent + ") > a:nth-child(1)")))
                 self.driver.execute_script("arguments[0].click();", picker)
                 sleep(2)
             picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
@@ -160,6 +160,8 @@ class App:
             try:
                 for i, hotel in enumerate(hotel_list):
                     hotel_name = hotel.find('span', {'class': 'product-maininfo-title hotel-name'}).getText()
+                    # fixme: remove whitespaces REF: https://stackoverrun.com/es/q/743639
+                    hotel_name = ' '.join(hotel_name.split())
                     self.all_hotels.append(hotel_name)
                     print(" %d - %s" % (i + 1, hotel_name))
 
