@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from time import sleep
 
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 # todo: EXPECTED CONDITIONS https://selenium-python.readthedocs.io/waits.html
@@ -40,14 +41,14 @@ class App:
             sleep(2)  # fixme: implicit wait!
             # self.close_dialog_box()
             self.search_target_profile()
-        # if self.error is False:
-        #    self.scroll_down()
+        if self.error is False:
+            self.scroll_down()
         # if self.error is False:
         #     if not os.path.exists(path):
         #         os.mkdir(path)
         #     self.downloading_images()
-        # sleep(3)
-        # self.driver.close()
+        sleep(3)
+        self.driver.close()
 
     def log_in(self, ):
         try:
@@ -113,16 +114,17 @@ class App:
             if self.target_continent != '4':
                 picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
                     By.XPATH,
-                    "/html/body/div[8]/div[2]/div/nav/ul/li["+self.target_continent+"]/a")))
+                    "/html/body/div[8]/div[2]/div/nav/ul/li[" + self.target_continent + "]/a")))
                 self.driver.execute_script("arguments[0].click();", picker)
                 sleep(2)
             picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
                 By.XPATH,
-                "//section/article[1]/div/ul["+self.target_country_col+"]/li["+self.target_country_row+"]/a")))
+                "//section/article[1]/div/ul[" + self.target_country_col + "]/li[" + self.target_country_row + "]/a")))
             self.driver.execute_script("arguments[0].click();", picker)
             sleep(2)
             picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
-                By.XPATH, "//section/article[2]/div/ul["+self.target_city_col+"]/li["+self.target_city_row+"]/a")))
+                By.XPATH,
+                "//section/article[2]/div/ul[" + self.target_city_col + "]/li[" + self.target_city_row + "]/a")))
             self.driver.execute_script("arguments[0].click();", picker)
             sleep(2)
             picker = self.driver.find_element_by_xpath("//section/article[3]/div/ul[1]/li[1]/a")
@@ -136,6 +138,23 @@ class App:
         except Exception:
             self.error = True
             print('Could not find search bar')
+
+    def scroll_down(self):
+        try:
+
+            wait = WebDriverWait(self.driver, 10)
+            element = wait.until(EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, '#form-cheapest-acc-hot13445 > button:nth-child(1)')))
+            # self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+            read_mores = self.driver.find_elements_by_xpath('//form/button')
+            for read_more in read_mores:
+                self.driver.execute_script("arguments[0].scrollIntoView();", read_more)
+                # read_more.click()
+            sleep(1)
+
+        except NoSuchElementException:
+            print('Some error occurred while trying to scroll down')
+            self.error = True
 
     """def write_captions_to_excel_file(self, images, caption_path):
         print('writing to excel')
@@ -190,31 +209,6 @@ class App:
                 print(e)
                 print('Could not download image number ', index)
                 print('Image link -->', link)
-
-    def scroll_down(self):
-        try:
-            no_of_posts = self.driver.find_element_by_xpath('//span[text()=" posts"]').text
-            no_of_posts = no_of_posts.replace(' posts', '')
-            no_of_posts = str(no_of_posts).replace(',', '')  # 15,483 --> 15483
-            self.no_of_posts = int(no_of_posts)
-            if self.no_of_posts > 12:
-                no_of_scrolls = int(self.no_of_posts/12) + 3
-                try:
-                    for value in range(no_of_scrolls):
-                        soup = BeautifulSoup(self.driver.page_source, 'lxml')
-                        for image in soup.find_all('img'):
-                            self.all_images.append(image)
-
-                        self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-                        sleep(2)
-                except Exception as e:
-                    self.error = True
-                    print(e)
-                    print('Some error occurred while trying to scroll down')
-            sleep(10)
-        except Exception:
-            print('Could not find no of posts while trying to scroll down')
-            self.error = True
 
     def close_dialog_box(self):
         # reload page
