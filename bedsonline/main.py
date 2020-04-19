@@ -1,3 +1,4 @@
+import operator
 from telnetlib import EC
 
 from bs4 import BeautifulSoup
@@ -29,6 +30,7 @@ class App:
         self.target_city_col = target_city_col
         self.target_city_row = target_city_row
         self.all_hotels = []
+        self.all_prices = []
         self.path = path
         self.driver = webdriver.Firefox(
             executable_path="/usr/local/bin/geckodriver")  # Change this to your FirefoxDriver path.
@@ -163,11 +165,12 @@ class App:
                     # fixme: remove whitespaces REF: https://stackoverrun.com/es/q/743639
                     hotel_name = ' '.join(hotel_name.split())
                     self.all_hotels.append(hotel_name)
-                    print(" %d - %s" % (i + 1, hotel_name))
+                    # print(" %d - %s" % (i + 1, hotel_name))
 
-                    '''hotel_price = hotel.find('span', {'class': 'final-price'}).getText().strip('€')
-                    hotel_price = hotel_price.replace('.', '')
-                    hotel_price = hotel_price.replace(',', '.')
+                    hotel_integer = hotel.find('span', {'class': 'hotel-price'}).getText()
+                    hotel_decimal = hotel.find('span', {'class': 'hotel-price-decimal'}).getText().strip('€')
+                    hotel_integer = hotel_integer.replace(',', '')
+                    hotel_price = '{}.{}'.format(hotel_integer, hotel_decimal)
                     hotel_price = float(hotel_price)
                     hotel_price = "{0:.2f}".format(hotel_price)
                     self.all_prices.append(hotel_price)
@@ -179,7 +182,25 @@ class App:
                     if i < 9:
                         print(" %d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
                     else:
-                        print("%d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))'''
+                        print("%d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
+
+                print("\n\tranking:\n")
+                # float cast
+                new_prices_2 = []
+                for element in self.all_prices:
+                    rank = float(element)
+                    new_prices_2.append(rank)
+
+                # final list
+                list = dict(zip(self.all_hotels, new_prices_2))
+                ranking_2 = sorted(list.items(), key=operator.itemgetter(1))
+                for k, v in ranking_2:
+                    if v < 1000.00:
+                        print("  ", "{0:.2f}".format(v), k)
+                    if 999.00 < v < 10000.00:
+                        print(" ", "{0:.2f}".format(v), k)
+                    if v > 9999.00:
+                        print("", "{0:.2f}".format(v), k)
 
                 sleep(2)
             except Exception as e:
