@@ -28,6 +28,7 @@ class App:
         self.target_country_row = target_country_row
         self.target_city_col = target_city_col
         self.target_city_row = target_city_row
+        self.all_hotels = []
         self.path = path
         self.driver = webdriver.Firefox(
             executable_path="/usr/local/bin/geckodriver")  # Change this to your FirefoxDriver path.
@@ -151,6 +152,38 @@ class App:
                 self.driver.execute_script("arguments[0].scrollIntoView();", read_more)
                 # read_more.click()
             sleep(1)
+
+            soup = BeautifulSoup(self.driver.page_source, 'lxml')
+            hotel_list = soup.find_all('article', {'class': 'crosselling-line availability-item'})
+            euro_symbol = '€'
+            print("\n\tdisplay:\n")
+            try:
+                for i, hotel in enumerate(hotel_list):
+                    hotel_name = hotel.find('span', {'class': 'product-maininfo-title hotel-name'}).getText()
+                    self.all_hotels.append(hotel_name)
+                    print(" %d - %s" % (i + 1, hotel_name))
+
+                    '''hotel_price = hotel.find('span', {'class': 'final-price'}).getText().strip('€')
+                    hotel_price = hotel_price.replace('.', '')
+                    hotel_price = hotel_price.replace(',', '.')
+                    hotel_price = float(hotel_price)
+                    hotel_price = "{0:.2f}".format(hotel_price)
+                    self.all_prices.append(hotel_price)
+                    if len(hotel_price) == 6:
+                        hotel_price = "  " + hotel_price
+                    if len(hotel_price) == 7:
+                        hotel_price = " " + hotel_price
+
+                    if i < 9:
+                        print(" %d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
+                    else:
+                        print("%d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))'''
+
+                sleep(2)
+            except Exception as e:
+                self.error = True
+                print(e)
+                print('Some error occurred while trying to scratch the hotel list')
 
         except NoSuchElementException:
             print('Some error occurred while trying to scroll down')
