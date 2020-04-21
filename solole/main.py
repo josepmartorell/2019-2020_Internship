@@ -1,5 +1,3 @@
-from telnetlib import EC
-
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from time import sleep
@@ -30,7 +28,7 @@ import shutil
 
 class App:
     def __init__(self, username='BUSINESSTRAVEL', password='Trav567RT', target_city='London',
-                 path='/home/jmartorell/Imágenes/sololePhotos'):  # Change this to your Target details and desired images path
+                 path='/home/jmartorell/Booking'):   # Change this to your Target details and desired booking path
         self.username = username
         self.password = password
         self.target_city = target_city
@@ -55,7 +53,7 @@ class App:
         if self.error is False:
             if not os.path.exists(path):
                 os.mkdir(path)
-            self.downloading_images()
+            # self.downloading_images()
         sleep(3)
         self.driver.close()
 
@@ -127,7 +125,7 @@ class App:
 
     def scroll_down(self):
         try:
-            self.driver.implicitly_wait(10)
+            self.driver.implicitly_wait(15)
             # fixme: screen:
             no_of_pages = self.driver.find_element_by_xpath('//pagination-template/ul/li[9]/a/span[2]').text
             print("Quantity of pages:" + no_of_pages)
@@ -137,6 +135,18 @@ class App:
             print("Quantity of results:" + no_of_results)
             # no_of_results = str(no_of_results).replace(',', '')  # 15,483 --> 15483
             # self.no_of_results = int(no_of_results)
+            # self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')  # fixme: scroll
+            # todo REF: https://stackoverflow.com/questions/48006078/how-to-scroll-down-in-python-selenium-step-by-step
+            # FIXME 1: two ways to scroll down,
+            #  1) go down to the bottom of the page at once.
+            # self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')  # fixme: scroll
+            # FIXME 2:
+            #  2) Descend from item to item to the bottom of the page.
+            # in this example and item is the text of the button "See options":
+            read_mores = self.driver.find_elements_by_xpath('//div[text()="Precio desde"]')
+            for read_more in read_mores:
+                self.driver.execute_script("arguments[0].scrollIntoView();", read_more)
+                # read_more.click()
             try:
                 soup = BeautifulSoup(self.driver.page_source, 'lxml')  # todo: bs4
                 for image in soup.find_all('img'):
@@ -148,26 +158,13 @@ class App:
                 print("I/O error occurred: ", os.strerror(e.errno))
                 print("Connection Error ")
                 pass
-            self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')  # fixme: scroll
 
-            '''if self.no_of_pages > 0:
-                no_of_scrolls = int(self.no_of_pages / 10) + 1
-                try:
-                    for value in range(no_of_scrolls):
-                        soup = BeautifulSoup(self.driver.page_source, 'lxml')
-                        for image in soup.find_all('img'):
-                            self.all_images.append(image)
-                        self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-                        sleep(10)
-                except Exception as e:
-                    self.error = True
-                    print(e)
-                    print('Some error occurred while trying to scroll down')
-            sleep(10)'''
+
+
         except Exception:
             print('Could not find no of pages while trying to scroll down')
             self.error = True
-
+    """
     def write_captions_to_excel_file(self, images, caption_path):
         print('writing to excel')
         workbook = Workbook(os.path.join(caption_path, 'captions.xlsx'))
@@ -220,7 +217,7 @@ class App:
                 print(e)
                 print('Could not download image number ', index)
                 print('Image link -->', link)
-    """
+
     def close_dialog_box(self):
         # reload page
         sleep(2)
