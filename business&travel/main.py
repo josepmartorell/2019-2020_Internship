@@ -2,6 +2,7 @@
 """
 @author: jmartorell
 """
+import operator
 import os
 from time import sleep
 
@@ -15,7 +16,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 
 class App:
-    def __init__(self, username='business.travel', password='Busi2016', target_destination='london',
+    def __init__(self, username='business.travel', password='Busi2016', target_destination='new york',
                  path='/home/jmartorell/Booking'):
         self.username = username
         self.password = password
@@ -136,6 +137,24 @@ class App:
                     print(" %d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
                 else:
                     print("%d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
+
+            print("\n\tranking:\n")
+            # float cast
+            new_prices_2 = []
+            for element in self.all_prices:
+                rank = float(element)
+                new_prices_2.append(rank)
+
+            # final list
+            list = dict(zip(self.all_hotels, new_prices_2))
+            ranking_2 = sorted(list.items(), key=operator.itemgetter(1))
+            for k, v in ranking_2:
+                if v < 1000.00:
+                    print("  ", "{0:.2f}".format(v), k)
+                if 999.00 < v < 10000.00:
+                    print(" ", "{0:.2f}".format(v), k)
+                if v > 9999.00:
+                    print("", "{0:.2f}".format(v), k)
 
             sleep(2)
         except Exception as e:
