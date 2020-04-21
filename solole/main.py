@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from time import sleep
 
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from xlsxwriter import Workbook
@@ -27,8 +27,8 @@ import shutil
 # cap["marionette"] = False
 
 class App:
-    def __init__(self, username='BUSINESSTRAVEL', password='Trav567RT', target_city='London',
-                 path='/home/jmartorell/Booking'):   # Change this to your Target details and desired booking path
+    def __init__(self, username='BUSINESSTRAVEL', password='Trav567RT', target_city='london',
+                 path='/home/jmartorell/Booking'):  # Change this to your Target details and desired booking path
         self.username = username
         self.password = password
         self.target_city = target_city
@@ -41,7 +41,8 @@ class App:
         self.error = False
         self.timeout = 30
         self.main_url = 'https://b2b.solole.es'
-        self.all_images = []
+        self.all_hotels = []
+        self.all_prices = []
         self.driver.get(self.main_url)
         sleep(1)
         self.log_in()
@@ -55,7 +56,7 @@ class App:
                 os.mkdir(path)
             # self.downloading_images()
         sleep(3)
-        self.driver.close()
+        # self.driver.close()
 
     def log_in(self, ):
 
@@ -124,17 +125,23 @@ class App:
             print('Could not find search bar')
 
     def scroll_down(self):
+        self.driver.implicitly_wait(20)
+
         try:
-            self.driver.implicitly_wait(15)
             # fixme: screen:
             no_of_pages = self.driver.find_element_by_xpath('//pagination-template/ul/li[9]/a/span[2]').text
             print("Quantity of pages:" + no_of_pages)
 
-            no_of_results = self.driver.find_element_by_xpath('//iboosy-accommodations-filter/div/div[1]/div[2]/h5').text
+            no_of_results = self.driver.find_element_by_xpath(
+                '//iboosy-accommodations-filter/div/div[1]/div[2]/h5').text
             no_of_results = no_of_results.replace(' RESULTADOS ENCONTRADOS', '')
             print("Quantity of results:" + no_of_results)
             # no_of_results = str(no_of_results).replace(',', '')  # 15,483 --> 15483
             # self.no_of_results = int(no_of_results)
+        except:
+            pass
+
+        try:
             # self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')  # fixme: scroll
             # todo REF: https://stackoverflow.com/questions/48006078/how-to-scroll-down-in-python-selenium-step-by-step
             # FIXME 1: two ways to scroll down,
@@ -147,23 +154,22 @@ class App:
             for read_more in read_mores:
                 self.driver.execute_script("arguments[0].scrollIntoView();", read_more)
                 # read_more.click()
+
             try:
                 soup = BeautifulSoup(self.driver.page_source, 'lxml')  # todo: bs4
-                for image in soup.find_all('img'):
-                    self.all_images.append(image)
-                # regular expression to get images
-                images = self.all_images
-                print('images % found' % len(images))
+                hotel_list = soup.find_all('div', {'preventdefault': 'true'})
+                euro_symbol = '€'
+                print(hotel_list)
+
             except IOError as e:
                 print("I/O error occurred: ", os.strerror(e.errno))
                 print("Connection Error ")
                 pass
 
-
-
-        except Exception:
-            print('Could not find no of pages while trying to scroll down')
+        except NoSuchElementException:
+            print('Some error occurred while trying to scroll down')
             self.error = True
+
     """
     def write_captions_to_excel_file(self, images, caption_path):
         print('writing to excel')
