@@ -5,6 +5,7 @@
 import os
 from time import sleep
 
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -14,8 +15,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 
 class App:
-    def __init__(self, username='business.travel', password='Busi2016', target_destination='tokio',
-                 path='/home/jmartorell/Imágenes/business&travelPhotos'):
+    def __init__(self, username='business.travel', password='Busi2016', target_destination='london',
+                 path='/home/jmartorell/Booking'):
         self.username = username
         self.password = password
         self.target_destination = target_destination
@@ -24,22 +25,23 @@ class App:
             executable_path='/usr/local/bin/geckodriver')
         self.error = False
         self.url = 'https://pro.w2m.travel'
-        self.all_images = []
+        self.all_hotels = []
+        self.all_prices = []
         self.browser.get(self.url)
         sleep(1)
         self.log_in()
         if self.error is False:
             # self.close_dialog_box()
             self.search_engine_insert()
-        '''if self.error is False:
-            self.scroll_down()'''
+        if self.error is False:
+            self.scroll_down()
         if self.error is False:
             if not os.path.exists(path):
                 os.mkdir(path)
-            self.reach_target()
+            # todo: self.reach_target()
         # close the browser
         sleep(6)
-        self.browser.quit()
+        # self.browser.quit()
 
     def log_in(self, ):
         try:
@@ -79,7 +81,7 @@ class App:
 
         # enter destination city
         target_city = element.find_element_by_xpath(
-            "//header/div[2]/div/div/div[2]/div[1]/div[1]/div[1]/div[2]/div/span[2]/div/div[3]/div[5]")
+            "//header/div[2]/div/div/div[2]/div[1]/div[1]/div[1]/div[2]/div/span[2]/div/div[3]/div[1]")
         target_city.click()
 
         # press the search button
@@ -87,10 +89,59 @@ class App:
             "/html/body/form/div[1]/header/div[2]/div/div/div[2]/div[2]/button")
         login_attempt.click()
 
-    def reach_target(self):
-        element = WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((
-            By.XPATH,
-            '//main/div[1]/div/div[1]/article/div[1]/div[2]/h2'))).click()
+    # todo: def reach_target(self):
+    #     element = WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((
+    #         By.XPATH,
+    #         '//main/div[1]/div/div[1]/article/div[1]/div[2]/h2'))).click()
+
+    def scroll_down(self):
+        self.browser.implicitly_wait(15)
+
+        # todo REF: https://stackoverflow.com/questions/48006078/how-to-scroll-down-in-python-selenium-step-by-step
+        # FIXME 1: two ways to scroll down,
+        #  1) go down to the bottom of the page at once.
+        # self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+        # FIXME 2:
+        #  2) Descend from item to item to the bottom of the page.
+        # in this example and item is the text of the button "See options":
+        read_mores = self.browser.find_elements_by_xpath('//button[text()="Ver más opciones"]')
+        for read_more in read_mores:
+            self.browser.execute_script("arguments[0].scrollIntoView();", read_more)
+            # read_more.click()
+
+        soup = BeautifulSoup(self.browser.page_source, 'lxml')
+        hotel_list = soup.find_all('div', {'class': 'results-list__item'})
+        euro_symbol = '€'
+
+        print("\n\tdisplay:\n")
+        try:
+            for i, hotel in enumerate(hotel_list):
+                hotel_name = hotel.find('h2', {'class': 'info-card__title'}).getText()
+                # fixme: remove whitespaces REF: https://stackoverrun.com/es/q/743639
+                hotel_name = ' '.join(hotel_name.split())
+                # notice that instead of .getText().strip('€') here we work with .getText().replace('€', ''):
+                hotel_price = hotel.find('a', {'tabindex': '0'}).getText().replace('€', '')
+                hotel_price = hotel_price.replace('.', '')
+                hotel_price = hotel_price.replace(',', '.')
+                hotel_price = float(hotel_price)
+                hotel_price = "{0:.2f}".format(hotel_price)
+                self.all_prices.append(hotel_price)
+
+                if len(hotel_price) == 6:
+                    hotel_price = "  " + hotel_price
+                if len(hotel_price) == 7:
+                    hotel_price = " " + hotel_price
+                self.all_hotels.append(hotel_name)
+                if i < 9:
+                    print(" %d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
+                else:
+                    print("%d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
+
+            sleep(2)
+        except Exception as e:
+            self.error = True
+            print(e)
+            print('Some error occurred while trying to scroll down')
 
 
 if __name__ == '__main__':
