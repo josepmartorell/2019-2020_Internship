@@ -1,3 +1,5 @@
+import operator
+
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from time import sleep
@@ -44,6 +46,7 @@ class App:
         self.all_hotels = []
         self.all_addresses = []
         self.all_prices = []
+        self.euro_symbol = '€'
         self.driver.get(self.main_url)
         sleep(1)
         self.log_in()
@@ -206,8 +209,34 @@ class App:
 
             # display list
             list = zip(self.all_prices, self.all_hotels, self.all_addresses)
-            for j, k, v in list:
-                print(j, k, " - ", v)
+            for i, (j, k, v) in enumerate(list):
+                if len(j) == 6:
+                    j = "  " + j
+                if len(j) == 7:
+                    j = " " + j
+                if i < 9:
+                    print(" %d - %s %s %s %s %s" % (i + 1, j, self.euro_symbol, k, " - ", v))
+                else:
+                    print("%d - %s %s %s %s %s" % (i + 1, j, self.euro_symbol, k, " - ", v))
+
+            print("\n\tranking:\n")
+
+            # float cast
+            new_prices_2 = []
+            for element in self.all_prices:
+                rank = float(element)
+                new_prices_2.append(rank)
+
+            # final list
+            list = dict(zip(self.all_hotels, new_prices_2))
+            ranking_2 = sorted(list.items(), key=operator.itemgetter(1))
+            for k, v in ranking_2:
+                if v < 1000.00:
+                    print("  ", "{0:.2f}".format(v), k)
+                if 999.00 < v < 10000.00:
+                    print(" ", "{0:.2f}".format(v), k)
+                if v > 9999.00:
+                    print("", "{0:.2f}".format(v), k)
 
         except NoSuchElementException:
             print('Some error occurred while trying to scroll down')
