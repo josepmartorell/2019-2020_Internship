@@ -27,7 +27,7 @@ import shutil
 # cap["marionette"] = False
 
 class App:
-    def __init__(self, username='BUSINESSTRAVEL', password='Trav567RT', target_city='london',
+    def __init__(self, username='BUSINESSTRAVEL', password='Trav567RT', target_city='new york',
                  path='/home/jmartorell/Booking'):  # Change this to your Target details and desired booking path
         self.username = username
         self.password = password
@@ -42,6 +42,7 @@ class App:
         self.timeout = 30
         self.main_url = 'https://b2b.solole.es'
         self.all_hotels = []
+        self.all_addresses = []
         self.all_prices = []
         self.driver.get(self.main_url)
         sleep(1)
@@ -90,7 +91,7 @@ class App:
             # todo: accessing a drop-down menu item by position within the list
             #  https://selenium-python.readthedocs.io/navigating.html#interacting-with-the-page
             all_options = self.driver.find_elements_by_class_name('dropdown-item')
-            all_options[1].click()
+            all_options[0].click()
             sleep(1)
 
             self.driver.find_element_by_css_selector(
@@ -157,14 +158,56 @@ class App:
 
             try:
                 soup = BeautifulSoup(self.driver.page_source, 'lxml')  # todo: bs4
-                hotel_list = soup.find_all('div', {'preventdefault': 'true'})
-                euro_symbol = '€'
-                print(hotel_list)
-
+                hotel_list = soup.find_all('div', {'class': 'row result-option'})
+                # fixme: name mechanism:
+                for i, hotel in enumerate(hotel_list):
+                    hotel_name = hotel.find('span', {'_ngcontent-c18': ""}).getText()
+                    hotel_name = ' '.join(hotel_name.split())
+                    # print("%d - %s" % (i + 1, hotel_name))
+                    self.all_hotels.append(hotel_name)
             except IOError as e:
                 print("I/O error occurred: ", os.strerror(e.errno))
-                print("Connection Error ")
+                print("Error loading the hotels ")
                 pass
+
+            try:
+                address_list = soup.find_all('div', {'class': 'address'})
+                # fixme: address mechanism:
+                for i, address in enumerate(address_list):
+                    hotel_address = address.find('span', {'_ngcontent-c18': ""}).getText()
+                    hotel_address = ' '.join(hotel_address.split())
+                    # print("%d - %s" % (i + 1, hotel_address))
+                    self.all_addresses.append(hotel_address)
+            except IOError as e:
+                print("I/O error occurred: ", os.strerror(e.errno))
+                print("Error loading addresses ")
+                pass
+
+            try:
+                price_list = soup.find_all('div', {'class': 'text-main-light prices'})
+                # fixme: price mechanism:
+                euro_symbol = '€'
+                for i, price in enumerate(price_list):
+                    hotel_price = price.find('span', {'_ngcontent-c18': ""}).getText().replace('€', '')
+                    hotel_price = ' '.join(hotel_price.split())
+                    if len(hotel_price) == 6:
+                        hotel_price = "  " + hotel_price
+                    if len(hotel_price) == 7:
+                        hotel_price = " " + hotel_price
+                    # print(" %d - %s %s" % (i + 1, hotel_price, euro_symbol))
+                    # print(" %s %s" % (hotel_price, euro_symbol))
+                    self.all_prices.append(hotel_price)
+            except IOError as e:
+                print("I/O error occurred: ", os.strerror(e.errno))
+                print("Error loading prices ")
+                pass
+
+            print("\n\tdisplay:\n")
+
+            # display list
+            list = zip(self.all_prices, self.all_hotels, self.all_addresses)
+            for j, k, v in list:
+                print(j, k, " - ", v)
 
         except NoSuchElementException:
             print('Some error occurred while trying to scroll down')
