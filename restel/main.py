@@ -10,10 +10,12 @@ import shutil
 
 
 class App:
-    def __init__(self, username='BUSINESS', password='459116RS', target_city='new york'):
+    def __init__(self, username='BUSINESS', password='459116RS', target_city='new york',
+                 path='//home/jmartorell/Booking'):
         self.username = username
         self.password = password
         self.target_city = target_city
+        self.path = path
         self.driver = webdriver.Firefox(
             executable_path='/usr/local/bin/geckodriver')  # Change this to your FirefoxDriver path.
         self.error = False
@@ -35,8 +37,11 @@ class App:
         if self.error is False:
             self.scroll_down()
         if self.error is False:
-            sleep(1)
-            self.driver.close()
+            if not os.path.exists(path):
+                os.mkdir(path)
+            # self.file_manager()
+        sleep(1)
+        self.driver.close()
 
     def log_in(self, ):
         try:
@@ -80,7 +85,7 @@ class App:
             all_options = self.driver.find_elements_by_class_name('available')
             all_options[0].click()
             all_options = self.driver.find_elements_by_class_name('available')
-            all_options[6].click()
+            all_options[1].click()
             sleep(2)
             # search button
             login_button = self.driver.find_element_by_xpath('//*[@id="search-hotels"]')
@@ -119,6 +124,8 @@ class App:
                 hotel_price = "{0:.2f}".format(hotel_price)
                 self.all_prices.append(hotel_price)
 
+                if len(hotel_price) == 5:
+                    hotel_price = "   " + hotel_price
                 if len(hotel_price) == 6:
                     hotel_price = "  " + hotel_price
                 if len(hotel_price) == 7:
@@ -140,7 +147,9 @@ class App:
             list = dict(zip(self.all_hotels, new_prices_2))
             ranking_2 = sorted(list.items(), key=operator.itemgetter(1))
             for k, v in ranking_2:
-                if v < 1000.00:
+                if v < 100.00:
+                    print("   ", "{0:.2f}".format(v), k)
+                if 99.00 < v < 1000.00:
                     print("  ", "{0:.2f}".format(v), k)
                 if 999.00 < v < 10000.00:
                     print(" ", "{0:.2f}".format(v), k)
