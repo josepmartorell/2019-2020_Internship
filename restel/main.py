@@ -1,3 +1,4 @@
+import datetime
 import operator
 
 from bs4 import BeautifulSoup
@@ -10,11 +11,12 @@ import shutil
 
 
 class App:
-    def __init__(self, username='BUSINESS', password='459116RS', target_city='new york',
+    def __init__(self, username='BUSINESS', password='459116RS', target_city='new york', stay=7,
                  path='//home/jmartorell/Booking'):
         self.username = username
         self.password = password
         self.target_city = target_city
+        self.stay = stay
         self.path = path
         self.driver = webdriver.Firefox(
             executable_path='/usr/local/bin/geckodriver')  # Change this to your FirefoxDriver path.
@@ -64,6 +66,15 @@ class App:
             print('Some exception occurred while trying to find username or password field')
             self.error = True
 
+    def flip_calendar(self, days):
+        today = datetime.datetime.utcnow()
+        print("CHECK IN:  ", today)
+        check_out = today + datetime.timedelta(days)
+        print("CHECK OUT: ", check_out)
+
+        flip = check_out.month - today.month
+        return flip
+
     def search_target_profile(self):
         try:
             search_bar = self.driver.find_element_by_css_selector('#filterHotels')
@@ -77,16 +88,23 @@ class App:
                 "li.item:nth-child(1) > div:nth-child(2) > span:nth-child(1)")
             target_city.click()
             sleep(1)
+
             # calendar picker
             self.driver.find_element_by_css_selector('#calendarHotels').click()
             sleep(1)
-            # todo: accessing a drop-down calendar item by position within the list
-            #  https://selenium-python.readthedocs.io/navigating.html#interacting-with-the-page
-            all_options = self.driver.find_elements_by_class_name('available')
-            all_options[0].click()
-            all_options = self.driver.find_elements_by_class_name('available')
-            all_options[1].click()
-            sleep(2)
+            if self.flip_calendar(self.stay) == 0:
+                # todo: accessing a drop-down calendar item by position within the list
+                #  https://selenium-python.readthedocs.io/navigating.html#interacting-with-the-page
+                all_options = self.driver.find_elements_by_class_name('available')
+                all_options[0].click()
+                all_options = self.driver.find_elements_by_class_name('available')
+                all_options[self.stay - 1].click()
+                sleep(2)
+            else:
+                all_options = self.driver.find_elements_by_class_name('available')
+                all_options[0].click()
+                self.driver.find_element_by_css_selector('div.drp-calendar:nth-child(3)').click()
+
             # search button
             login_button = self.driver.find_element_by_xpath('//*[@id="search-hotels"]')
             # instead of submit it works with click
