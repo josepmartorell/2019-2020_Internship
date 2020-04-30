@@ -24,6 +24,7 @@ class App:
         self.main_url = 'http://www.restel.es'
         self.all_hotels = []
         self.all_prices = []
+        self.all_addresses = []
         self.driver.get(self.main_url)
         sleep(1)
         self.log_in()
@@ -67,6 +68,7 @@ class App:
             self.error = True
 
     def flip_calendar(self, days):
+
         today = datetime.datetime.utcnow()
         print("CHECK IN:  ", today)
         check_out = today + datetime.timedelta(days)
@@ -134,25 +136,28 @@ class App:
         print("\n\tdisplay:\n")
         try:
             for i, hotel in enumerate(hotel_list):
-                hotel_name = hotel.find('a', {'class': 'hotel-name'}).getText()
+
                 hotel_price = hotel.find('span', {'class': 'final-price'}).getText().strip('€')
                 hotel_price = hotel_price.replace('.', '')
                 hotel_price = hotel_price.replace(',', '.')
                 hotel_price = float(hotel_price)
                 hotel_price = "{0:.2f}".format(hotel_price)
                 self.all_prices.append(hotel_price)
-
                 if len(hotel_price) == 5:
                     hotel_price = "   " + hotel_price
                 if len(hotel_price) == 6:
                     hotel_price = "  " + hotel_price
                 if len(hotel_price) == 7:
                     hotel_price = " " + hotel_price
+
+                hotel_name = hotel.find('a', {'class': 'hotel-name'}).getText()
+                hotel_address = hotel.find('span', {'class': 'address-content'}).getText()
                 self.all_hotels.append(hotel_name)
+                self.all_addresses.append(hotel_address)
                 if i < 9:
-                    print(" %d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
+                    print(" %d - %s %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name, hotel_address))
                 else:
-                    print("%d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
+                    print("%d - %s %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name, hotel_address))
             print("\n\tranking:\n")
 
             # float cast
