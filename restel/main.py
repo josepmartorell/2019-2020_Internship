@@ -42,7 +42,7 @@ class App:
         if self.error is False:
             if not os.path.exists(path):
                 os.mkdir(path)
-            # self.file_manager()
+            self.file_manager()
         sleep(1)
         self.driver.close()
 
@@ -67,7 +67,7 @@ class App:
             print('Some exception occurred while trying to find username or password field')
             self.error = True
 
-    def flip_calendar(self, days):
+    def flip_calendar(self, days):  # sets the variable that determines whether to turn the calendar
 
         today = datetime.datetime.utcnow()
         print("CHECK IN:  ", today)
@@ -117,6 +117,8 @@ class App:
             print('Could not find search bar')
 
     def scroll_down(self):
+        self.driver.implicitly_wait(20)
+
         soup = BeautifulSoup(self.driver.page_source, 'lxml')
         hotel_list = soup.find_all('div', {'class': 'element'})
         euro_symbol = '€'
@@ -185,6 +187,17 @@ class App:
             print(e)
             print('Some error occurred while trying to scroll down')
 
+    def file_manager(self, ):  # manage files by creating and writing to them by calling methods
+
+        bookings_folder_path = os.path.join(self.path, 'bookings')
+        if not os.path.exists(bookings_folder_path):
+            os.mkdir(bookings_folder_path)
+
+        billing_folder_path = os.path.join(self.path, 'billing')
+        if not os.path.exists(billing_folder_path):
+            os.mkdir(billing_folder_path)
+        # self.write_captions_to_excel_file(images, captions_folder_path)
+
     """
     def write_captions_to_excel_file(self, images, caption_path):
         print('writing to excel')
@@ -204,41 +217,6 @@ class App:
             worksheet.write(row, 1, caption)
             row += 1
         workbook.close()
-
-    def download_captions(self, images):
-        captions_folder_path = os.path.join(self.path, 'captions')
-        if not os.path.exists(captions_folder_path):
-            os.mkdir(captions_folder_path)
-        self.write_captions_to_excel_file(images, captions_folder_path)
-        '''for index, image in enumerate(images):
-            try:
-                caption = image['alt']
-            except KeyError:
-                caption = 'No caption exists for this image'
-            file_name = 'caption_' + str(index) + '.txt'
-            file_path = os.path.join(captions_folder_path, file_name)
-            link = image['src']
-            with open(file_path, 'wb') as file:
-                file.write(str('link:' + str(link) + '\n' + 'caption:' + caption).encode())'''
-
-
-    def downloading_images(self):
-        self.all_images = list(set(self.all_images))
-        self.download_captions(self.all_images)
-        print('Length of all images', len(self.all_images))
-        for index, image in enumerate(self.all_images):
-            filename = 'image_' + str(index) + '.jpg'
-            image_path = os.path.join(self.path, filename)
-            link = image['src']
-            print('Downloading image', index)
-            response = requests.get(link, stream=True)
-            try:
-                with open(image_path, 'wb') as file:
-                    shutil.copyfileobj(response.raw, file)  # source -  destination
-            except Exception as e:
-                print(e)
-                print('Could not download image number ', index)
-                print('Image link -->', link)
 
     def close_dialog_box(self):
         # reload page
