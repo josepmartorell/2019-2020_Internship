@@ -118,6 +118,7 @@ class App:
             print('Could not find search bar')
 
     def scroll_down(self):
+        global index
         self.driver.implicitly_wait(20)
 
         soup = BeautifulSoup(self.driver.page_source, 'lxml')
@@ -189,9 +190,15 @@ class App:
                     print("", "{0:.2f}".format(v), k, "-", w)
 
             self.cheap = ranking_2[0]
-            print('\nCheapest reservation: ', self.cheap[0], self.cheap[1], euro_symbol)
-            self.display = display_list[7]
-            print('Target button number: ', self.display.index(self.cheap[0]))
+            print('\nCheapest reservations: ', self.cheap[0], self.cheap[1], euro_symbol)
+            # self.display = display_list[7]
+            # print('Target button number: ', self.display.index(self.cheap[0]))
+            self.display = display_list
+            for i, collation in enumerate(display_list):
+                if collation[0] == self.cheap[0]:
+                    index = i
+            print('Position of the target button: ', index + 1)
+
             sleep(2)
         except Exception as e:
             self.error = True
