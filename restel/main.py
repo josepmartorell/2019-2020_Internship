@@ -67,8 +67,7 @@ class App:
             print('Some exception occurred while trying to find username or password field')
             self.error = True
 
-    def flip_calendar(self, days):  # sets the variable that determines whether to turn the calendar
-
+    def flip_calendar(self, days):
         today = datetime.datetime.utcnow()
         print("CHECK IN:  ", today)
         check_out = today + datetime.timedelta(days)
@@ -157,9 +156,9 @@ class App:
                 self.all_hotels.append(hotel_name)
                 self.all_addresses.append(hotel_address)
                 if i < 9:
-                    print(" %d - %s %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name, hotel_address))
+                    print(" %d - %s %s %s - %s" % (i + 1, hotel_price, euro_symbol, hotel_name, hotel_address))
                 else:
-                    print("%d - %s %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name, hotel_address))
+                    print("%d - %s %s %s - %s" % (i + 1, hotel_price, euro_symbol, hotel_name, hotel_address))
             print("\n\tranking:\n")
 
             # float cast
@@ -169,17 +168,23 @@ class App:
                 new_prices_2.append(rank)
 
             # final list
-            list = dict(zip(self.all_hotels, new_prices_2))
-            ranking_2 = sorted(list.items(), key=operator.itemgetter(1))
-            for k, v in ranking_2:
+            # dict version allow just 2 values 'k' and 'v':
+            # list = dict(zip(self.all_hotels, new_prices_2))
+            # ranking_2 = sorted(list.items(), key=operator.itemgetter(1))
+            # for k, v in ranking_2:...etc'''
+            # with common zip package we easily pack the addresses too:
+            list = zip(self.all_hotels, new_prices_2, self.all_addresses)
+            ranking_2 = sorted(list, key=operator.itemgetter(1))
+            # todo REF: https://discuss.codecademy.com/t/how-can-i-sort-a-zipped-object/454412/6
+            for k, v, w in ranking_2:
                 if v < 100.00:
-                    print("   ", "{0:.2f}".format(v), k)
+                    print("   ", "{0:.2f}".format(v), k, "-", w)
                 if 99.00 < v < 1000.00:
-                    print("  ", "{0:.2f}".format(v), k)
+                    print("  ", "{0:.2f}".format(v), k, "-", w)
                 if 999.00 < v < 10000.00:
-                    print(" ", "{0:.2f}".format(v), k)
+                    print(" ", "{0:.2f}".format(v), k, "-", w)
                 if v > 9999.00:
-                    print("", "{0:.2f}".format(v), k)
+                    print("", "{0:.2f}".format(v), k, "-", w)
 
             sleep(2)
         except Exception as e:
@@ -187,8 +192,7 @@ class App:
             print(e)
             print('Some error occurred while trying to scroll down')
 
-    def file_manager(self, ):  # manage files by creating and writing to them by calling methods
-
+    def file_manager(self, ):
         bookings_folder_path = os.path.join(self.path, 'bookings')
         if not os.path.exists(bookings_folder_path):
             os.mkdir(bookings_folder_path)
