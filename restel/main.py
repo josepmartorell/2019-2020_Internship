@@ -25,6 +25,8 @@ class App:
         self.all_hotels = []
         self.all_prices = []
         self.all_addresses = []
+        self.display = []
+        self.cheap = []
         self.driver.get(self.main_url)
         sleep(1)
         self.log_in()
@@ -173,8 +175,8 @@ class App:
             # ranking_2 = sorted(list.items(), key=operator.itemgetter(1))
             # for k, v in ranking_2:...etc'''
             # with common zip package we easily pack the addresses too:
-            list = zip(self.all_hotels, new_prices_2, self.all_addresses)
-            ranking_2 = sorted(list, key=operator.itemgetter(1))
+            display_list = list(zip(self.all_hotels, new_prices_2, self.all_addresses))
+            ranking_2 = sorted(display_list, key=operator.itemgetter(1))
             # todo REF: https://discuss.codecademy.com/t/how-can-i-sort-a-zipped-object/454412/6
             for k, v, w in ranking_2:
                 if v < 100.00:
@@ -186,6 +188,10 @@ class App:
                 if v > 9999.00:
                     print("", "{0:.2f}".format(v), k, "-", w)
 
+            self.cheap = ranking_2[0]
+            print('\nCheapest reservation: ', self.cheap[0], self.cheap[1], euro_symbol)
+            self.display = display_list[7]
+            print('Target button number: ', self.display.index(self.cheap[0]))
             sleep(2)
         except Exception as e:
             self.error = True
