@@ -27,6 +27,7 @@ class App:
         self.all_addresses = []
         self.display = []
         self.cheap = []
+        self.index = ""
         self.driver.get(self.main_url)
         sleep(1)
         self.log_in()
@@ -42,11 +43,13 @@ class App:
         if self.error is False:
             self.scroll_down()
         if self.error is False:
+            self.target_button(self.index)
+        if self.error is False:
             if not os.path.exists(path):
                 os.mkdir(path)
             self.file_manager()
         sleep(1)
-        self.driver.close()
+        # self.driver.close()
 
     def log_in(self, ):
         try:
@@ -118,7 +121,7 @@ class App:
             print('Could not find search bar')
 
     def scroll_down(self):
-        global index
+        global position
         self.driver.implicitly_wait(20)
 
         soup = BeautifulSoup(self.driver.page_source, 'lxml')
@@ -196,14 +199,21 @@ class App:
             self.display = display_list
             for i, collation in enumerate(display_list):
                 if collation[0] == self.cheap[0]:
-                    index = i
-            print('Position of the target button: ', index + 1)
+                    position = i
+            print('Position of the target button: ', position + 1)
+            self.index = str(position - 1clear)
 
             sleep(2)
         except Exception as e:
             self.error = True
             print(e)
             print('Some error occurred while trying to scroll down')
+
+    def target_button(self, index):
+        target_button = self.driver.find_element_by_xpath(
+            '//app-search-results-list/div/div[1]/div/div[1]/div[' + index + ']/div/div[3]/div/div[3]/a')
+        self.driver.execute_script("arguments[0].scrollIntoView();", target_button)
+        # target_button.click()
 
     def file_manager(self, ):
         bookings_folder_path = os.path.join(self.path, 'bookings')
