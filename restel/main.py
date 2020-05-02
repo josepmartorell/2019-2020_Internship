@@ -49,7 +49,7 @@ class App:
                 os.mkdir(path)
             self.file_manager()
         sleep(1)
-        # self.driver.close()
+        self.driver.close()
 
     def log_in(self, ):
         try:
@@ -201,7 +201,7 @@ class App:
                 if collation[0] == self.cheap[0]:
                     position = i
             print('Position of the target button: ', position + 1)
-            self.index = str(position - 1clear)
+            self.index = str(position - 1)
 
             sleep(2)
         except Exception as e:
@@ -219,57 +219,32 @@ class App:
         bookings_folder_path = os.path.join(self.path, 'bookings')
         if not os.path.exists(bookings_folder_path):
             os.mkdir(bookings_folder_path)
+        if self.error is False:
+            self.write_bookings_to_excel_file(bookings_folder_path)
 
         billing_folder_path = os.path.join(self.path, 'billing')
         if not os.path.exists(billing_folder_path):
             os.mkdir(billing_folder_path)
         # self.write_captions_to_excel_file(images, captions_folder_path)
 
-    """
-    def write_captions_to_excel_file(self, images, caption_path):
-        print('writing to excel')
-        workbook = Workbook(os.path.join(caption_path, 'captions.xlsx'))
+    def write_bookings_to_excel_file(self, booking_path):
+        print('\nwriting the reservation at the hotel ' + self.cheap[0] + ' to excel file...')
+        workbook = Workbook(os.path.join(booking_path, 'bookings.xlsx'))
         worksheet = workbook.add_worksheet()
         row = 0
-        worksheet.write(row, 0, 'Image name')       # 3 --> row number, column number, value
-        worksheet.write(row, 1, 'Caption')
+        worksheet.write(row, 0, 'Code')       # 3 --> row number, column number, value
+        worksheet.write(row, 1, 'Price')
+        worksheet.write(row, 2, 'Hotel')
+        worksheet.write(row, 3, 'Address')
+
         row += 1
-        for index, image in enumerate(images):
-            filename = 'image_' + str(index) + '.jpg'
-            try:
-                caption = image['alt']
-            except KeyError:
-                caption = 'No caption exists'
-            worksheet.write(row, 0, filename)
-            worksheet.write(row, 1, caption)
-            row += 1
+
+        worksheet.write(row, 0, 'AA00')
+        worksheet.write(row, 1, self.cheap[1])
+        worksheet.write(row, 2, self.cheap[0])
+        worksheet.write(row, 3, self.cheap[2])
+        row += 1
         workbook.close()
-
-    def close_dialog_box(self):
-        # reload page
-        sleep(2)
-        self.driver.get(self.driver.current_url)
-        sleep(3)
-
-        try:
-            sleep(3)
-            not_now_btn = self.driver.find_element_by_xpath('//*[text()="Not Now"]')
-            sleep(3)
-
-            not_now_btn.click()
-            sleep(1)
-        except Exception:
-            pass
-
-
-    def close_settings_window_if_there(self):
-        try:
-            self.driver.switch_to.window(self.driver.window_handles[1])
-            self.driver.close()
-            self.driver.switch_to.window(self.driver.window_handles[0])
-        except Exception as e:
-            pass
-    """
 
 
 if __name__ == '__main__':
