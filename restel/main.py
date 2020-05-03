@@ -1,6 +1,7 @@
 import datetime
 import operator
 
+import xlrd
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from time import sleep
@@ -28,6 +29,7 @@ class App:
         self.display = []
         self.cheap = []
         self.index = ""
+        self.options = {}
         self.driver.get(self.main_url)
         sleep(1)
         self.log_in()
@@ -48,7 +50,7 @@ class App:
             if not os.path.exists(path):
                 os.mkdir(path)
             self.file_manager()
-        sleep(1)
+        sleep(10)
         self.driver.close()
 
     def log_in(self, ):
@@ -193,14 +195,15 @@ class App:
                     print("", "{0:.2f}".format(v), k, "-", w)
 
             self.cheap = ranking_2[0]
-            print('\nCheapest reservations: ', self.cheap[0], self.cheap[1], euro_symbol)
+            self.options = ranking_2
+            print('\ncheapest reservations: ', self.cheap[0], self.cheap[1], euro_symbol)
             # self.display = display_list[7]
             # print('Target button number: ', self.display.index(self.cheap[0]))
             self.display = display_list
             for i, collation in enumerate(display_list):
                 if collation[0] == self.cheap[0]:
                     position = i
-            print('Position of the target button: ', position + 1)
+            print('position of the target button: ', position + 1)
             self.index = str(position - 1)
 
             sleep(2)
@@ -221,14 +224,23 @@ class App:
             os.mkdir(bookings_folder_path)
         if self.error is False:
             self.write_bookings_to_excel_file(bookings_folder_path)
+        # if self.error is False:
+        #     self.read_bookings_from_excel_file(self.path + '/bookings/bookings.xlsx')
 
         billing_folder_path = os.path.join(self.path, 'billing')
         if not os.path.exists(billing_folder_path):
             os.mkdir(billing_folder_path)
         # self.write_captions_to_excel_file(images, captions_folder_path)
 
+    def read_bookings_from_excel_file(self, excel_path):
+        workbook = xlrd.open_workbook(excel_path)
+        worksheet = workbook.sheet_by_index(0)
+        for row in range(2):
+            col_1, col_2, col_3, col_4 = worksheet.row_values(row)
+            print(col_1, '    ', col_2, '    ', col_3, '    ', col_4, '    ', )
+
     def write_bookings_to_excel_file(self, booking_path):
-        print('\nwriting the reservation at the hotel ' + self.cheap[0] + ' to excel file...')
+        print('\nwriting to excel file...')
         workbook = Workbook(os.path.join(booking_path, 'bookings.xlsx'))
         worksheet = workbook.add_worksheet()
         row = 0
@@ -239,11 +251,21 @@ class App:
 
         row += 1
 
-        worksheet.write(row, 0, 'AA00')
-        worksheet.write(row, 1, self.cheap[1])
-        worksheet.write(row, 2, self.cheap[0])
-        worksheet.write(row, 3, self.cheap[2])
-        row += 1
+        # worksheet.write(row, 0, 'BEST')
+        # worksheet.write(row, 1, self.cheap[1])
+        # worksheet.write(row, 2, self.cheap[0])
+        # worksheet.write(row, 3, self.cheap[2])
+        # row += 1
+
+        for i, option in enumerate(self.options):
+            if i < 9:
+                worksheet.write(row, 0, 'AA0' + str(i + 1))
+            else:
+                worksheet.write(row, 0, 'AA' + str(i + 1))
+            worksheet.write(row, 1, option[1])
+            worksheet.write(row, 2, option[0])
+            worksheet.write(row, 3, option[2])
+            row += 1
         workbook.close()
 
 
