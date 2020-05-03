@@ -7,8 +7,6 @@ from selenium import webdriver
 from time import sleep
 from xlsxwriter import Workbook
 import os
-import requests
-import shutil
 
 
 class App:
@@ -228,19 +226,16 @@ class App:
         if self.error is False:
             self.read_bookings_from_excel_file(self.path + '/bookings/bookings.xlsx')
 
-        # billing_folder_path = os.path.join(self.path, 'billing')
-        # if not os.path.exists(billing_folder_path):
-        #     os.mkdir(billing_folder_path)
-
     def read_bookings_from_excel_file(self, excel_path):
         workbook = xlrd.open_workbook(excel_path)
         worksheet = workbook.sheet_by_index(0)
         for row in range(2):
-            col_1, col_2, col_3, col_4 = worksheet.row_values(row)
-            print(col_1, '    ', col_2, '    ', col_3, '    ', col_4, '    ',)
+            col_1, col_2, col_3, col_4, col_5, col_6 = worksheet.row_values(row)
+            print(col_1, '    ', col_2, '    ', )
 
     def write_bookings_to_excel_file(self, booking_path):
-        print('\nwriting to excel file:')
+        print('\nwriting to excel...clear'
+              '')
         workbook = Workbook(os.path.join(booking_path, 'bookings.xlsx'))
         worksheet = workbook.add_worksheet()
         worksheet.set_column(2, 3, 50)
@@ -248,10 +243,12 @@ class App:
         cell_format = workbook.add_format({'bold': True, 'italic': True, 'font_color': 'blue'})
         money = workbook.add_format({'num_format': '#,##0.00'})
         row = 0
-        worksheet.write(row, 0, 'Code', bold)       # 3 --> row number, column number, value
+        worksheet.write(row, 0, 'Code', bold)  # 3 --> row number, column number, value
         worksheet.write(row, 1, 'Price', bold)
         worksheet.write(row, 2, 'Hotel', bold)
         worksheet.write(row, 3, 'Address', bold)
+        worksheet.write(row, 4, 'Retail', bold)
+        worksheet.write(row, 5, 'Profit', bold)
 
         row += 1
 
@@ -259,6 +256,8 @@ class App:
         worksheet.write(row, 1, self.cheap[1], cell_format)
         worksheet.write(row, 2, self.cheap[0], cell_format)
         worksheet.write(row, 3, self.cheap[2], cell_format)
+        worksheet.write_formula(1, 4, '=1.374*B2', cell_format)
+        worksheet.write_formula(1, 5, '=E2-B2', cell_format)
         row += 1
 
         for i, option in enumerate(self.options):
