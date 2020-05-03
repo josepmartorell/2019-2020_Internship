@@ -76,9 +76,9 @@ class App:
 
     def flip_calendar(self, days):
         today = datetime.datetime.utcnow()
-        print("CHECK IN:  ", today)
+        print("check in:  ", today)
         check_out = today + datetime.timedelta(days)
-        print("CHECK OUT: ", check_out)
+        print("check out: ", check_out)
 
         flip = check_out.month - today.month
         return flip
@@ -144,6 +144,7 @@ class App:
 
         print("\n\tdisplay:\n")
         try:
+            self.driver.implicitly_wait(20)
             for i, hotel in enumerate(hotel_list):
 
                 hotel_price = hotel.find('span', {'class': 'final-price'}).getText().strip('€')
@@ -167,8 +168,8 @@ class App:
                     print(" %d - %s %s %s - %s" % (i + 1, hotel_price, euro_symbol, hotel_name, hotel_address))
                 else:
                     print("%d - %s %s %s - %s" % (i + 1, hotel_price, euro_symbol, hotel_name, hotel_address))
-            print("\n\tranking:\n")
 
+            print("\n\tranking:\n")
             # float cast
             new_prices_2 = []
             for element in self.all_prices:
@@ -186,13 +187,13 @@ class App:
             # todo REF: https://discuss.codecademy.com/t/how-can-i-sort-a-zipped-object/454412/6
             for k, v, w in ranking_2:
                 if v < 100.00:
-                    print("   ", "{0:.2f}".format(v), k, "-", w)
+                    print("   ", "{0:.2f}".format(v), k)
                 if 99.00 < v < 1000.00:
-                    print("  ", "{0:.2f}".format(v), k, "-", w)
+                    print("  ", "{0:.2f}".format(v), k)
                 if 999.00 < v < 10000.00:
-                    print(" ", "{0:.2f}".format(v), k, "-", w)
+                    print(" ", "{0:.2f}".format(v), k)
                 if v > 9999.00:
-                    print("", "{0:.2f}".format(v), k, "-", w)
+                    print("", "{0:.2f}".format(v), k)
 
             self.cheap = ranking_2[0]
             self.options = ranking_2
@@ -224,45 +225,48 @@ class App:
             os.mkdir(bookings_folder_path)
         if self.error is False:
             self.write_bookings_to_excel_file(bookings_folder_path)
-        # if self.error is False:
-        #     self.read_bookings_from_excel_file(self.path + '/bookings/bookings.xlsx')
+        if self.error is False:
+            self.read_bookings_from_excel_file(self.path + '/bookings/bookings.xlsx')
 
-        billing_folder_path = os.path.join(self.path, 'billing')
-        if not os.path.exists(billing_folder_path):
-            os.mkdir(billing_folder_path)
-        # self.write_captions_to_excel_file(images, captions_folder_path)
+        # billing_folder_path = os.path.join(self.path, 'billing')
+        # if not os.path.exists(billing_folder_path):
+        #     os.mkdir(billing_folder_path)
 
     def read_bookings_from_excel_file(self, excel_path):
         workbook = xlrd.open_workbook(excel_path)
         worksheet = workbook.sheet_by_index(0)
         for row in range(2):
             col_1, col_2, col_3, col_4 = worksheet.row_values(row)
-            print(col_1, '    ', col_2, '    ', col_3, '    ', col_4, '    ', )
+            print(col_1, '    ', col_2, '    ', col_3, '    ', col_4, '    ',)
 
     def write_bookings_to_excel_file(self, booking_path):
-        print('\nwriting to excel file...')
+        print('\nwriting to excel file:')
         workbook = Workbook(os.path.join(booking_path, 'bookings.xlsx'))
         worksheet = workbook.add_worksheet()
+        worksheet.set_column(2, 3, 50)
+        bold = workbook.add_format({'bold': True})
+        cell_format = workbook.add_format({'bold': True, 'italic': True, 'font_color': 'blue'})
+        money = workbook.add_format({'num_format': '#,##0.00'})
         row = 0
-        worksheet.write(row, 0, 'Code')       # 3 --> row number, column number, value
-        worksheet.write(row, 1, 'Price')
-        worksheet.write(row, 2, 'Hotel')
-        worksheet.write(row, 3, 'Address')
+        worksheet.write(row, 0, 'Code', bold)       # 3 --> row number, column number, value
+        worksheet.write(row, 1, 'Price', bold)
+        worksheet.write(row, 2, 'Hotel', bold)
+        worksheet.write(row, 3, 'Address', bold)
 
         row += 1
 
-        # worksheet.write(row, 0, 'BEST')
-        # worksheet.write(row, 1, self.cheap[1])
-        # worksheet.write(row, 2, self.cheap[0])
-        # worksheet.write(row, 3, self.cheap[2])
-        # row += 1
+        worksheet.write(row, 0, 'BEST', cell_format)
+        worksheet.write(row, 1, self.cheap[1], cell_format)
+        worksheet.write(row, 2, self.cheap[0], cell_format)
+        worksheet.write(row, 3, self.cheap[2], cell_format)
+        row += 1
 
         for i, option in enumerate(self.options):
             if i < 9:
                 worksheet.write(row, 0, 'AA0' + str(i + 1))
             else:
                 worksheet.write(row, 0, 'AA' + str(i + 1))
-            worksheet.write(row, 1, option[1])
+            worksheet.write(row, 1, option[1], money)
             worksheet.write(row, 2, option[0])
             worksheet.write(row, 3, option[2])
             row += 1
