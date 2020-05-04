@@ -43,8 +43,6 @@ class App:
         if self.error is False:
             self.scroll_down()
         if self.error is False:
-            self.target_button(self.index)
-        if self.error is False:
             if not os.path.exists(path):
                 os.mkdir(path)
             self.file_manager()
@@ -204,6 +202,8 @@ class App:
                     position = i
             print('position of the target button: ', position + 1)
             self.index = str(position - 1)
+            if self.error is False:
+                self.target_button(self.index)
 
             sleep(2)
         except Exception as e:
@@ -239,7 +239,7 @@ class App:
         worksheet = workbook.add_worksheet()
         worksheet.set_column(2, 3, 50)
         worksheet.set_column(1, 1, 9)
-        worksheet.set_column(4, 4, 8)
+        worksheet.set_column(4, 4, 9)
         bold = workbook.add_format({'bold': True})
         cell_format = workbook.add_format({'bold': True, 'italic': True, 'font_color': 'blue'})
         money = workbook.add_format({'num_format': '#,##0.00'})
@@ -269,7 +269,7 @@ class App:
             worksheet.write(row, 1, option[1], money)
             worksheet.write(row, 2, option[0])
             worksheet.write(row, 3, option[2])
-            worksheet.write_array_formula('E3:E31', '{=1.374*B3:B30}', money)
+            worksheet.write_array_formula('E3:E31', '{=1.374*B3:B31}', money)
             worksheet.write_array_formula('F3:F31', '{==E3:E31-B3:B31}', money)
             row += 1
         workbook.close()
