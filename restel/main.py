@@ -234,11 +234,12 @@ class App:
             print(col_1, '    ', col_2, '    ', )
 
     def write_bookings_to_excel_file(self, booking_path):
-        print('\nwriting to excel...clear'
-              '')
+        print('\nwriting to excel...')
         workbook = Workbook(os.path.join(booking_path, 'bookings.xlsx'))
         worksheet = workbook.add_worksheet()
         worksheet.set_column(2, 3, 50)
+        worksheet.set_column(1, 1, 9)
+        worksheet.set_column(4, 4, 8)
         bold = workbook.add_format({'bold': True})
         cell_format = workbook.add_format({'bold': True, 'italic': True, 'font_color': 'blue'})
         money = workbook.add_format({'num_format': '#,##0.00'})
@@ -268,6 +269,8 @@ class App:
             worksheet.write(row, 1, option[1], money)
             worksheet.write(row, 2, option[0])
             worksheet.write(row, 3, option[2])
+            worksheet.write_array_formula('E3:E31', '{=1.374*B3:B30}', money)
+            worksheet.write_array_formula('F3:F31', '{==E3:E31-B3:B31}', money)
             row += 1
         workbook.close()
 
