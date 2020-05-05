@@ -7,12 +7,14 @@ from time import sleep
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+
 # todo: EXPECTED CONDITIONS https://selenium-python.readthedocs.io/waits.html
 # https://stackoverflow.com/questions/58743549/attributeerror-bytes-object-has-no-attribute-element-to-be-clickable
 # The import from telnetlib import EC. You need to import expected_conditions and use it as EC
 # from selenium.webdriver.support import expected_conditions as EC...
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+
 from xlsxwriter import Workbook
 import os
 import requests
@@ -95,7 +97,6 @@ class App:
                 self.driver.find_element_by_xpath('//form/div[3]/button').submit()
                 sleep(1)
 
-                # self.close_settings_window_if_there()
             except Exception as e:
                 print(e)
                 self.error = True
@@ -154,11 +155,6 @@ class App:
             print("Loading took too much time!")
 
         try:
-
-            wait = WebDriverWait(self.driver, 10)
-            wait.until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, '#form-cheapest-acc-hot13445 > button:nth-child(1)')))
-
             # self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
             read_mores = self.driver.find_elements_by_xpath('//form/button')
             for read_more in read_mores:
