@@ -59,7 +59,7 @@ class App:
             # cookies popup
             WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
                 By.XPATH,
-                '/html/body/div[3]/div/div/div[2]/button[1]'))).click()
+                '//div/div/div[2]/button[1]'))).click()
             sleep(1)
 
         except Exception:
@@ -83,7 +83,7 @@ class App:
                     By.XPATH, '//*[@id="username"]')))
                 user_name_input = self.driver.find_element_by_xpath('//*[@id="username"]')
                 user_name_input.send_keys(self.username)
-                sleep(3)
+                sleep(1)
 
                 WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((
                     By.XPATH, '//*[@id="password"]')))
@@ -104,8 +104,7 @@ class App:
             # todo: filling the search bar
             # search_bar.send_keys(self.target_username).click # this line is wrong, read below please
             # fixme: you cannot enter text directly use the autocomplete square icon to the right of the field
-            self.driver.find_element_by_xpath('/html/body/main/article/div[3]/div['
-                                              '2]/section/div/form/fieldset[1]/div/a/span').click()
+            self.driver.find_element_by_xpath('//section/div/form/fieldset[1]/div/a/span').click()
             sleep(2)
 
             # todo: https://dzone.com/articles/perform-actions-using-javascript-in-python-seleniu
@@ -132,6 +131,7 @@ class App:
             sleep(2)
             picker = self.driver.find_element_by_xpath("//section/article[3]/div/ul[1]/li[1]/a")
             self.driver.execute_script("arguments[0].click();", picker)
+            sleep(2)
 
             # search button
             login_button = self.driver.find_element_by_xpath('//*[@id="mainsearch"]')
@@ -146,8 +146,8 @@ class App:
         try:
 
             wait = WebDriverWait(self.driver, 10)
-            element = wait.until(EC.element_to_be_clickable(
-                (By.CSS_SELECTOR, '#form-cheapest-acc-hot13445 > button:nth-child(1)')))
+            wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#form-cheapest-acc-hot13445 > button:nth-child(1)')))
+
             # self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
             read_mores = self.driver.find_elements_by_xpath('//form/button')
             for read_more in read_mores:
