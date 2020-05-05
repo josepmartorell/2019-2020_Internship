@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from time import sleep
 
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 # todo: EXPECTED CONDITIONS https://selenium-python.readthedocs.io/waits.html
@@ -13,6 +12,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 # The import from telnetlib import EC. You need to import expected_conditions and use it as EC
 # from selenium.webdriver.support import expected_conditions as EC...
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from xlsxwriter import Workbook
 import os
 import requests
@@ -49,7 +49,7 @@ class App:
         # if self.error is False:
         #     if not os.path.exists(path):
         #         os.mkdir(path)
-        #     self.downloading_images()
+        #     self.file_manager()
         sleep(3)
         self.driver.close()
 
@@ -91,7 +91,8 @@ class App:
                 password_input.send_keys(self.password)
                 sleep(1)
 
-                user_name_input.submit()
+                # user_name_input.submit()
+                self.driver.find_element_by_xpath('//form/div[3]/button').submit()
                 sleep(1)
 
                 # self.close_settings_window_if_there()
@@ -144,9 +145,19 @@ class App:
 
     def scroll_down(self):
         try:
+            wait = WebDriverWait(self.driver, 10)
+            wait.until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, '#form-cheapest-acc-hot13445 > button:nth-child(1)')))
+            print("Page is ready!")
+
+        except TimeoutException:
+            print("Loading took too much time!")
+
+        try:
 
             wait = WebDriverWait(self.driver, 10)
-            wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#form-cheapest-acc-hot13445 > button:nth-child(1)')))
+            wait.until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, '#form-cheapest-acc-hot13445 > button:nth-child(1)')))
 
             # self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
             read_mores = self.driver.find_elements_by_xpath('//form/button')
@@ -161,7 +172,7 @@ class App:
             print("\n\tdisplay:\n")
             try:
                 for i, hotel in enumerate(hotel_list):
-                    hotel_name = hotel.find('span', {'class': 'product-maininfo-title hotel-name'}).getText()
+                    hotel_name = hotel.find('a', {'data-tl': 'acc-title'}).getText()
                     # fixme: remove whitespaces REF: https://stackoverrun.com/es/q/743639
                     hotel_name = ' '.join(hotel_name.split())
                     self.all_hotels.append(hotel_name)
@@ -207,7 +218,7 @@ class App:
                 self.error = True
                 print(e)
                 print('Some error occurred while trying to scratch the hotel list')
-
+            # input('break')  # free space
         except NoSuchElementException:
             print('Some error occurred while trying to scroll down')
             self.error = True
