@@ -115,25 +115,35 @@ class App:
             #  self.driver.execute_script(javaScript)
             #  Method 2: Executing JavaScript at Element Level:
 
+            try:
+                wait = WebDriverWait(self.driver, 100)
+                wait.until(
+                    EC.element_to_be_clickable(
+                        (By.CSS_SELECTOR, "#continent-picker-tab > li:nth-child"
+                                          "(" + self.target_continent + ") > a:nth-child(1)")))
+                print("Element is ready!")
+            except TimeoutException:
+                print("Loading took too much time!")
+
             if self.target_continent != '4':
                 picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
                     By.CSS_SELECTOR,
                     "#continent-picker-tab > li:nth-child(" + self.target_continent + ") > a:nth-child(1)")))
                 self.driver.execute_script("arguments[0].click();", picker)
-                sleep(2)
+                sleep(1)
             picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
                 By.XPATH,
                 "//section/article[1]/div/ul[" + self.target_country_col + "]/li[" + self.target_country_row + "]/a")))
             self.driver.execute_script("arguments[0].click();", picker)
-            sleep(2)
+            sleep(1)
             picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
                 By.XPATH,
                 "//section/article[2]/div/ul[" + self.target_city_col + "]/li[" + self.target_city_row + "]/a")))
             self.driver.execute_script("arguments[0].click();", picker)
-            sleep(2)
-            picker = self.driver.find_element_by_xpath("//section/article[3]/div/ul[1]/li[1]/a")
+            sleep(1)
+            picker = self.driver.find_element_by_xpath("//article[3]/div/ul[1]/li[1]/a")
             self.driver.execute_script("arguments[0].click();", picker)
-            sleep(2)
+            sleep(1)
 
             # search button
             login_button = self.driver.find_element_by_xpath('//*[@id="mainsearch"]')
@@ -214,7 +224,11 @@ class App:
                 self.error = True
                 print(e)
                 print('Some error occurred while trying to scratch the hotel list')
-            # input('break')  # free space
+
+            # activate page analyzer
+            analyzer = input('\nBREAK: \n\tDo yo want prettify? \npress "p" and enter to accept or just enter to exit)\n')
+            if analyzer == 'p' or 'P':
+                print(soup.prettify())
         except NoSuchElementException:
             print('Some error occurred while trying to scroll down')
             self.error = True
