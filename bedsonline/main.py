@@ -126,29 +126,33 @@ class App:
                 print("Loading took too much time!")
 
             if self.target_continent != '4':
-                picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
+                picker = WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located((
                     By.CSS_SELECTOR,
                     "#continent-picker-tab > li:nth-child(" + self.target_continent + ") > a:nth-child(1)")))
                 self.driver.execute_script("arguments[0].click();", picker)
                 sleep(1)
-            picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
+            picker = WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located((
                 By.XPATH,
                 "//section/article[1]/div/ul[" + self.target_country_col + "]/li[" + self.target_country_row + "]/a")))
             self.driver.execute_script("arguments[0].click();", picker)
             sleep(1)
-            picker = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
+            picker = WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located((
                 By.XPATH,
                 "//section/article[2]/div/ul[" + self.target_city_col + "]/li[" + self.target_city_row + "]/a")))
             self.driver.execute_script("arguments[0].click();", picker)
             sleep(1)
-            picker = self.driver.find_element_by_xpath("//article[3]/div/ul[1]/li[1]/a")
+            picker = WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located((
+                By.XPATH,
+                "//article[3]/div/ul[1]/li[1]/a")))
             self.driver.execute_script("arguments[0].click();", picker)
             sleep(1)
 
             # search button
             login_button = self.driver.find_element_by_xpath('//*[@id="mainsearch"]')
             login_button.submit()
-            sleep(3)
+            # even a 25 second wait is not enough to load the entire page!
+            # todo AJAX: 30 seconds
+            sleep(30)  # wait ajax full load
 
         except Exception:
             self.error = True
@@ -191,10 +195,14 @@ class App:
                     hotel_price = float(hotel_price)
                     hotel_price = "{0:.2f}".format(hotel_price)
                     self.all_prices.append(hotel_price)
+                    if len(hotel_price) == 5:
+                        hotel_price = "   " + hotel_price
                     if len(hotel_price) == 6:
                         hotel_price = "  " + hotel_price
                     if len(hotel_price) == 7:
                         hotel_price = " " + hotel_price
+                    if len(hotel_price) == 8:
+                        hotel_price = "" + hotel_price
 
                     if i < 9:
                         print(" %d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
@@ -212,7 +220,9 @@ class App:
                 list = dict(zip(self.all_hotels, new_prices_2))
                 ranking_2 = sorted(list.items(), key=operator.itemgetter(1))
                 for k, v in ranking_2:
-                    if v < 1000.00:
+                    if v < 100.00:
+                        print("   ", "{0:.2f}".format(v), k)
+                    if 99.00 < v < 1000.00:
                         print("  ", "{0:.2f}".format(v), k)
                     if 999.00 < v < 10000.00:
                         print(" ", "{0:.2f}".format(v), k)
@@ -226,7 +236,8 @@ class App:
                 print('Some error occurred while trying to scratch the hotel list')
 
             # activate page analyzer
-            analyzer = input('\nBREAK: \n\tDo yo want prettify? \npress "p" and enter to accept or just enter to exit)\n')
+            analyzer = input(
+                '\nBREAK: \n\tDo yo want prettify? \npress "p" and enter to accept or just enter to exit)\n')
             if analyzer == 'p' or 'P':
                 print(soup.prettify())
         except NoSuchElementException:
