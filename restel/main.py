@@ -37,7 +37,6 @@ class App:
         sleep(1)
         self.log_in()
         if self.error is False:
-            # self.close_dialog_box()
             # todo: REF:
             #  https://es.stackoverflow.com/questions/109086/esperar-respuestas-para-continuar-selenium-python
             # The explicit wait, unlike an implicit one or what time.sleep does (although this is blocking)
@@ -51,6 +50,7 @@ class App:
             if not os.path.exists(path):
                 os.mkdir(path)
             self.file_manager()
+        print('\nsending email...\n')
         sleep(10)
         self.driver.close()
 
@@ -59,18 +59,17 @@ class App:
             # fixme: the xpath did not work selected with the right mouse button (neither with the css selector). The
             #  solution has been to use the variable "placeholder" as xpath, taking it from the same script used in
             #  solole.
-            user_name_input = self.driver.find_element_by_xpath('//input[@placeholder="Usuario"]')
+            user_name_input = self.driver.find_element_by_xpath('//form/div[1]/div/input')
             user_name_input.send_keys(self.username)
             sleep(1)
 
-            password_input = self.driver.find_element_by_xpath('//input[@placeholder="Contraseña"]')
+            password_input = self.driver.find_element_by_xpath('//form/div[2]/div/input')
             password_input.send_keys(self.password)
             sleep(1)
 
             user_name_input.submit()
             sleep(1)
 
-            # self.close_settings_window_if_there()
         except Exception:
             print('Some exception occurred while trying to find username or password field')
             self.error = True
@@ -78,7 +77,7 @@ class App:
     def flip_calendar(self, days):
         today = datetime.datetime.utcnow()
         print("check in:  ", today)
-        check_out = today + datetime.timedelta(days)
+        check_out = today + datetime.timedelta(days - 1)
         print("check out: ", check_out)
 
         flip = check_out.month - today.month
@@ -276,11 +275,15 @@ class App:
             worksheet.write(row, 2, option[0])
             worksheet.write(row, 3, option[2])
             worksheet.write_array_formula('E3:E31', '{=1.374*B3:B31}', money)
-            worksheet.write_array_formula('F3:F31', '{==E3:E31-B3:B31}', money)
+            worksheet.write_array_formula('F3:F31', '{=E3:E31-B3:B31}', money)
             row += 1
+        workbook.close()
+        # fixme WARNING:
+        # in order for xlsxwriter to create the spreadsheet, the workbook must be closed
+        # right at the end. If it closes after it won't create it, check it by closing it after the line:
+        # self.send_attachment (spreadsheet)
         spreadsheet = '//home/jmartorell/Booking/bookings/bookings.xlsx'
         self.send_attachment(spreadsheet)
-        workbook.close()
 
     def send_attachment(self, file):
         subject = "An email with attachment from Python"
