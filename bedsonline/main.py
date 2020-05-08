@@ -33,6 +33,11 @@ class App:
         self.target_city_row = target_city_row
         self.all_hotels = []
         self.all_prices = []
+        self.all_zones = []
+        self.display = []
+        self.cheap = []
+        self.index = ""
+        self.options = {}
         self.path = path
         self.driver = webdriver.Firefox(
             executable_path="/usr/local/bin/geckodriver")  # Change this to your FirefoxDriver path.
@@ -158,6 +163,7 @@ class App:
             print('Could not find search bar')
 
     def scroll_down(self):
+        global position
         try:
             wait = WebDriverWait(self.driver, 10)
             wait.until(
@@ -192,6 +198,10 @@ class App:
                     self.all_hotels.append(hotel_name)
                     # print(" %d - %s" % (i + 1, hotel_name))
 
+                    hotel_zone = hotel.find('span', {'class': '_hotelzone'}).getText()
+                    hotel_name = ' '.join(hotel_name.split())
+                    self.all_zones.append(hotel_zone)
+
                     hotel_integer = hotel.find('span', {'class': 'hotel-price'}).getText()
                     hotel_decimal = hotel.find('span', {'class': 'hotel-price-decimal'}).getText().strip('€')
                     hotel_integer = hotel_integer.replace(',', '')
@@ -209,9 +219,9 @@ class App:
                         hotel_price = "" + hotel_price
 
                     if i < 9:
-                        print(" %d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
+                        print(" %d - %s %s %s - %s" % (i + 1, hotel_price, euro_symbol, hotel_name, hotel_zone))
                     else:
-                        print("%d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
+                        print("%d - %s %s %s - %s" % (i + 1, hotel_price, euro_symbol, hotel_name, hotel_zone))
 
                 print("\n\tRanking:\n")
                 # float cast
@@ -221,9 +231,10 @@ class App:
                     new_prices_2.append(rank)
 
                 # final list
-                list = dict(zip(self.all_hotels, new_prices_2))
-                ranking_2 = sorted(list.items(), key=operator.itemgetter(1))
-                for k, v in ranking_2:
+                display_list = list(zip(self.all_hotels, new_prices_2, self.all_zones))
+                ranking_2 = sorted(display_list, key=operator.itemgetter(1))
+                # todo REF: https://discuss.codecademy.com/t/how-can-i-sort-a-zipped-object/454412/6
+                for k, v, w in ranking_2:
                     if v < 100.00:
                         print("   ", "{0:.2f}".format(v), k)
                     if 99.00 < v < 1000.00:
@@ -232,6 +243,18 @@ class App:
                         print(" ", "{0:.2f}".format(v), k)
                     if v > 9999.00:
                         print("", "{0:.2f}".format(v), k)
+
+                self.cheap = ranking_2[0]
+                self.options = ranking_2
+                print('\ncheapest reservations: ', self.cheap[0], self.cheap[1], euro_symbol)
+                # self.display = display_list[7]
+                # print('Target button number: ', self.display.index(self.cheap[0]))
+                self.display = display_list
+                for i, collation in enumerate(display_list):
+                    if collation[0] == self.cheap[0]:
+                        position = i
+                print('position of the target button: ', position + 1)
+                self.index = str(position - 1)
 
                 sleep(2)
             except Exception as e:
