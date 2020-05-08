@@ -106,7 +106,8 @@ class App:
             # todo: filling the search bar
             # search_bar.send_keys(self.target_username).click # this line is wrong, read below please
             # fixme: you cannot enter text directly use the autocomplete square icon to the right of the field
-            self.driver.find_element_by_xpath('//section/div/form/fieldset[1]/div/a/span').click()
+            WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located((
+                By.XPATH, '//section/div/form/fieldset[1]/div/a/span'))).click()
             sleep(2)
 
             # todo: https://dzone.com/articles/perform-actions-using-javascript-in-python-seleniu
@@ -121,9 +122,9 @@ class App:
                     EC.element_to_be_clickable(
                         (By.CSS_SELECTOR, "#continent-picker-tab > li:nth-child"
                                           "(" + self.target_continent + ") > a:nth-child(1)")))
-                print("Loading page ...")
+                print("Manipulating search engine ...")
             except TimeoutException:
-                print("Loading took too much time!")
+                print("Searching took too much time!")
 
             if self.target_continent != '4':
                 picker = WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located((
@@ -148,7 +149,8 @@ class App:
             sleep(1)
 
             # search button
-            login_button = self.driver.find_element_by_xpath('//*[@id="mainsearch"]')
+            login_button = WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located((
+                By.XPATH, '//*[@id="mainsearch"]')))
             login_button.submit()
 
         except Exception:
@@ -175,7 +177,7 @@ class App:
 
             # even 25 seconds may not be enough to load the page!
             # todo AJAX: maximum 30 seconds
-            sleep(15)  # wait ajax full load
+            sleep(11)  # wait ajax full load
 
             print("Scraping page ...")
             soup = BeautifulSoup(self.driver.page_source, 'lxml')
@@ -211,7 +213,7 @@ class App:
                     else:
                         print("%d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
 
-                print("\n\tranking:\n")
+                print("\n\tRanking:\n")
                 # float cast
                 new_prices_2 = []
                 for element in self.all_prices:
