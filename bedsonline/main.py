@@ -121,7 +121,7 @@ class App:
                     EC.element_to_be_clickable(
                         (By.CSS_SELECTOR, "#continent-picker-tab > li:nth-child"
                                           "(" + self.target_continent + ") > a:nth-child(1)")))
-                print("Element is ready!")
+                print("Loading page ...")
             except TimeoutException:
                 print("Loading took too much time!")
 
@@ -150,9 +150,6 @@ class App:
             # search button
             login_button = self.driver.find_element_by_xpath('//*[@id="mainsearch"]')
             login_button.submit()
-            # even a 25 second wait is not enough to load the entire page!
-            # todo AJAX: 30 seconds
-            sleep(30)  # wait ajax full load
 
         except Exception:
             self.error = True
@@ -163,7 +160,7 @@ class App:
             wait = WebDriverWait(self.driver, 10)
             wait.until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, '#form-cheapest-acc-hot13445 > button:nth-child(1)')))
-            print("Page is ready!")
+            print("Waiting ajax full load ...")
 
         except TimeoutException:
             print("Loading took too much time!")
@@ -176,10 +173,15 @@ class App:
                 # read_more.click()
             sleep(1)
 
+            # even 25 seconds may not be enough to load the page!
+            # todo AJAX: maximum 30 seconds
+            sleep(15)  # wait ajax full load
+
+            print("Scraping page ...")
             soup = BeautifulSoup(self.driver.page_source, 'lxml')
             hotel_list = soup.find_all('article', {'class': 'crosselling-line availability-item'})
             euro_symbol = '€'
-            print("\n\tdisplay:\n")
+            print("\n\tDisplay:\n")
             try:
                 for i, hotel in enumerate(hotel_list):
                     hotel_name = hotel.find('a', {'data-tl': 'acc-title'}).getText()
@@ -236,10 +238,9 @@ class App:
                 print('Some error occurred while trying to scratch the hotel list')
 
             # activate page analyzer
-            analyzer = input(
-                '\nBREAK: \n\tDo yo want prettify? \npress "p" and enter to accept or just enter to exit)\n')
-            if analyzer == 'p' or 'P':
-                print(soup.prettify())
+            input('\nBREAK: \n\tActivate the analyzer?')
+            print(soup.prettify())
+
         except NoSuchElementException:
             print('Some error occurred while trying to scroll down')
             self.error = True
