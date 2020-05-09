@@ -14,11 +14,9 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 # The import from telnetlib import EC. You need to import expected_conditions and use it as EC
 # from selenium.webdriver.support import expected_conditions as EC...
 from selenium.webdriver.support import expected_conditions as EC
-
-from xlsxwriter import Workbook
-import os
+from openpyxl import Workbook
 import requests
-import shutil
+import os
 
 
 class App:
@@ -281,10 +279,32 @@ class App:
         bookings_folder_path = os.path.join(self.path, 'bookings')
         if not os.path.exists(bookings_folder_path):
             os.mkdir(bookings_folder_path)
-        # if self.error is False:
-        #     self.write_bookings_to_excel_file(bookings_folder_path)
+        if self.error is False:
+            self.write_bookings_to_excel_file(bookings_folder_path)
         # if self.error is False:
         #     self.read_bookings_from_excel_file(self.path + '/bookings/bookings.xlsx')
+
+    def write_bookings_to_excel_file(self, booking_path):
+        # FIXME: openpyxl -> https://openpyxl.readthedocs.io/en/stable/index.html
+        filepath = os.path.join(booking_path, 'bookings.xlsx')
+        workbook = Workbook(filepath)
+        # todo: grab the active worksheet: worksheet = workbook.active
+        # This is set to 0 by default. Unless you modify its value, you will always get the first worksheet by using:
+        # worksheet = workbook.active
+        # -> or you can create new worksheets using the Workbook.create_sheet() method:
+        worksheet_1 = workbook.create_sheet("Stadistics")  # insert at the end (default)
+        worksheet_2 = workbook.create_sheet("Snapshoot", 0)  # insert at first position
+        worksheet_3 = workbook.create_sheet("Bookings", -1)  # insert at the penultimate position
+        # Once you gave a worksheet a name, you can get it as a key of the workbook:
+        # >>> ws3 = wb["New Title"]
+
+        sheet = workbook.active
+        data = [('Code', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit'),
+                ('AA00', self.cheap[1], self.cheap[0], self.cheap[2]),
+                ('AA01', 590, 'Plaza')]  # append all rows
+        for row in data:
+            sheet.append(row)  # save file
+        workbook.save(filepath)
 
     """
     def read_bookings_from_excel_file(self, excel_path):
