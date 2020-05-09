@@ -49,14 +49,13 @@ class App:
         self.log_in()
         if self.error is False:
             sleep(2)  # fixme: implicit wait!
-            # self.close_dialog_box()
             self.search_target_profile()
         if self.error is False:
             self.scroll_down()
-        # if self.error is False:
-        #     if not os.path.exists(path):
-        #         os.mkdir(path)
-        #     self.file_manager()
+        if self.error is False:
+            if not os.path.exists(path):
+                os.mkdir(path)
+            self.file_manager()
         sleep(3)
         self.driver.close()
 
@@ -77,7 +76,7 @@ class App:
                 # Press button to access the login fields
                 sleep(1)
                 login_button = self.driver.find_element_by_xpath(
-                    '/html/body/div[2]/header/section[2]/div[1]/div/section[2]/a[1]')
+                    '//section[2]/div[1]/div/section[2]/a[1]')
                 login_button.click()
                 sleep(1)
 
@@ -254,7 +253,9 @@ class App:
                     if collation[0] == self.cheap[0]:
                         position = i
                 print('position of the target button: ', position + 1)
-                self.index = str(position - 1)
+                self.index = str(position)
+                if self.error is False:
+                    self.target_button(self.index)
 
                 sleep(2)
             except Exception as e:
@@ -270,84 +271,123 @@ class App:
             print('Some error occurred while trying to scroll down')
             self.error = True
 
-    """def write_captions_to_excel_file(self, images, caption_path):
-        print('writing to excel')
-        workbook = Workbook(os.path.join(caption_path, 'captions.xlsx'))
+    def target_button(self, index):
+        target_button = self.driver.find_element_by_xpath(
+            '//article[' + index + ']/div/div[1]/div[4]/div[2]/div[2]/form/button')
+        self.driver.execute_script("arguments[0].scrollIntoView();", target_button)
+        # target_button.click()
+
+    def file_manager(self, ):
+        bookings_folder_path = os.path.join(self.path, 'bookings')
+        if not os.path.exists(bookings_folder_path):
+            os.mkdir(bookings_folder_path)
+        # if self.error is False:
+        #     self.write_bookings_to_excel_file(bookings_folder_path)
+        # if self.error is False:
+        #     self.read_bookings_from_excel_file(self.path + '/bookings/bookings.xlsx')
+
+    """
+    def read_bookings_from_excel_file(self, excel_path):
+        workbook = xlrd.open_workbook(excel_path)
+        worksheet = workbook.sheet_by_index(0)
+        for row in range(2):
+            col_1, col_2, col_3, col_4, col_5, col_6 = worksheet.row_values(row)
+            print(col_1, '    ', col_2, '    ', )
+
+    def write_bookings_to_excel_file(self, booking_path):
+        print('\nwriting to excel...')
+        workbook = Workbook(os.path.join(booking_path, 'bookings.xlsx'))
         worksheet = workbook.add_worksheet()
+        worksheet.set_column(2, 3, 50)
+        worksheet.set_column(1, 1, 9)
+        worksheet.set_column(4, 4, 9)
+        bold = workbook.add_format({'bold': True})
+        cell_format = workbook.add_format({'bold': True, 'italic': True, 'font_color': 'blue'})
+        cell_money = workbook.add_format({'bold': True, 'italic': True, 'font_color': 'blue', 'num_format': '#,##0.00'})
+        money = workbook.add_format({'num_format': '#,##0.00'})
         row = 0
-        worksheet.write(row, 0, 'Image name')       # 3 --> row number, column number, value
-        worksheet.write(row, 1, 'Caption')
+        worksheet.write(row, 0, 'Code', bold)  # 3 --> row number, column number, value
+        worksheet.write(row, 1, 'Price', bold)
+        worksheet.write(row, 2, 'Hotel', bold)
+        worksheet.write(row, 3, 'Address', bold)
+        worksheet.write(row, 4, 'Retail', bold)
+        worksheet.write(row, 5, 'Profit', bold)
+
         row += 1
-        for index, image in enumerate(images):
-            filename = 'image_' + str(index) + '.jpg'
-            try:
-                caption = image['alt']
-            except KeyError:
-                caption = 'No caption exists'
-            worksheet.write(row, 0, filename)
-            worksheet.write(row, 1, caption)
+
+        worksheet.write(row, 0, 'BEST', cell_money)
+        worksheet.write(row, 1, self.cheap[1], cell_format)
+        worksheet.write(row, 2, self.cheap[0], cell_format)
+        worksheet.write(row, 3, self.cheap[2], cell_format)
+        worksheet.write_formula(1, 4, '=1.374*B2', cell_money)
+        worksheet.write_formula(1, 5, '=E2-B2', cell_money)
+        row += 1
+
+        for i, option in enumerate(self.options):
+            if i < 9:
+                worksheet.write(row, 0, 'AA0' + str(i + 1))
+            else:
+                worksheet.write(row, 0, 'AA' + str(i + 1))
+            worksheet.write(row, 1, option[1], money)
+            worksheet.write(row, 2, option[0])
+            worksheet.write(row, 3, option[2])
+            worksheet.write_array_formula('E3:E31', '{=1.374*B3:B31}', money)
+            worksheet.write_array_formula('F3:F31', '{=E3:E31-B3:B31}', money)
             row += 1
         workbook.close()
+        # fixme WARNING:
+        # in order for xlsxwriter to create the spreadsheet, the workbook must be closed
+        # right at the end. If it closes after it won't create it, check it by closing it after the line:
+        # self.send_attachment (spreadsheet)
+        spreadsheet = '//home/jmartorell/Booking/bookings/bookings.xlsx'
+        self.send_attachment(spreadsheet)
 
-    def download_captions(self, images):
-        captions_folder_path = os.path.join(self.path, 'captions')
-        if not os.path.exists(captions_folder_path):
-            os.mkdir(captions_folder_path)
-        self.write_captions_to_excel_file(images, captions_folder_path)
-        '''for index, image in enumerate(images):
-            try:
-                caption = image['alt']
-            except KeyError:
-                caption = 'No caption exists for this image'
-            file_name = 'caption_' + str(index) + '.txt'
-            file_path = os.path.join(captions_folder_path, file_name)
-            link = image['src']
-            with open(file_path, 'wb') as file:
-                file.write(str('link:' + str(link) + '\n' + 'caption:' + caption).encode())'''
+    def send_attachment(self, file):
+        subject = "An email with attachment from Python"
+        body = "This is an email with attachment sent from Python"
+        sender_email = "jetro4100@gmail.com"
+        receiver_email = "martorelljosep@gmail.com"
+        # password = input("Type your password and press enter:")
+        password = 'ZXspectrum5128$}_'
 
+        # Create a multipart message and set headers
+        message = MIMEMultipart()
+        message["From"] = sender_email
+        message["To"] = receiver_email
+        message["Subject"] = subject
+        message["Bcc"] = receiver_email  # Recommended for mass emails
 
-    def downloading_images(self):
-        self.all_images = list(set(self.all_images))
-        self.download_captions(self.all_images)
-        print('Length of all images', len(self.all_images))
-        for index, image in enumerate(self.all_images):
-            filename = 'image_' + str(index) + '.jpg'
-            image_path = os.path.join(self.path, filename)
-            link = image['src']
-            print('Downloading image', index)
-            response = requests.get(link, stream=True)
-            try:
-                with open(image_path, 'wb') as file:
-                    shutil.copyfileobj(response.raw, file)  # source -  destination
-            except Exception as e:
-                print(e)
-                print('Could not download image number ', index)
-                print('Image link -->', link)
+        # Add body to email
+        message.attach(MIMEText(body, "plain"))
 
-    def close_dialog_box(self):
-        # reload page
-        sleep(2)
-        self.driver.get(self.driver.current_url)
-        sleep(3)
+        filename = file  # In same directory as script
 
-        try:
-            sleep(3)
-            not_now_btn = self.driver.find_element_by_xpath('//*[text()="Not Now"]')
-            sleep(3)
+        # Open PDF file in binary mode
+        with open(filename, "rb") as attachment:
+            # Add file as application/octet-stream
+            # Email client can usually download this automatically as attachment
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(attachment.read())
 
-            not_now_btn.click()
-            sleep(1)
-        except Exception:
-            pass
+        # Encode file in ASCII characters to send by email
+        encoders.encode_base64(part)
 
+        # Add header as key/value pair to attachment part
+        part.add_header(
+            "Content-Disposition",
+            f"attachment; filename= {filename}",
+        )
 
-    def close_settings_window_if_there(self):
-        try:
-            self.driver.switch_to.window(self.driver.window_handles[1])
-            self.driver.close()
-            self.driver.switch_to.window(self.driver.window_handles[0])
-        except Exception as e:
-            pass"""
+        # Add attachment to message and convert message to string
+        message.attach(part)
+        text = message.as_string()
+
+        # Log in to server using secure context and send email
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(sender_email, password)
+            server.sendmail(sender_email, receiver_email, text)
+    """
 
 
 if __name__ == '__main__':
