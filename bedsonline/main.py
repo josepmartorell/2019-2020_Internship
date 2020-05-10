@@ -54,13 +54,14 @@ class App:
             if not os.path.exists(path):
                 os.mkdir(path)
             self.file_manager()
-        sleep(3)
+        sleep(10)
         self.driver.close()
 
     def log_in(self, ):
         try:
             # todo: dealing with popup windows
             # cookies popup
+            print('Closing cookies window ...')
             WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
                 By.XPATH,
                 '//div/div/div[2]/button[1]'))).click()
@@ -82,6 +83,7 @@ class App:
                 #  https://sqa.stackexchange.com/questions/13792/how-to-proceed-after-clicking-a-link-to-new-page-in-selenium-in-python
                 window_after = self.driver.window_handles[1]
                 self.driver.switch_to.window(window_after)
+                print('Logging in with username and password ...')
 
                 WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((
                     By.XPATH, '//*[@id="username"]')))
@@ -110,21 +112,19 @@ class App:
             # fixme: you cannot enter text directly use the autocomplete square icon to the right of the field
             WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located((
                 By.XPATH, '//section/div/form/fieldset[1]/div/a/span'))).click()
-            sleep(2)
 
             # todo: https://dzone.com/articles/perform-actions-using-javascript-in-python-seleniu
             #  Method 1: Executing JavaScript at Document Root Level
             #  javaScript = "document.getElementsByClassName('ui-dialog-titlebar-close ui-corner-all')[0].click();"
             #  self.driver.execute_script(javaScript)
             #  Method 2: Executing JavaScript at Element Level:
-
+            print("Manipulating search engine ...")
             try:
                 wait = WebDriverWait(self.driver, 100)
                 wait.until(
                     EC.element_to_be_clickable(
                         (By.CSS_SELECTOR, "#continent-picker-tab > li:nth-child"
                                           "(" + self.target_continent + ") > a:nth-child(1)")))
-                print("Manipulating search engine ...")
             except TimeoutException:
                 print("Searching took too much time!")
 
@@ -153,6 +153,7 @@ class App:
             # search button
             login_button = WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located((
                 By.XPATH, '//*[@id="mainsearch"]')))
+            print('Loading page ...')
             login_button.submit()
 
         except Exception:
@@ -165,12 +166,12 @@ class App:
             wait = WebDriverWait(self.driver, 10)
             wait.until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, '#form-cheapest-acc-hot13445 > button:nth-child(1)')))
-            print("Waiting ajax full load ...")
 
         except TimeoutException:
             print("Loading took too much time!")
 
         try:
+            print('Scrolling page ...')
             # self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
             read_mores = self.driver.find_elements_by_xpath('//form/button')
             for read_more in read_mores:
@@ -180,6 +181,7 @@ class App:
 
             # even 25 seconds may not be enough to load the page!
             # todo AJAX: maximum 30 seconds
+            print('Waiting ajax full load ...')
             sleep(11)  # wait ajax full load
 
             print("Scraping page ...")
@@ -243,14 +245,14 @@ class App:
 
                 self.cheap = ranking_2[0]
                 self.options = ranking_2
-                print('\ncheapest reservations: ', self.cheap[0], self.cheap[1], euro_symbol)
+                print('\nCheapest reservation: ', self.cheap[0], self.cheap[1], euro_symbol)
                 # self.display = display_list[7]
                 # print('Target button number: ', self.display.index(self.cheap[0]))
                 self.display = display_list
                 for i, collation in enumerate(display_list):
                     if collation[0] == self.cheap[0]:
                         position = i
-                print('position of the target button: ', position + 1)
+                print('Pointing to the target button ', position + 1, ' ...')
                 self.index = str(position)
                 if self.error is False:
                     self.target_button(self.index)
@@ -262,8 +264,10 @@ class App:
                 print('Some error occurred while trying to scratch the hotel list')
 
             # activate page analyzer
-            input('\nBREAK: \n\tActivate the analyzer?')
-            print(soup.prettify())
+            print('Downloading html to computer ...\n')
+            file = open("test/bedsonline.html", "w")
+            file.write(soup.prettify())
+            file.close()
 
         except NoSuchElementException:
             print('Some error occurred while trying to scroll down')
@@ -299,6 +303,7 @@ class App:
         # >>> ws3 = wb["New Title"]
 
         sheet = workbook.active
+        sheet.column_dimensions['B'].number_format = '#,##0.00'
         data = [('Code', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit'),
                 ('AA00', self.cheap[1], self.cheap[0], self.cheap[2]),
                 ('AA01', 590, 'Plaza')]  # append all rows
