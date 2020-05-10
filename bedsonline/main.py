@@ -1,19 +1,17 @@
 import operator
+from time import sleep
 from telnetlib import EC
-
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from time import sleep
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-
 # todo: EXPECTED CONDITIONS https://selenium-python.readthedocs.io/waits.html
 # https://stackoverflow.com/questions/58743549/attributeerror-bytes-object-has-no-attribute-element-to-be-clickable
 # The import from telnetlib import EC. You need to import expected_conditions and use it as EC
 # from selenium.webdriver.support import expected_conditions as EC...
 from selenium.webdriver.support import expected_conditions as EC
+from openpyxl import load_workbook
 from openpyxl import Workbook
 import requests
 import os
@@ -264,7 +262,7 @@ class App:
                 print('Some error occurred while trying to scratch the hotel list')
 
             # activate page analyzer
-            print('Downloading html to computer ...\n')
+            print('Downloading html to computer ...')
             file = open("bedsonline.html", "w")
             file.write(soup.prettify())
             file.close()
@@ -285,28 +283,49 @@ class App:
             os.mkdir(bookings_folder_path)
         if self.error is False:
             self.write_bookings_to_excel_file(bookings_folder_path)
+            print('Writing to excel ...')
         # if self.error is False:
         #     self.read_bookings_from_excel_file(self.path + '/bookings/bookings.xlsx')
 
     def write_bookings_to_excel_file(self, booking_path):
         # FIXME: openpyxl -> https://openpyxl.readthedocs.io/en/stable/index.html
         filepath = os.path.join(booking_path, 'bookings.xlsx')
-        workbook = Workbook(filepath)
+        workbook = load_workbook(filepath)
         # todo: grab the active worksheet: worksheet = workbook.active
         # This is set to 0 by default. Unless you modify its value, you will always get the first worksheet by using:
         # worksheet = workbook.active
         # -> or you can create new worksheets using the Workbook.create_sheet() method:
-        worksheet_1 = workbook.create_sheet("Stadistics")  # insert at the end (default)
-        worksheet_2 = workbook.create_sheet("Snapshoot", 0)  # insert at first position
-        worksheet_3 = workbook.create_sheet("Bookings", -1)  # insert at the penultimate position
+        worksheet_1 = workbook.create_sheet("Snapshoot", 0)  # insert at first position
+        worksheet_2 = workbook.create_sheet("Bookings", -1)  # insert at the penultimate position
+        worksheet_3 = workbook.create_sheet("Stadistics")  # insert at the end (default)
         # Once you gave a worksheet a name, you can get it as a key of the workbook:
         # >>> ws3 = wb["New Title"]
 
         sheet = workbook.active
         sheet.column_dimensions['B'].number_format = '#,##0.00'
         header = ('Code', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
-        for row in self.data:  # append all rows
-            sheet.append(row)
+        cell_reference = worksheet_1.cell(row=1, column=1)
+        cell_reference.value = header[0]
+        cell_reference = worksheet_1.cell(row=1, column=2)
+        cell_reference.value = header[1]
+        cell_reference = worksheet_1.cell(row=1, column=3)
+        cell_reference.value = header[2]
+        cell_reference = worksheet_1.cell(row=1, column=4)
+        cell_reference.value = header[3]
+        cell_reference = worksheet_1.cell(row=1, column=5)
+        cell_reference.value = header[4]
+        cell_reference = worksheet_1.cell(row=1, column=6)
+        cell_reference.value = header[5]
+        i = 2
+        for row in self.data:
+            # fixme: sheet.append(row) only append all rows, use cell instead:
+            cell_reference = worksheet_1.cell(row=i, column=2)
+            cell_reference.value = row[1]
+            cell_reference = worksheet_1.cell(row=i, column=3)
+            cell_reference.value = row[0]
+            cell_reference = worksheet_1.cell(row=i, column=4)
+            cell_reference.value = row[2]
+            i += 1
         workbook.save(filepath)  # save file
 
     """
