@@ -303,6 +303,14 @@ class App:
 
         sheet = workbook.active
         sheet.column_dimensions['B'].number_format = '#,##0.00'
+        sheet.column_dimensions['A'].width = 8
+        sheet.column_dimensions['B'].width = 9
+        sheet.column_dimensions['C'].width = 50
+        sheet.column_dimensions['D'].width = 16
+        sheet.column_dimensions['E'].width = 9
+        sheet.column_dimensions['F'].width = 9
+
+        # fixme write REF: https://www.pythonexcel.com/openpyxl-write-to-cell.php
         header = ('Code', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
         cell_reference = worksheet_1.cell(row=1, column=1)
         cell_reference.value = header[0]
@@ -316,9 +324,10 @@ class App:
         cell_reference.value = header[4]
         cell_reference = worksheet_1.cell(row=1, column=6)
         cell_reference.value = header[5]
+
+        # WARNING: sheet.append(row) only append all rows, use cell instead:
         i = 2
         for row in self.data:
-            # fixme: sheet.append(row) only append all rows, use cell instead:
             cell_reference = worksheet_1.cell(row=i, column=2)
             cell_reference.value = row[1]
             cell_reference = worksheet_1.cell(row=i, column=3)
