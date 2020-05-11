@@ -303,6 +303,8 @@ class App:
 
         sheet = workbook.active
         sheet.column_dimensions['B'].number_format = '#,##0.00'
+        sheet.column_dimensions['E'].number_format = '#,##0.00'
+        sheet.column_dimensions['F'].number_format = '#,##0.00'
         sheet.column_dimensions['A'].width = 8
         sheet.column_dimensions['B'].width = 9
         sheet.column_dimensions['C'].width = 50
@@ -312,20 +314,18 @@ class App:
 
         # fixme write REF: https://www.pythonexcel.com/openpyxl-write-to-cell.php
         header = ('Code', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
-        cell_reference = worksheet_1.cell(row=1, column=1)
-        cell_reference.value = header[0]
-        cell_reference = worksheet_1.cell(row=1, column=2)
-        cell_reference.value = header[1]
-        cell_reference = worksheet_1.cell(row=1, column=3)
-        cell_reference.value = header[2]
-        cell_reference = worksheet_1.cell(row=1, column=4)
-        cell_reference.value = header[3]
-        cell_reference = worksheet_1.cell(row=1, column=5)
-        cell_reference.value = header[4]
-        cell_reference = worksheet_1.cell(row=1, column=6)
-        cell_reference.value = header[5]
+        worksheet_1.cell(row=1, column=1).value = header[0]
+        worksheet_1.cell(row=1, column=2).value = header[1]
+        worksheet_1.cell(row=1, column=3).value = header[2]
+        worksheet_1.cell(row=1, column=4).value = header[3]
+        worksheet_1.cell(row=1, column=5).value = header[4]
+        worksheet_1.cell(row=1, column=6).value = header[5]
 
+        # worksheet_1["E2"] = "=1.374*B2:B31"
+        # worksheet_1.formula_attributes['E2'] = {'t': 'array', 'ref': "E2:E31"}
+        # fixme: # working with scraped lists you do not know the range length:
         # WARNING: sheet.append(row) only append all rows, use cell instead:
+        c = '1.374'
         i = 2
         for row in self.data:
             cell_reference = worksheet_1.cell(row=i, column=2)
@@ -334,6 +334,13 @@ class App:
             cell_reference.value = row[0]
             cell_reference = worksheet_1.cell(row=i, column=4)
             cell_reference.value = row[2]
+            # REF:
+            # https://stackoverflow.com/questions/51044736/openpyxl-iterate-through-rows-and-apply-formula
+            # fixme CODE:
+            #  for row_num in range(2, max_row_num):
+            #     sheet['E{}'.format(row_num)] = '=CLEAN(D{})'.format(row_num)
+            sheet['E{}'.format(i)] = '=PRODUCT(B{},{}'.format(i, c)
+            sheet['F{}'.format(i)] = '=SUM(E{},-B{}'.format(i, i)
             i += 1
         workbook.save(filepath)  # save file
 
