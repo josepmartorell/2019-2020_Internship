@@ -2,6 +2,7 @@ import operator
 from time import sleep
 from telnetlib import EC
 from bs4 import BeautifulSoup
+from openpyxl.styles import PatternFill, Font
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -290,6 +291,8 @@ class App:
     def write_bookings_to_excel_file(self, booking_path):
         # FIXME: openpyxl -> https://openpyxl.readthedocs.io/en/stable/index.html
         filepath = os.path.join(booking_path, 'bookings.xlsx')
+        workbook = Workbook()
+        workbook.save(filepath)
         workbook = load_workbook(filepath)
         # todo: grab the active worksheet: worksheet = workbook.active
         # This is set to 0 by default. Unless you modify its value, you will always get the first worksheet by using:
@@ -311,6 +314,15 @@ class App:
         sheet.column_dimensions['D'].width = 16
         sheet.column_dimensions['E'].width = 9
         sheet.column_dimensions['F'].width = 9
+
+        row = sheet.row_dimensions[1]
+        row.font = Font(bold="single", italic=True, name="Arial")
+
+        # fixme REF:
+        # https://stackoverflow.com/questions/35918504/adding-a-background-color-to-cell-openpyxl
+        for col_range in range(1, 7):
+            cell_title = sheet.cell(1, col_range)
+            cell_title.fill = PatternFill(start_color="00c0c0c0", end_color="00c0c0c0", fill_type="solid")
 
         # fixme write REF: https://www.pythonexcel.com/openpyxl-write-to-cell.php
         header = ('Code', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
@@ -341,6 +353,8 @@ class App:
             #     sheet['E{}'.format(row_num)] = '=CLEAN(D{})'.format(row_num)
             sheet['E{}'.format(i)] = '=PRODUCT(B{},{}'.format(i, c)
             sheet['F{}'.format(i)] = '=SUM(E{},-B{}'.format(i, i)
+            row = sheet.row_dimensions[i]
+            row.font = Font(bold="single", italic=True, name="Arial")
             i += 1
         workbook.save(filepath)  # save file
 
