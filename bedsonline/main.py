@@ -196,7 +196,7 @@ class App:
                     self.all_hotels.append(hotel_name)
                     # print(" %d - %s" % (i + 1, hotel_name))
 
-                    hotel_zone = hotel.find('span', {'class': '_hotelzone'}).getText()
+                    hotel_zone = hotel.find('span', {'class': '_hotelzone'}).getText().strip(',')
                     hotel_name = ' '.join(hotel_name.split())
                     self.all_zones.append(hotel_zone)
 
@@ -315,6 +315,19 @@ class App:
         sheet.column_dimensions['E'].width = 9
         sheet.column_dimensions['F'].width = 9
 
+        format = sheet.column_dimensions['A']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['B']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['C']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['D']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['E']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['F']
+        format.font = Font(bold=True, italic=True, name='Arial')
+
         # fixme REF:
         # https://stackoverflow.com/questions/35918504/adding-a-background-color-to-cell-openpyxl
         for col_range in range(1, 7):
@@ -362,50 +375,7 @@ class App:
             print(col_1, '    ', col_2, '    ', )
 
     def write_bookings_to_excel_file(self, booking_path):
-        print('\nwriting to excel...')
-        workbook = Workbook(os.path.join(booking_path, 'bookings.xlsx'))
-        worksheet = workbook.add_worksheet()
-        worksheet.set_column(2, 3, 50)
-        worksheet.set_column(1, 1, 9)
-        worksheet.set_column(4, 4, 9)
-        bold = workbook.add_format({'bold': True})
-        cell_format = workbook.add_format({'bold': True, 'italic': True, 'font_color': 'blue'})
-        cell_money = workbook.add_format({'bold': True, 'italic': True, 'font_color': 'blue', 'num_format': '#,##0.00'})
-        money = workbook.add_format({'num_format': '#,##0.00'})
-        row = 0
-        worksheet.write(row, 0, 'Code', bold)  # 3 --> row number, column number, value
-        worksheet.write(row, 1, 'Price', bold)
-        worksheet.write(row, 2, 'Hotel', bold)
-        worksheet.write(row, 3, 'Address', bold)
-        worksheet.write(row, 4, 'Retail', bold)
-        worksheet.write(row, 5, 'Profit', bold)
-
-        row += 1
-
-        worksheet.write(row, 0, 'BEST', cell_money)
-        worksheet.write(row, 1, self.cheap[1], cell_format)
-        worksheet.write(row, 2, self.cheap[0], cell_format)
-        worksheet.write(row, 3, self.cheap[2], cell_format)
-        worksheet.write_formula(1, 4, '=1.374*B2', cell_money)
-        worksheet.write_formula(1, 5, '=E2-B2', cell_money)
-        row += 1
-
-        for i, option in enumerate(self.options):
-            if i < 9:
-                worksheet.write(row, 0, 'AA0' + str(i + 1))
-            else:
-                worksheet.write(row, 0, 'AA' + str(i + 1))
-            worksheet.write(row, 1, option[1], money)
-            worksheet.write(row, 2, option[0])
-            worksheet.write(row, 3, option[2])
-            worksheet.write_array_formula('E3:E31', '{=1.374*B3:B31}', money)
-            worksheet.write_array_formula('F3:F31', '{=E3:E31-B3:B31}', money)
-            row += 1
-        workbook.close()
-        # fixme WARNING:
-        # in order for xlsxwriter to create the spreadsheet, the workbook must be closed
-        # right at the end. If it closes after it won't create it, check it by closing it after the line:
-        # self.send_attachment (spreadsheet)
+        # ->
         spreadsheet = '//home/jmartorell/Booking/bookings/bookings.xlsx'
         self.send_attachment(spreadsheet)
 
