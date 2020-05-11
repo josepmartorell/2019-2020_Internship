@@ -315,9 +315,6 @@ class App:
         sheet.column_dimensions['E'].width = 9
         sheet.column_dimensions['F'].width = 9
 
-        row = sheet.row_dimensions[1]
-        row.font = Font(bold="single", italic=True, name="Arial")
-
         # fixme REF:
         # https://stackoverflow.com/questions/35918504/adding-a-background-color-to-cell-openpyxl
         for col_range in range(1, 7):
@@ -353,8 +350,6 @@ class App:
             #     sheet['E{}'.format(row_num)] = '=CLEAN(D{})'.format(row_num)
             sheet['E{}'.format(i)] = '=PRODUCT(B{},{}'.format(i, c)
             sheet['F{}'.format(i)] = '=SUM(E{},-B{}'.format(i, i)
-            row = sheet.row_dimensions[i]
-            row.font = Font(bold="single", italic=True, name="Arial")
             i += 1
         workbook.save(filepath)  # save file
 
