@@ -233,7 +233,7 @@ class App:
 
                 # final list
                 display_list = list(zip(self.all_positions, self.all_hotels, new_prices, self.all_zones))
-                ranking = sorted(display_list, key=operator.itemgetter(1))
+                ranking = sorted(display_list, key=operator.itemgetter(2))
                 # todo REF: https://discuss.codecademy.com/t/how-can-i-sort-a-zipped-object/454412/6
                 for j, k, v, w in ranking:
                     if v < 100.00:
@@ -311,34 +311,7 @@ class App:
         workbook.remove(std)
 
         sheet = workbook.active
-        sheet.column_dimensions['B'].number_format = '#,##0.00'
-        sheet.column_dimensions['E'].number_format = '#,##0.00'
-        sheet.column_dimensions['F'].number_format = '#,##0.00'
-        sheet.column_dimensions['A'].width = 3
-        sheet.column_dimensions['B'].width = 9
-        sheet.column_dimensions['C'].width = 50
-        sheet.column_dimensions['D'].width = 16
-        sheet.column_dimensions['E'].width = 9
-        sheet.column_dimensions['F'].width = 9
-
-        format = sheet.column_dimensions['A']
-        format.font = Font(bold=True, italic=True, name='Arial')
-        format = sheet.column_dimensions['B']
-        format.font = Font(bold=True, italic=True, name='Arial')
-        format = sheet.column_dimensions['C']
-        format.font = Font(bold=True, italic=True, name='Arial')
-        format = sheet.column_dimensions['D']
-        format.font = Font(bold=True, italic=True, name='Arial')
-        format = sheet.column_dimensions['E']
-        format.font = Font(bold=True, italic=True, name='Arial')
-        format = sheet.column_dimensions['F']
-        format.font = Font(bold=True, italic=True, name='Arial')
-
-        # fixme REF:
-        # https://stackoverflow.com/questions/35918504/adding-a-background-color-to-cell-openpyxl
-        for col_range in range(1, 7):
-            cell_title = sheet.cell(1, col_range)
-            cell_title.fill = PatternFill(start_color="00c0c0c0", end_color="00c0c0c0", fill_type="solid")
+        self.set_stylesheet(sheet)
 
         # fixme write REF: https://www.pythonexcel.com/openpyxl-write-to-cell.php
         header = ('No', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
@@ -372,7 +345,47 @@ class App:
             sheet['E{}'.format(i)] = '=PRODUCT(B{},{}'.format(i, c)
             sheet['F{}'.format(i)] = '=SUM(E{},-B{}'.format(i, i)
             i += 1
+
+        # select and write bookings
+        booking = self.data[0]
+        worksheet_2.cell(row=1, column=1).value = booking[0]
+        worksheet_2.cell(row=1, column=2).value = booking[1]
+        worksheet_2.cell(row=1, column=3).value = booking[2]
+        worksheet_2.cell(row=1, column=4).value = booking[3]
+        sheet['E{}'.format(i)] = '=PRODUCT(B{},{}'.format(2, c)
+        sheet['F{}'.format(i)] = '=SUM(E{},-B{}'.format(2, 2)
         workbook.save(filepath)  # save file
+
+    def set_stylesheet(self, sheet):
+
+        sheet.column_dimensions['B'].number_format = '#,##0.00'
+        sheet.column_dimensions['E'].number_format = '#,##0.00'
+        sheet.column_dimensions['F'].number_format = '#,##0.00'
+        sheet.column_dimensions['A'].width = 3
+        sheet.column_dimensions['B'].width = 9
+        sheet.column_dimensions['C'].width = 50
+        sheet.column_dimensions['D'].width = 16
+        sheet.column_dimensions['E'].width = 9
+        sheet.column_dimensions['F'].width = 9
+
+        format = sheet.column_dimensions['A']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['B']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['C']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['D']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['E']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['F']
+        format.font = Font(bold=True, italic=True, name='Arial')
+
+        # fixme REF:
+        # https://stackoverflow.com/questions/35918504/adding-a-background-color-to-cell-openpyxl
+        for col_range in range(1, 7):
+            cell_title = sheet.cell(1, col_range)
+            cell_title.fill = PatternFill(start_color="00c0c0c0", end_color="00c0c0c0", fill_type="solid")
 
     """
     def read_bookings_from_excel_file(self, excel_path):
