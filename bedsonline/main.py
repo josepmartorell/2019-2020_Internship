@@ -311,7 +311,7 @@ class App:
         workbook.remove(std)
 
         sheet = workbook.active
-        self.set_stylesheet(sheet)
+        self.set_stylesheet(sheet, 1)
 
         # fixme write REF: https://www.pythonexcel.com/openpyxl-write-to-cell.php
         header = ('No', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
@@ -346,22 +346,41 @@ class App:
             sheet['F{}'.format(i)] = '=SUM(E{},-B{}'.format(i, i)
             i += 1
 
-        # select and write bookings
+        # select bookings sheet
+        workbook.active = worksheet_2
+        sheet = workbook.active
+        self.set_stylesheet(sheet, 2)
+
+        header = ('Code', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
+        worksheet_2.cell(row=1, column=1).value = header[0]
+        worksheet_2.cell(row=1, column=2).value = header[1]
+        worksheet_2.cell(row=1, column=3).value = header[2]
+        worksheet_2.cell(row=1, column=4).value = header[3]
+        worksheet_2.cell(row=1, column=5).value = header[4]
+        worksheet_2.cell(row=1, column=6).value = header[5]
+
         booking = self.data[0]
-        worksheet_2.cell(row=1, column=1).value = booking[0]
-        worksheet_2.cell(row=1, column=2).value = booking[1]
-        worksheet_2.cell(row=1, column=3).value = booking[2]
-        worksheet_2.cell(row=1, column=4).value = booking[3]
-        sheet['E{}'.format(i)] = '=PRODUCT(B{},{}'.format(2, c)
-        sheet['F{}'.format(i)] = '=SUM(E{},-B{}'.format(2, 2)
+        worksheet_2.cell(row=2, column=1).value = booking[0]
+        worksheet_2.cell(row=2, column=2).value = booking[2]
+        worksheet_2.cell(row=2, column=3).value = booking[1]
+        worksheet_2.cell(row=2, column=4).value = booking[3]
+        sheet['E{}'.format(2)] = '=PRODUCT(B{},{}'.format(2, c)
+        sheet['F{}'.format(2)] = '=SUM(E{},-B{}'.format(2, 2)
+
+        workbook.active = worksheet_1
+        sheet = workbook.active
+        self.set_stylesheet(sheet, 1)
         workbook.save(filepath)  # save file
 
-    def set_stylesheet(self, sheet):
+    def set_stylesheet(self, sheet, shift):
 
         sheet.column_dimensions['B'].number_format = '#,##0.00'
         sheet.column_dimensions['E'].number_format = '#,##0.00'
         sheet.column_dimensions['F'].number_format = '#,##0.00'
-        sheet.column_dimensions['A'].width = 3
+        if shift != 2:
+            sheet.column_dimensions['A'].width = 3
+        else:
+            sheet.column_dimensions['A'].width = 5
         sheet.column_dimensions['B'].width = 9
         sheet.column_dimensions['C'].width = 50
         sheet.column_dimensions['D'].width = 16
