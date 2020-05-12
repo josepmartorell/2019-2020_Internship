@@ -28,6 +28,7 @@ class App:
         self.target_country_row = target_country_row
         self.target_city_col = target_city_col
         self.target_city_row = target_city_row
+        self.all_positions = []
         self.all_hotels = []
         self.all_prices = []
         self.all_zones = []
@@ -190,6 +191,8 @@ class App:
             print("\n\tDisplay:\n")
             try:
                 for i, hotel in enumerate(hotel_list):
+                    self.all_positions.append(i + 1)
+
                     hotel_name = hotel.find('a', {'data-tl': 'acc-title'}).getText()
                     # fixme: remove whitespaces REF: https://stackoverrun.com/es/q/743639
                     hotel_name = ' '.join(hotel_name.split())
@@ -229,10 +232,10 @@ class App:
                     new_prices.append(rank)
 
                 # final list
-                display_list = list(zip(self.all_hotels, new_prices, self.all_zones))
+                display_list = list(zip(self.all_positions, self.all_hotels, new_prices, self.all_zones))
                 ranking = sorted(display_list, key=operator.itemgetter(1))
                 # todo REF: https://discuss.codecademy.com/t/how-can-i-sort-a-zipped-object/454412/6
-                for k, v, w in ranking:
+                for j, k, v, w in ranking:
                     if v < 100.00:
                         print("   ", "{0:.2f}".format(v), k)
                     if 99.00 < v < 1000.00:
@@ -244,12 +247,12 @@ class App:
 
                 self.cheap = ranking[0]
                 self.data = ranking
-                print('\nCheapest reservation: ', self.cheap[0], self.cheap[1], euro_symbol)
+                print('\nCheapest reservation: ', self.cheap[1], self.cheap[2], euro_symbol)
                 # self.display = display_list[7]
                 # print('Target button number: ', self.display.index(self.cheap[0]))
                 self.display = display_list
                 for i, collation in enumerate(display_list):
-                    if collation[0] == self.cheap[0]:
+                    if collation[1] == self.cheap[1]:
                         position = i
                 print('Pointing to the target button ', position + 1, ' ...')
                 self.index = str(position)
@@ -303,12 +306,15 @@ class App:
         worksheet_3 = workbook.create_sheet("Stadistics")  # insert at the end (default)
         # Once you gave a worksheet a name, you can get it as a key of the workbook:
         # >>> ws3 = wb["New Title"]
+        # fixme: delete the default sheet:
+        std = workbook["Sheet"]
+        workbook.remove(std)
 
         sheet = workbook.active
         sheet.column_dimensions['B'].number_format = '#,##0.00'
         sheet.column_dimensions['E'].number_format = '#,##0.00'
         sheet.column_dimensions['F'].number_format = '#,##0.00'
-        sheet.column_dimensions['A'].width = 8
+        sheet.column_dimensions['A'].width = 3
         sheet.column_dimensions['B'].width = 9
         sheet.column_dimensions['C'].width = 50
         sheet.column_dimensions['D'].width = 16
@@ -335,7 +341,7 @@ class App:
             cell_title.fill = PatternFill(start_color="00c0c0c0", end_color="00c0c0c0", fill_type="solid")
 
         # fixme write REF: https://www.pythonexcel.com/openpyxl-write-to-cell.php
-        header = ('Code', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
+        header = ('No', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
         worksheet_1.cell(row=1, column=1).value = header[0]
         worksheet_1.cell(row=1, column=2).value = header[1]
         worksheet_1.cell(row=1, column=3).value = header[2]
@@ -350,12 +356,14 @@ class App:
         c = '1.374'
         i = 2
         for row in self.data:
-            cell_reference = worksheet_1.cell(row=i, column=2)
-            cell_reference.value = row[1]
-            cell_reference = worksheet_1.cell(row=i, column=3)
+            cell_reference = worksheet_1.cell(row=i, column=1)
             cell_reference.value = row[0]
-            cell_reference = worksheet_1.cell(row=i, column=4)
+            cell_reference = worksheet_1.cell(row=i, column=2)
             cell_reference.value = row[2]
+            cell_reference = worksheet_1.cell(row=i, column=3)
+            cell_reference.value = row[1]
+            cell_reference = worksheet_1.cell(row=i, column=4)
+            cell_reference.value = row[3]
             # REF:
             # https://stackoverflow.com/questions/51044736/openpyxl-iterate-through-rows-and-apply-formula
             # fixme CODE:
