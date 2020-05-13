@@ -61,7 +61,7 @@ class App:
         try:
             # todo: dealing with popup windows
             # cookies popup
-            print('Closing cookies window ...')
+            print('\nClosing cookies window ...')
             WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((
                 By.XPATH,
                 '//div/div/div[2]/button[1]'))).click()
@@ -294,80 +294,82 @@ class App:
     def write_bookings_to_excel_file(self, booking_path):
         # FIXME: openpyxl -> https://openpyxl.readthedocs.io/en/stable/index.html
         filepath = os.path.join(booking_path, 'bookings.xlsx')
-        workbook = Workbook()
-        workbook.save(filepath)
-        workbook = load_workbook(filepath)
-        # todo: grab the active worksheet: worksheet = workbook.active
-        # This is set to 0 by default. Unless you modify its value, you will always get the first worksheet by using:
-        # worksheet = workbook.active
-        # -> or you can create new worksheets using the Workbook.create_sheet() method:
-        worksheet_1 = workbook.create_sheet("Snapshoot", 0)  # insert at first position
-        worksheet_2 = workbook.create_sheet("Bookings", -1)  # insert at the penultimate position
-        worksheet_3 = workbook.create_sheet("Stadistics")  # insert at the end (default)
-        # Once you gave a worksheet a name, you can get it as a key of the workbook:
-        # >>> ws3 = wb["New Title"]
-        # fixme: delete the default sheet:
-        std = workbook["Sheet"]
-        workbook.remove(std)
+        if not os.path.exists(filepath):
+            workbook = Workbook()
+            workbook.save(filepath)
+            # todo: grab the active worksheet: worksheet = workbook.active This is set to 0 by default. Unless you
+            #  modify its value, you will always get the first worksheet by using: worksheet = workbook.active -> or
+            #  you can create new worksheets using the Workbook.create_sheet() method:
+            worksheet_1 = workbook.create_sheet("Snapshoot", 0)  # insert at first position
+            worksheet_2 = workbook.create_sheet("Bookings", -1)  # insert at the penultimate position
+            worksheet_3 = workbook.create_sheet("Stadistics")  # insert at the end (default)
+            # Once you gave a worksheet a name, you can get it as a key of the workbook:
+            # >>> ws3 = wb["New Title"]
+            # fixme: delete the default sheet:
+            # std = workbook["Sheet"]
+            # workbook.remove(std)
 
-        sheet = workbook.active
-        self.set_stylesheet(sheet, 1)
+            sheet = workbook.active
+            self.set_stylesheet(sheet, 1)
 
-        # fixme write REF: https://www.pythonexcel.com/openpyxl-write-to-cell.php
-        header = ('No', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
-        worksheet_1.cell(row=1, column=1).value = header[0]
-        worksheet_1.cell(row=1, column=2).value = header[1]
-        worksheet_1.cell(row=1, column=3).value = header[2]
-        worksheet_1.cell(row=1, column=4).value = header[3]
-        worksheet_1.cell(row=1, column=5).value = header[4]
-        worksheet_1.cell(row=1, column=6).value = header[5]
+            # fixme write REF: https://www.pythonexcel.com/openpyxl-write-to-cell.php
+            header = ('No', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
+            worksheet_1.cell(row=1, column=1).value = header[0]
+            worksheet_1.cell(row=1, column=2).value = header[1]
+            worksheet_1.cell(row=1, column=3).value = header[2]
+            worksheet_1.cell(row=1, column=4).value = header[3]
+            worksheet_1.cell(row=1, column=5).value = header[4]
+            worksheet_1.cell(row=1, column=6).value = header[5]
 
-        # worksheet_1["E2"] = "=1.374*B2:B31"
-        # worksheet_1.formula_attributes['E2'] = {'t': 'array', 'ref': "E2:E31"}
-        # fixme: # working with scraped lists you do not know the range length:
-        # WARNING: sheet.append(row) only append all rows, use cell instead:
-        c = '1.374'
-        i = 2
-        for row in self.data:
-            cell_reference = worksheet_1.cell(row=i, column=1)
-            cell_reference.value = row[0]
-            cell_reference = worksheet_1.cell(row=i, column=2)
-            cell_reference.value = row[2]
-            cell_reference = worksheet_1.cell(row=i, column=3)
-            cell_reference.value = row[1]
-            cell_reference = worksheet_1.cell(row=i, column=4)
-            cell_reference.value = row[3]
-            # REF:
-            # https://stackoverflow.com/questions/51044736/openpyxl-iterate-through-rows-and-apply-formula
-            # fixme CODE:
-            #  for row_num in range(2, max_row_num):
-            #     sheet['E{}'.format(row_num)] = '=CLEAN(D{})'.format(row_num)
-            sheet['E{}'.format(i)] = '=PRODUCT(B{},{}'.format(i, c)
-            sheet['F{}'.format(i)] = '=SUM(E{},-B{}'.format(i, i)
-            i += 1
+            # worksheet_1["E2"] = "=1.374*B2:B31"
+            # worksheet_1.formula_attributes['E2'] = {'t': 'array', 'ref': "E2:E31"}
+            # fixme: # working with scraped lists you do not know the range length:
+            # WARNING: sheet.append(row) only append all rows, use cell instead:
+            c = '1.374'
+            i = 2
+            for row in self.data:
+                cell_reference = worksheet_1.cell(row=i, column=1)
+                cell_reference.value = row[0]
+                cell_reference = worksheet_1.cell(row=i, column=2)
+                cell_reference.value = row[2]
+                cell_reference = worksheet_1.cell(row=i, column=3)
+                cell_reference.value = row[1]
+                cell_reference = worksheet_1.cell(row=i, column=4)
+                cell_reference.value = row[3]
+                # REF:
+                # https://stackoverflow.com/questions/51044736/openpyxl-iterate-through-rows-and-apply-formula
+                # fixme CODE:
+                #  for row_num in range(2, max_row_num):
+                #     sheet['E{}'.format(row_num)] = '=CLEAN(D{})'.format(row_num)
+                sheet['E{}'.format(i)] = '=PRODUCT(B{},{}'.format(i, c)
+                sheet['F{}'.format(i)] = '=SUM(E{},-B{}'.format(i, i)
+                i += 1
 
-        # select bookings sheet
-        workbook.active = worksheet_2
-        sheet = workbook.active
-        self.set_stylesheet(sheet, 2)
+            # select bookings sheet
+            workbook.active = worksheet_2
+            sheet = workbook.active
+            self.set_stylesheet(sheet, 2)
 
-        header = ('Code', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
-        worksheet_2.cell(row=1, column=1).value = header[0]
-        worksheet_2.cell(row=1, column=2).value = header[1]
-        worksheet_2.cell(row=1, column=3).value = header[2]
-        worksheet_2.cell(row=1, column=4).value = header[3]
-        worksheet_2.cell(row=1, column=5).value = header[4]
-        worksheet_2.cell(row=1, column=6).value = header[5]
+            header = ('Code', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
+            worksheet_2.cell(row=1, column=1).value = header[0]
+            worksheet_2.cell(row=1, column=2).value = header[1]
+            worksheet_2.cell(row=1, column=3).value = header[2]
+            worksheet_2.cell(row=1, column=4).value = header[3]
+            worksheet_2.cell(row=1, column=5).value = header[4]
+            worksheet_2.cell(row=1, column=6).value = header[5]
 
-        booking = self.data[0]
-        worksheet_2.cell(row=2, column=1).value = booking[0]
-        worksheet_2.cell(row=2, column=2).value = booking[2]
-        worksheet_2.cell(row=2, column=3).value = booking[1]
-        worksheet_2.cell(row=2, column=4).value = booking[3]
-        sheet['E{}'.format(2)] = '=PRODUCT(B{},{}'.format(2, c)
-        sheet['F{}'.format(2)] = '=SUM(E{},-B{}'.format(2, 2)
+            booking = self.data[0]
+            worksheet_2.cell(row=2, column=1).value = booking[0]
+            worksheet_2.cell(row=2, column=2).value = booking[2]
+            worksheet_2.cell(row=2, column=3).value = booking[1]
+            worksheet_2.cell(row=2, column=4).value = booking[3]
+            sheet['E{}'.format(2)] = '=PRODUCT(B{},{}'.format(2, c)
+            sheet['F{}'.format(2)] = '=SUM(E{},-B{}'.format(2, 2)
 
-        workbook.active = worksheet_1
+            workbook.active = worksheet_1
+        else:
+            workbook = load_workbook(filepath)
+
         sheet = workbook.active
         self.set_stylesheet(sheet, 1)
         workbook.save(filepath)  # save file
