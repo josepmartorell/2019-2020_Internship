@@ -369,6 +369,46 @@ class App:
             workbook.active = worksheet_1
         else:
             workbook = load_workbook(filepath)
+            worksheet_1 = workbook.active
+
+            c = '1.374'
+            i = 2
+            for row in self.data:
+                cell_reference = worksheet_1.cell(row=i, column=1)
+                cell_reference.value = row[0]
+                cell_reference = worksheet_1.cell(row=i, column=2)
+                cell_reference.value = row[2]
+                cell_reference = worksheet_1.cell(row=i, column=3)
+                cell_reference.value = row[1]
+                cell_reference = worksheet_1.cell(row=i, column=4)
+                cell_reference.value = row[3]
+                # REF:
+                # https://stackoverflow.com/questions/51044736/openpyxl-iterate-through-rows-and-apply-formula
+                # fixme CODE:
+                #  for row_num in range(2, max_row_num):
+                #     sheet['E{}'.format(row_num)] = '=CLEAN(D{})'.format(row_num)
+                worksheet_1['E{}'.format(i)] = '=PRODUCT(B{},{}'.format(i, c)
+                worksheet_1['F{}'.format(i)] = '=SUM(E{},-B{}'.format(i, i)
+                i += 1
+
+            workbook.active = 1
+            worksheet_2 = workbook.active
+
+            # select target row
+            target = 1
+            while worksheet_2.cell(row=target, column=1).value is not None:
+                target += 1
+
+            booking = self.data[0]
+            worksheet_2.cell(row=target, column=1).value = booking[0]
+            worksheet_2.cell(row=target, column=2).value = booking[2]
+            worksheet_2.cell(row=target, column=3).value = booking[1]
+            worksheet_2.cell(row=target, column=4).value = booking[3]
+            worksheet_2['E{}'.format(target)] = '=PRODUCT(B{},{}'.format(target, c)
+            worksheet_2['F{}'.format(target)] = '=SUM(E{},-B{}'.format(target, target)
+
+            # switch sheet
+            workbook.active = 0
 
         sheet = workbook.active
         self.set_stylesheet(sheet, 1)
