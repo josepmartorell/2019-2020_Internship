@@ -16,6 +16,7 @@ from openpyxl import load_workbook
 from openpyxl import Workbook
 import requests
 import os
+from bedsonline import targets as t
 
 
 class App:
@@ -54,7 +55,7 @@ class App:
             if not os.path.exists(path):
                 os.mkdir(path)
             self.file_manager()
-        sleep(10)
+        # sleep(10)
         self.driver.close()
 
     def log_in(self, ):
@@ -188,7 +189,7 @@ class App:
             soup = BeautifulSoup(self.driver.page_source, 'lxml')
             hotel_list = soup.find_all('article', {'class': 'crosselling-line availability-item'})
             euro_symbol = '€'
-            print("\n\tDisplay:\n")
+            print("\n\tSnapshoot:\n")
             try:
                 for i, hotel in enumerate(hotel_list):
                     self.all_positions.append(i + 1)
@@ -302,7 +303,6 @@ class App:
             #  you can create new worksheets using the Workbook.create_sheet() method:
             worksheet_1 = workbook.create_sheet("Snapshoot", 0)  # insert at first position
             worksheet_2 = workbook.create_sheet("Bookings", -1)  # insert at the penultimate position
-            worksheet_3 = workbook.create_sheet("Stadistics")  # insert at the end (default)
             # Once you gave a worksheet a name, you can get it as a key of the workbook:
             # >>> ws3 = wb["New Title"]
             # fixme: delete the default sheet:
@@ -350,7 +350,7 @@ class App:
             sheet = workbook.active
             self.set_stylesheet(sheet, 2)
 
-            header = ('Code', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
+            header = ('No', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
             worksheet_2.cell(row=1, column=1).value = header[0]
             worksheet_2.cell(row=1, column=2).value = header[1]
             worksheet_2.cell(row=1, column=3).value = header[2]
@@ -422,7 +422,7 @@ class App:
         if shift != 2:
             sheet.column_dimensions['A'].width = 3
         else:
-            sheet.column_dimensions['A'].width = 5
+            sheet.column_dimensions['A'].width = 4
         sheet.column_dimensions['B'].width = 9
         sheet.column_dimensions['C'].width = 50
         sheet.column_dimensions['D'].width = 16
@@ -510,4 +510,11 @@ class App:
 
 
 if __name__ == '__main__':
-    app = App()
+    x = 0
+    while x < 25:
+        app = App(target_continent=t.a[x],
+                  target_country_col=t.b[x],
+                  target_country_row=t.c[x],
+                  target_city_col=t.d[x],
+                  target_city_row=t.e[x])
+        x += 1
