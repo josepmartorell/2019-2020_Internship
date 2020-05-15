@@ -12,11 +12,13 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 # The import from telnetlib import EC. You need to import expected_conditions and use it as EC
 # from selenium.webdriver.support import expected_conditions as EC...
 from selenium.webdriver.support import expected_conditions as EC
+from bedsonline import targets as t
 from openpyxl import load_workbook
 from openpyxl import Workbook
 import requests
 import os
-from bedsonline import targets as t
+
+global mode
 
 
 class App:
@@ -267,10 +269,11 @@ class App:
                 print('Some error occurred while trying to scratch the hotel list')
 
             # activate page analyzer
-            print('Downloading html to computer ...')
-            file = open("bedsonline.html", "w")
-            file.write(soup.prettify())
-            file.close()
+            if mode == "d":
+                print('Downloading html to computer ...')
+                file = open("bedsonline.html", "w")
+                file.write(soup.prettify())
+                file.close()
 
         except NoSuchElementException:
             print('Some error occurred while trying to scroll down')
@@ -306,8 +309,8 @@ class App:
             # Once you gave a worksheet a name, you can get it as a key of the workbook:
             # >>> ws3 = wb["New Title"]
             # fixme: delete the default sheet:
-            # std = workbook["Sheet"]
-            # workbook.remove(std)
+            std = workbook["Sheet"]
+            workbook.remove(std)
 
             sheet = workbook.active
             self.set_stylesheet(sheet, 1)
@@ -448,73 +451,19 @@ class App:
             cell_title = sheet.cell(1, col_range)
             cell_title.fill = PatternFill(start_color="00c0c0c0", end_color="00c0c0c0", fill_type="solid")
 
-    """
-    def read_bookings_from_excel_file(self, excel_path):
-        workbook = xlrd.open_workbook(excel_path)
-        worksheet = workbook.sheet_by_index(0)
-        for row in range(2):
-            col_1, col_2, col_3, col_4, col_5, col_6 = worksheet.row_values(row)
-            print(col_1, '    ', col_2, '    ', )
-
-    def write_bookings_to_excel_file(self, booking_path):
-        # ->
-        spreadsheet = '//home/jmartorell/Booking/bookings/bookings.xlsx'
-        self.send_attachment(spreadsheet)
-
-    def send_attachment(self, file):
-        subject = "An email with attachment from Python"
-        body = "This is an email with attachment sent from Python"
-        sender_email = "jetro4100@gmail.com"
-        receiver_email = "martorelljosep@gmail.com"
-        # password = input("Type your password and press enter:")
-        password = 'ZXspectrum5128$}_'
-
-        # Create a multipart message and set headers
-        message = MIMEMultipart()
-        message["From"] = sender_email
-        message["To"] = receiver_email
-        message["Subject"] = subject
-        message["Bcc"] = receiver_email  # Recommended for mass emails
-
-        # Add body to email
-        message.attach(MIMEText(body, "plain"))
-
-        filename = file  # In same directory as script
-
-        # Open PDF file in binary mode
-        with open(filename, "rb") as attachment:
-            # Add file as application/octet-stream
-            # Email client can usually download this automatically as attachment
-            part = MIMEBase("application", "octet-stream")
-            part.set_payload(attachment.read())
-
-        # Encode file in ASCII characters to send by email
-        encoders.encode_base64(part)
-
-        # Add header as key/value pair to attachment part
-        part.add_header(
-            "Content-Disposition",
-            f"attachment; filename= {filename}",
-        )
-
-        # Add attachment to message and convert message to string
-        message.attach(part)
-        text = message.as_string()
-
-        # Log in to server using secure context and send email
-        context = ssl.create_default_context()
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-            server.login(sender_email, password)
-            server.sendmail(sender_email, receiver_email, text)
-    """
-
 
 if __name__ == '__main__':
-    x = 0
-    while x < 25:
-        app = App(target_continent=t.a[x],
-                  target_country_col=t.b[x],
-                  target_country_row=t.c[x],
-                  target_city_col=t.d[x],
-                  target_city_row=t.e[x])
-        x += 1
+    mode = input('\nSelect spider run mode:'
+                 '\n\tDEMO .........(type "d" + enter)'
+                 "\n\tAUTOMATIC ....(press enter)\n")
+    if mode != "d":
+        x = 0
+        while x < 25:
+            app = App(target_continent=t.a[x],
+                      target_country_col=t.b[x],
+                      target_country_row=t.c[x],
+                      target_city_col=t.d[x],
+                      target_city_row=t.e[x])
+            x += 1
+    else:
+        app = App()
