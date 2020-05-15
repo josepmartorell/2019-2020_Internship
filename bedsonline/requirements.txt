@@ -3,5 +3,5 @@ selenium
 bs4
 requests
 shutil
-xlsxwriter
+openpyxl
 xlrd
