@@ -2,7 +2,6 @@ import operator
 from time import sleep
 from telnetlib import EC
 from bs4 import BeautifulSoup
-from openpyxl.styles import PatternFill, Font
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -12,10 +11,17 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 # The import from telnetlib import EC. You need to import expected_conditions and use it as EC
 # from selenium.webdriver.support import expected_conditions as EC...
 from selenium.webdriver.support import expected_conditions as EC
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
 from bedsonline import targets as t
+from openpyxl.styles import PatternFill, Font
 from openpyxl import load_workbook
 from openpyxl import Workbook
+from email import encoders
 import requests
+import smtplib
+import ssl
 import os
 
 global mode
@@ -292,13 +298,13 @@ class App:
             os.mkdir(bookings_folder_path)
         if self.error is False:
             self.write_bookings_to_excel_file(bookings_folder_path)
-            print('Writing to excel ...')
         # if self.error is False:
         #     self.read_bookings_from_excel_file(self.path + '/bookings/bookings.xlsx')
 
     def write_bookings_to_excel_file(self, booking_path):
         # FIXME: openpyxl -> https://openpyxl.readthedocs.io/en/stable/index.html
         filepath = os.path.join(booking_path, 'bookings.xlsx')
+        print('Writing to excel ...')
         if not os.path.exists(filepath):
             workbook = Workbook()
             workbook.save(filepath)
@@ -418,6 +424,15 @@ class App:
         self.set_stylesheet(sheet, 1)
         workbook.save(filepath)  # save file
 
+        workbook.close()
+        # fixme WARNING:
+        # in order for openpyxl to create the spreadsheet, the workbook must be closed
+        # right at the end. If it closes after it won't create it, check it by closing it after the line:
+        # self.send_attachment (spreadsheet)
+        if mode == "d":
+            spreadsheet = '//home/jmartorell/Booking/bookings/bookings.xlsx'
+            self.send_attachment(spreadsheet)
+
     def set_stylesheet(self, sheet, shift):
 
         sheet.column_dimensions['B'].number_format = '#,##0.00'
@@ -451,6 +466,53 @@ class App:
         for col_range in range(1, 7):
             cell_title = sheet.cell(1, col_range)
             cell_title.fill = PatternFill(start_color="00c0c0c0", end_color="00c0c0c0", fill_type="solid")
+
+    def send_attachment(self, file):
+        subject = "An email with attachment from Python"
+        body = "This is an email with attachment sent from Python"
+        sender_email = "jetro4100@gmail.com"
+        receiver_email = "martorelljosep@gmail.com"
+        # password = input("Type your password and press enter:")
+        password = 'ZXspectrum5128$}_'
+
+        # Create a multipart message and set headers
+        message = MIMEMultipart()
+        message["From"] = sender_email
+        message["To"] = receiver_email
+        message["Subject"] = subject
+        message["Bcc"] = receiver_email  # Recommended for mass emails
+
+        # Add body to email
+        message.attach(MIMEText(body, "plain"))
+
+        filename = file  # In same directory as script
+
+        # Open PDF file in binary mode
+        with open(filename, "rb") as attachment:
+            # Add file as application/octet-stream
+            # Email client can usually download this automatically as attachment
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(attachment.read())
+
+        # Encode file in ASCII characters to send by email
+        encoders.encode_base64(part)
+
+        # Add header as key/value pair to attachment part
+        part.add_header(
+            "Content-Disposition",
+            f"attachment; filename= {filename}",
+        )
+
+        # Add attachment to message and convert message to string
+        message.attach(part)
+        text = message.as_string()
+
+        # Log in to server using secure context and send email
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(sender_email, password)
+            server.sendmail(sender_email, receiver_email, text)
+            print('Sending email ...')
 
 
 if __name__ == '__main__':
