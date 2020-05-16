@@ -23,7 +23,7 @@ global mode
 
 class App:
     def __init__(self, username='BUSIN95C', password='020906Sm', target_continent='2', target_country_col='3',
-                 target_country_row='1', target_city_col='4', target_city_row='94', path='//home/jmartorell/Booking'):
+                 target_country_row='1', target_city_col='4', target_city_row='92', path='//home/jmartorell/Booking'):
         self.username = username
         self.password = password
         self.target_continent = target_continent
@@ -57,7 +57,8 @@ class App:
             if not os.path.exists(path):
                 os.mkdir(path)
             self.file_manager()
-        # sleep(10)
+        if mode == "d":
+            sleep(10)
         self.driver.close()
 
     def log_in(self, ):
@@ -425,7 +426,7 @@ class App:
         if shift != 2:
             sheet.column_dimensions['A'].width = 3
         else:
-            sheet.column_dimensions['A'].width = 4
+            sheet.column_dimensions['A'].width = 3
         sheet.column_dimensions['B'].width = 9
         sheet.column_dimensions['C'].width = 50
         sheet.column_dimensions['D'].width = 16
