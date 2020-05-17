@@ -57,16 +57,14 @@ class App:
         sleep(1)
         self.log_in()
         if self.error is False:
-            # self.close_dialog_box()
             self.search_target_profile()
         if self.error is False:
             self.scroll_down()
         if self.error is False:
             if not os.path.exists(path):
                 os.mkdir(path)
-            # self.downloading_images()
-        sleep(3)
-        # self.driver.close()
+        sleep(10)
+        self.driver.close()
 
     def log_in(self, ):
         try:
@@ -247,7 +245,9 @@ class App:
 
             ranking = sorted(display_list, key=operator.itemgetter(1))
             for k, v, w in ranking:
-                if v < 1000.00:
+                if v < 100.00:
+                    print("   ", "{0:.2f}".format(v), k)
+                if 99.00 < v < 1000.00:
                     print("  ", "{0:.2f}".format(v), k)
                 if 999.00 < v < 10000.00:
                     print(" ", "{0:.2f}".format(v), k)
@@ -260,24 +260,26 @@ class App:
             self.display = display_list
             for i, collation in enumerate(display_list):
                 if collation[0] == self.cheap[0]:
-                    position = i
+                    self.position = i
             print('Position of the target button: ', self.position + 1)
-            self.index = str(self.position - 1)
-            # if self.error is False:
-            #     self.target_button(self.index)
+            # FIXME WARNING!!!! next line does not work with position -1 or just position! see it why...
+            # Coincidentally, the first is the cheapest, that is, index 1, the variable self.index starts with 0,
+            # therefore we must add 1. If we subtracted  -1 or we did not add anything, it was out of range,
+            # and the spider did not I found the address.
+            self.index = str(self.position + 1)
+            if self.error is False:
+                self.target_button(self.index)
 
         except NoSuchElementException:
             print('Some error occurred while trying to scroll down')
             self.error = True
 
-
-"""
     def target_button(self, index):
+        print('Targeting button ...')
         target_button = self.driver.find_element_by_xpath(
             '//div[ ' + index + ' ]/div/div[1]/div[2]/div[2]/div[1]/div[2]/span')
-        self.driver.execute_script("arguments[1].scrollIntoView();", target_button)
+        self.driver.execute_script("arguments[0].scrollIntoView();", target_button)
         # target_button.click()
-"""
 
 
 if __name__ == '__main__':
