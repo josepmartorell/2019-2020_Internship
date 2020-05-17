@@ -29,6 +29,7 @@ import shutil
 # cap["marionette"] = False
 
 class App:
+
     def __init__(self, username='BUSINESSTRAVEL', password='Trav567RT', target_city='new york',
                  path='/home/jmartorell/Booking'):  # Change this to your Target details and desired booking path
         self.username = username
@@ -47,6 +48,11 @@ class App:
         self.all_addresses = []
         self.all_prices = []
         self.euro_symbol = '€'
+        self.display = []
+        self.cheap = []
+        self.index = ""
+        self.options = {}
+        self.position = 0
         self.driver.get(self.main_url)
         sleep(1)
         self.log_in()
@@ -63,8 +69,8 @@ class App:
         # self.driver.close()
 
     def log_in(self, ):
-
         try:
+            print('\nLogging in with username and password ...')
             user_name_input = self.driver.find_element_by_xpath('//input[@placeholder="Nombre de usuario"]')
             user_name_input.send_keys(self.username)
             sleep(1)
@@ -83,6 +89,7 @@ class App:
 
     def search_target_profile(self):
         try:
+            print("Manipulating search engine ...")
             search_bar = self.driver.find_element_by_xpath('//*[@id="hotelzonePred"]')
             search_bar.send_keys(self.target_city)
             # target_profile_url = self.main_url + '/' + self.target_city + '/'
@@ -108,20 +115,18 @@ class App:
             self.driver.find_element_by_css_selector('div.ngb-dp-month:nth-child(2) > '
                                                      'ngb-datepicker-month-view:nth-child(1) > div:nth-child(3) > '
                                                      'div:nth-child(7)').click()
-            # self.driver.find_element_by_css_selector('').click()
 
             user_name_input = self.driver.find_element_by_xpath('//*[@id="nationalityPred"]')
             user_name_input.send_keys('espa')
             sleep(1)
             # todo: accessing a drop-down menu item directly with xpath
-            element = self.driver.find_element_by_xpath('/html/body/iboosy-app/div/div/ng-component/div/div[2]/div['
-                                                        '2]/iboosy-accommodations-search/div[1]/div/div/div['
-                                                        '3]/iboosy-nationalities/div/div/ngb-typeahead-window/button'
-                                                        '/div/span[2]')
+            element = self.driver.find_element_by_xpath(
+                '//div[3]/iboosy-nationalities/div/div/ngb-typeahead-window/button/div/span[2]')
             element.click()
             login_button = self.driver.find_element_by_xpath('//*[@id="searchbtn"]')
             # instead of submit it works with click
             login_button.click()
+            print('Loading page ...')
             sleep(1)
 
         except Exception:
@@ -134,14 +139,13 @@ class App:
         try:
             # fixme: screen:
             no_of_pages = self.driver.find_element_by_xpath('//pagination-template/ul/li[9]/a/span[2]').text
-            print("Quantity of pages:" + no_of_pages)
+            print("Quantity of pages: " + no_of_pages)
 
             no_of_results = self.driver.find_element_by_xpath(
                 '//iboosy-accommodations-filter/div/div[1]/div[2]/h5').text
             no_of_results = no_of_results.replace(' RESULTADOS ENCONTRADOS', '')
-            print("Quantity of results:" + no_of_results)
-            # no_of_results = str(no_of_results).replace(',', '')  # 15,483 --> 15483
-            # self.no_of_results = int(no_of_results)
+            print("Quantity of results: " + no_of_results)
+
         except:
             pass
 
@@ -154,12 +158,14 @@ class App:
             # FIXME 2:
             #  2) Descend from item to item to the bottom of the page.
             # in this example and item is the text of the button "See options":
+            print('Scrolling page ...')
             read_mores = self.driver.find_elements_by_xpath('//div[text()="Precio desde"]')
             for read_more in read_mores:
                 self.driver.execute_script("arguments[0].scrollIntoView();", read_more)
                 # read_more.click()
 
             try:
+                print("Scraping page ...")
                 soup = BeautifulSoup(self.driver.page_source, 'lxml')  # todo: bs4
                 hotel_list = soup.find_all('div', {'class': 'row result-option'})
                 # fixme: name mechanism:
@@ -174,12 +180,12 @@ class App:
                 pass
 
             try:
+                soup = BeautifulSoup(self.driver.page_source, 'lxml')  # todo: bs4
                 address_list = soup.find_all('div', {'class': 'address'})
                 # fixme: address mechanism:
                 for i, address in enumerate(address_list):
                     hotel_address = address.find('span', {'_ngcontent-c18': ""}).getText()
                     hotel_address = ' '.join(hotel_address.split())
-                    # print("%d - %s" % (i + 1, hotel_address))
                     self.all_addresses.append(hotel_address)
             except IOError as e:
                 print("I/O error occurred: ", os.strerror(e.errno))
@@ -187,50 +193,60 @@ class App:
                 pass
 
             try:
+                soup = BeautifulSoup(self.driver.page_source, 'lxml')  # todo: bs4
                 price_list = soup.find_all('div', {'class': 'text-main-light prices'})
                 # fixme: price mechanism:
-                euro_symbol = '€'
                 for i, price in enumerate(price_list):
                     hotel_price = price.find('span', {'_ngcontent-c18': ""}).getText().replace('€', '')
                     hotel_price = ' '.join(hotel_price.split())
+                    if len(hotel_price) == 5:
+                        hotel_price = "   " + hotel_price
                     if len(hotel_price) == 6:
                         hotel_price = "  " + hotel_price
                     if len(hotel_price) == 7:
                         hotel_price = " " + hotel_price
-                    # print(" %d - %s %s" % (i + 1, hotel_price, euro_symbol))
-                    # print(" %s %s" % (hotel_price, euro_symbol))
+                    if len(hotel_price) == 8:
+                        hotel_price = "" + hotel_price
                     self.all_prices.append(hotel_price)
+
             except IOError as e:
                 print("I/O error occurred: ", os.strerror(e.errno))
                 print("Error loading prices ")
                 pass
 
-            print("\n\tdisplay:\n")
+            print("\n\tDisplay:\n")
 
             # display list
             list = zip(self.all_prices, self.all_hotels, self.all_addresses)
             for i, (j, k, v) in enumerate(list):
+                if len(j) == 5:
+                    j = "   " + j
                 if len(j) == 6:
                     j = "  " + j
                 if len(j) == 7:
                     j = " " + j
+                if len(j) == 8:
+                    j = "" + j
                 if i < 9:
                     print(" %d - %s %s %s %s %s" % (i + 1, j, self.euro_symbol, k, " - ", v))
                 else:
                     print("%d - %s %s %s %s %s" % (i + 1, j, self.euro_symbol, k, " - ", v))
 
-            print("\n\tranking:\n")
+            print("\n\tRanking:\n")
 
             # float cast
-            new_prices_2 = []
+            new_prices = []
             for element in self.all_prices:
                 rank = float(element)
-                new_prices_2.append(rank)
+                new_prices.append(rank)
 
-            # final list
-            list = dict(zip(self.all_hotels, new_prices_2))
-            ranking_2 = sorted(list.items(), key=operator.itemgetter(1))
-            for k, v in ranking_2:
+            # fixme: final list
+            # unlike in restel or bedsonline the following zip does not work with list (zip ())
+            # display_list = list(zip(self.all_hotels, new_prices, self.all_addresses))
+            display_list = zip(self.all_hotels, new_prices, self.all_addresses)
+
+            ranking = sorted(display_list, key=operator.itemgetter(1))
+            for k, v, w in ranking:
                 if v < 1000.00:
                     print("  ", "{0:.2f}".format(v), k)
                 if 999.00 < v < 10000.00:
@@ -238,89 +254,30 @@ class App:
                 if v > 9999.00:
                     print("", "{0:.2f}".format(v), k)
 
+            self.cheap = ranking[0]
+            self.options = ranking
+            print('\nCheapest reservations: ', self.cheap[0], self.cheap[1], self.euro_symbol)
+            self.display = display_list
+            for i, collation in enumerate(display_list):
+                if collation[0] == self.cheap[0]:
+                    position = i
+            print('Position of the target button: ', self.position + 1)
+            self.index = str(self.position - 1)
+            # if self.error is False:
+            #     self.target_button(self.index)
+
         except NoSuchElementException:
             print('Some error occurred while trying to scroll down')
             self.error = True
 
-    """
-    def write_captions_to_excel_file(self, images, caption_path):
-        print('writing to excel')
-        workbook = Workbook(os.path.join(caption_path, 'captions.xlsx'))
-        worksheet = workbook.add_worksheet()
-        row = 0
-        worksheet.write(row, 0, 'Image name')  # 3 --> row number, column number, value
-        worksheet.write(row, 1, 'Caption')
-        row += 1
-        for index, image in enumerate(images):
-            filename = 'image_' + str(index) + '.jpg'
-            try:
-                caption = image['alt']
-            except KeyError:
-                caption = 'No caption exists'
-            worksheet.write(row, 0, filename)
-            worksheet.write(row, 1, caption)
-            row += 1
-        workbook.close()
-        
-    def download_captions(self, images):
-        captions_folder_path = os.path.join(self.path, 'captions')
-        if not os.path.exists(captions_folder_path):
-            os.mkdir(captions_folder_path)
-        self.write_captions_to_excel_file(images, captions_folder_path)
-        '''for index, image in enumerate(images):
-            try:
-                caption = image['alt']
-            except KeyError:
-                caption = 'No caption exists for this image'
-            file_name = 'caption_' + str(index) + '.txt'
-            file_path = os.path.join(captions_folder_path, file_name)
-            link = image['src']
-            with open(file_path, 'wb') as file:
-                file.write(str('link:' + str(link) + '\n' + 'caption:' + caption).encode())'''
 
-    def downloading_images(self):
-        self.all_images = list(set(self.all_images))
-        self.download_captions(self.all_images)
-        print('Length of all images', len(self.all_images))
-        for index, image in enumerate(self.all_images):
-            filename = 'image_' + str(index) + '.jpg'
-            image_path = os.path.join(self.path, filename)
-            link = image['src']
-            print('Downloading image', index)
-            response = requests.get(link, stream=True)
-            try:
-                with open(image_path, 'wb') as file:
-                    shutil.copyfileobj(response.raw, file)  # source -  destination
-            except Exception as e:
-                print(e)
-                print('Could not download image number ', index)
-                print('Image link -->', link)
-
-    def close_dialog_box(self):
-        # reload page
-        sleep(2)
-        self.driver.get(self.driver.current_url)
-        sleep(3)
-        try:
-            sleep(3)
-            not_now_btn = self.driver.find_element_by_xpath('//*[text()="Not Now"]')
-            sleep(3)
-            not_now_btn.click()
-            sleep(1)
-        except Exception:
-            pass
-
-
-
-
-    def close_settings_window_if_there(self):
-        try:
-            self.driver.switch_to.window(self.driver.window_handles[1])
-            self.driver.close()
-            self.driver.switch_to.window(self.driver.window_handles[0])
-        except Exception as e:
-            pass
-    """
+"""
+    def target_button(self, index):
+        target_button = self.driver.find_element_by_xpath(
+            '//div[ ' + index + ' ]/div/div[1]/div[2]/div[2]/div[1]/div[2]/span')
+        self.driver.execute_script("arguments[1].scrollIntoView();", target_button)
+        # target_button.click()
+"""
 
 
 if __name__ == '__main__':
