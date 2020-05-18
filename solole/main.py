@@ -2,7 +2,7 @@ import operator
 from time import sleep
 from bs4 import BeautifulSoup
 from selenium import webdriver
-# todo: Check driver version periodically
+# todo: -> Check driver version periodically
 # check = input("\nPress enter to check Selenium driver version...")
 # os.system('python -c "import selenium; print(selenium.__version__)"')
 # As you are using Selenium 3.8.0 you have to use GeckoDriver mandatory. But again as you are using Firefox v46.0 you
@@ -14,7 +14,8 @@ from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
-from openpyxl.styles import PatternFill, Font
+from openpyxl.styles import PatternFill, Border, Side, Font
+from openpyxl.styles import Alignment, Protection
 from openpyxl import load_workbook
 from openpyxl import Workbook
 import requests
@@ -301,14 +302,18 @@ class App:
             sheet.column_dimensions['A'].width = 9
             sheet.column_dimensions['B'].width = 9
             sheet.column_dimensions['C'].width = 9
-            sheet.column_dimensions['D'].width = 3
+            sheet.column_dimensions['D'].width = 4
             sheet.column_dimensions['E'].width = 50
             sheet.column_dimensions['F'].width = 16
-            # set bar title color:
+            # set bar title style:
             for col_range in range(1, 10):
                 cell_title = sheet.cell(1, col_range)
                 cell_title.fill = PatternFill(
                     start_color="00c0c0c0", end_color="00c0c0c0", fill_type="solid")
+                cell_title = sheet.cell(1, col_range)
+                cell_title.font = Font(bold=True, size=11)
+                bd = Side(style='thick', color="000000")
+                cell_title.border = Border(left=bd, top=bd, right=bd, bottom=bd)
 
         else:
             header = ('Code', 'Price', 'Retail', 'Profit', 'CC', 'City', 'No', 'Hotel', 'Zone')
@@ -326,20 +331,24 @@ class App:
             sheet.column_dimensions['E'].number_format = '#,##0.00'
             sheet.column_dimensions['F'].number_format = '#,##0.00'
             # set column width:
-            sheet.column_dimensions['A'].width = 5
+            sheet.column_dimensions['A'].width = 6
             sheet.column_dimensions['B'].width = 9
             sheet.column_dimensions['C'].width = 9
             sheet.column_dimensions['D'].width = 9
-            sheet.column_dimensions['E'].width = 3
+            sheet.column_dimensions['E'].width = 4
             sheet.column_dimensions['F'].width = 16
-            sheet.column_dimensions['G'].width = 3
+            sheet.column_dimensions['G'].width = 4
             sheet.column_dimensions['H'].width = 50
             sheet.column_dimensions['I'].width = 16
-            # set bar title color:
+            # set bar title style:
             for col_range in range(1, 10):
                 cell_title = sheet.cell(1, col_range)
                 cell_title.fill = PatternFill(
                     start_color="00c0c0c0", end_color="00c0c0c0", fill_type="solid")
+                cell_title = sheet.cell(1, col_range)
+                cell_title.font = Font(bold=True, size=11)
+                bd = Side(style='thick', color="000000")
+                cell_title.border = Border(left=bd, top=bd, right=bd, bottom=bd)
 
     def write_bookings_to_excel_file(self, booking_path):
         filepath = os.path.join(booking_path, 'bookings.xlsx')
@@ -352,7 +361,7 @@ class App:
             workbook = load_workbook(filepath)
 
         sheet = workbook.active
-        self.set_stylesheet(sheet, 0)
+        self.set_stylesheet(sheet, 1)
         workbook.save(filepath)  # save file
 
 
