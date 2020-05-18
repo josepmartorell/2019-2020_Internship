@@ -1,32 +1,27 @@
 import operator
-
+from time import sleep
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from time import sleep
-
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from xlsxwriter import Workbook
-import os
-import requests
-import shutil
-
-
-# driver version
+# todo: Check driver version periodically
 # check = input("\nPress enter to check Selenium driver version...")
 # os.system('python -c "import selenium; print(selenium.__version__)"')
-
-
 # As you are using Selenium 3.8.0 you have to use GeckoDriver mandatory. But again as you are using Firefox v46.0 you
-# have to set the capability marionette to False through DesiredCapabilities() as follows :
-# REF:
-# https://stackoverflow.com/questions/47782650/selenium-common-exceptions-sessionnotcreatedexception-message-unable
-# -to-find-a/47785513
-
+# have to set the capability marionette to False through DesiredCapabilities() as follows REF:
+# https://stackoverflow.com/questions/47782650/selenium-common-exceptions-sessionnotcreatedexception-message-unable-to-find-a/47785513
 # from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 # cap = DesiredCapabilities().FIREFOX
 # cap["marionette"] = False
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.common.by import By
+from openpyxl import load_workbook
+from openpyxl import Workbook
+import requests
+import shutil
+import os
+
+
+
 
 class App:
 
@@ -241,11 +236,8 @@ class App:
                 rank = float(element)
                 new_prices.append(rank)
 
-            # fixme: final list
-            # unlike in restel or bedsonline the following zip does not work with list (zip ())
-            # display_list = list(zip(self.all_hotels, new_prices, self.all_addresses))
+            # final list
             display_list = zip(self.all_positions, self.all_hotels, new_prices, self.all_addresses)
-
             ranking = sorted(display_list, key=operator.itemgetter(2))
             for j, k, v, w in ranking:
                 if v < 100.00:
@@ -257,10 +249,10 @@ class App:
                 if v > 9999.00:
                     print("", "{0:.2f}".format(v), k)
 
-            self.cheap = ranking[0]
-            self.data = ranking
-            print('\nCheapest reservations: ', self.cheap[1], self.cheap[2], self.euro_symbol)
             self.display = display_list
+            self.data = ranking
+            self.cheap = ranking[0]
+            print('\nCheapest reservations: ', self.cheap[1], self.cheap[2], self.euro_symbol)
             for i, collation in enumerate(display_list):
                 if collation[1] == self.cheap[1]:
                     self.position = i
@@ -287,10 +279,46 @@ class App:
         bookings_folder_path = os.path.join(self.path, 'bookings')
         if not os.path.exists(bookings_folder_path):
             os.mkdir(bookings_folder_path)
-        # if self.error is False:
-        #     self.write_bookings_to_excel_file(bookings_folder_path)
+        if self.error is False:
+            self.write_bookings_to_excel_file(bookings_folder_path)
         # if self.error is False:
         #     self.read_bookings_from_excel_file(self.path + '/bookings/bookings.xlsx')
+
+    def set_stylesheet(self, sheet, shift):
+
+        if shift == 0:
+            header = ('No', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
+            sheet.cell(row=1, column=1).value = header[0]
+            sheet.cell(row=1, column=2).value = header[1]
+            sheet.cell(row=1, column=3).value = header[2]
+            sheet.cell(row=1, column=4).value = header[3]
+            sheet.cell(row=1, column=5).value = header[4]
+            sheet.cell(row=1, column=6).value = header[5]
+        else:
+            header = ('Code', 'CC', 'No', 'Price', 'Retail', 'Profit', 'Hotel', 'City', 'Zone')
+            sheet.cell(row=1, column=1).value = header[0]
+            sheet.cell(row=1, column=2).value = header[1]
+            sheet.cell(row=1, column=3).value = header[2]
+            sheet.cell(row=1, column=4).value = header[3]
+            sheet.cell(row=1, column=5).value = header[4]
+            sheet.cell(row=1, column=6).value = header[5]
+            sheet.cell(row=1, column=7).value = header[6]
+            sheet.cell(row=1, column=8).value = header[7]
+            sheet.cell(row=1, column=9).value = header[8]
+
+    def write_bookings_to_excel_file(self, booking_path):
+        filepath = os.path.join(booking_path, 'bookings.xlsx')
+        print('Writing to excel ...')
+
+        if not os.path.exists(filepath):
+            workbook = Workbook()
+            workbook.save(filepath)
+        else:
+            workbook = load_workbook(filepath)
+
+        sheet = workbook.active
+        self.set_stylesheet(sheet, 1)
+        workbook.save(filepath)  # save file
 
 
 if __name__ == '__main__':
