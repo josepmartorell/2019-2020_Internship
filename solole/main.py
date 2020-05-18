@@ -44,6 +44,7 @@ class App:
         self.error = False
         self.timeout = 30
         self.main_url = 'https://b2b.solole.es'
+        self.all_positions = []
         self.all_hotels = []
         self.all_addresses = []
         self.all_prices = []
@@ -51,7 +52,7 @@ class App:
         self.display = []
         self.cheap = []
         self.index = ""
-        self.options = {}
+        self.data = {}
         self.position = 0
         self.driver.get(self.main_url)
         sleep(1)
@@ -63,6 +64,7 @@ class App:
         if self.error is False:
             if not os.path.exists(path):
                 os.mkdir(path)
+            self.file_manager()
         sleep(10)
         self.driver.close()
 
@@ -168,6 +170,7 @@ class App:
                 hotel_list = soup.find_all('div', {'class': 'row result-option'})
                 # fixme: name mechanism:
                 for i, hotel in enumerate(hotel_list):
+                    self.all_positions.append(i + 1)
                     hotel_name = hotel.find('span', {'_ngcontent-c18': ""}).getText()
                     hotel_name = ' '.join(hotel_name.split())
                     # print("%d - %s" % (i + 1, hotel_name))
@@ -241,10 +244,10 @@ class App:
             # fixme: final list
             # unlike in restel or bedsonline the following zip does not work with list (zip ())
             # display_list = list(zip(self.all_hotels, new_prices, self.all_addresses))
-            display_list = zip(self.all_hotels, new_prices, self.all_addresses)
+            display_list = zip(self.all_positions, self.all_hotels, new_prices, self.all_addresses)
 
-            ranking = sorted(display_list, key=operator.itemgetter(1))
-            for k, v, w in ranking:
+            ranking = sorted(display_list, key=operator.itemgetter(2))
+            for j, k, v, w in ranking:
                 if v < 100.00:
                     print("   ", "{0:.2f}".format(v), k)
                 if 99.00 < v < 1000.00:
@@ -255,13 +258,13 @@ class App:
                     print("", "{0:.2f}".format(v), k)
 
             self.cheap = ranking[0]
-            self.options = ranking
-            print('\nCheapest reservations: ', self.cheap[0], self.cheap[1], self.euro_symbol)
+            self.data = ranking
+            print('\nCheapest reservations: ', self.cheap[1], self.cheap[2], self.euro_symbol)
             self.display = display_list
             for i, collation in enumerate(display_list):
-                if collation[0] == self.cheap[0]:
+                if collation[1] == self.cheap[1]:
                     self.position = i
-            print('Position of the target button: ', self.position + 1)
+            print('Pointing to the target button ', self.position + 1, ' ...')
             # FIXME WARNING!!!! next line does not work with position -1 or just position! see it why...
             # Coincidentally, the first is the cheapest, that is, index 1, the variable self.index starts with 0,
             # therefore we must add 1. If we subtracted  -1 or we did not add anything, it was out of range,
@@ -275,11 +278,19 @@ class App:
             self.error = True
 
     def target_button(self, index):
-        print('Targeting button ...')
         target_button = self.driver.find_element_by_xpath(
             '//div[ ' + index + ' ]/div/div[1]/div[2]/div[2]/div[1]/div[2]/span')
         self.driver.execute_script("arguments[0].scrollIntoView();", target_button)
         # target_button.click()
+
+    def file_manager(self, ):
+        bookings_folder_path = os.path.join(self.path, 'bookings')
+        if not os.path.exists(bookings_folder_path):
+            os.mkdir(bookings_folder_path)
+        # if self.error is False:
+        #     self.write_bookings_to_excel_file(bookings_folder_path)
+        # if self.error is False:
+        #     self.read_bookings_from_excel_file(self.path + '/bookings/bookings.xlsx')
 
 
 if __name__ == '__main__':
