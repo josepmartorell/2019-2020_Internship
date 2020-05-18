@@ -14,13 +14,12 @@ from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
+from openpyxl.styles import PatternFill, Font
 from openpyxl import load_workbook
 from openpyxl import Workbook
 import requests
 import shutil
 import os
-
-
 
 
 class App:
@@ -210,7 +209,7 @@ class App:
                 print("Error loading prices ")
                 pass
 
-            print("\n\tDisplay:\n")
+            print("\n\tSnapshoot:\n")
 
             # display list
             list = zip(self.all_prices, self.all_hotels, self.all_addresses)
@@ -287,15 +286,32 @@ class App:
     def set_stylesheet(self, sheet, shift):
 
         if shift == 0:
-            header = ('No', 'Price', 'Hotel', 'Zone', 'Retail', 'Profit')
+            header = ('Price', 'Retail', 'Profit', 'No', 'Hotel', 'Zone')
             sheet.cell(row=1, column=1).value = header[0]
             sheet.cell(row=1, column=2).value = header[1]
             sheet.cell(row=1, column=3).value = header[2]
             sheet.cell(row=1, column=4).value = header[3]
             sheet.cell(row=1, column=5).value = header[4]
             sheet.cell(row=1, column=6).value = header[5]
+            # set number format:
+            sheet.column_dimensions['A'].number_format = '#,##0.00'
+            sheet.column_dimensions['B'].number_format = '#,##0.00'
+            sheet.column_dimensions['C'].number_format = '#,##0.00'
+            # set column width:
+            sheet.column_dimensions['A'].width = 9
+            sheet.column_dimensions['B'].width = 9
+            sheet.column_dimensions['C'].width = 9
+            sheet.column_dimensions['D'].width = 3
+            sheet.column_dimensions['E'].width = 50
+            sheet.column_dimensions['F'].width = 16
+            # set bar title color:
+            for col_range in range(1, 10):
+                cell_title = sheet.cell(1, col_range)
+                cell_title.fill = PatternFill(
+                    start_color="00c0c0c0", end_color="00c0c0c0", fill_type="solid")
+
         else:
-            header = ('Code', 'CC', 'No', 'Price', 'Retail', 'Profit', 'Hotel', 'City', 'Zone')
+            header = ('Code', 'Price', 'Retail', 'Profit', 'CC', 'City', 'No', 'Hotel', 'Zone')
             sheet.cell(row=1, column=1).value = header[0]
             sheet.cell(row=1, column=2).value = header[1]
             sheet.cell(row=1, column=3).value = header[2]
@@ -305,6 +321,25 @@ class App:
             sheet.cell(row=1, column=7).value = header[6]
             sheet.cell(row=1, column=8).value = header[7]
             sheet.cell(row=1, column=9).value = header[8]
+            # set number format:
+            sheet.column_dimensions['D'].number_format = '#,##0.00'
+            sheet.column_dimensions['E'].number_format = '#,##0.00'
+            sheet.column_dimensions['F'].number_format = '#,##0.00'
+            # set column width:
+            sheet.column_dimensions['A'].width = 5
+            sheet.column_dimensions['B'].width = 9
+            sheet.column_dimensions['C'].width = 9
+            sheet.column_dimensions['D'].width = 9
+            sheet.column_dimensions['E'].width = 3
+            sheet.column_dimensions['F'].width = 16
+            sheet.column_dimensions['G'].width = 3
+            sheet.column_dimensions['H'].width = 50
+            sheet.column_dimensions['I'].width = 16
+            # set bar title color:
+            for col_range in range(1, 10):
+                cell_title = sheet.cell(1, col_range)
+                cell_title.fill = PatternFill(
+                    start_color="00c0c0c0", end_color="00c0c0c0", fill_type="solid")
 
     def write_bookings_to_excel_file(self, booking_path):
         filepath = os.path.join(booking_path, 'bookings.xlsx')
@@ -317,7 +352,7 @@ class App:
             workbook = load_workbook(filepath)
 
         sheet = workbook.active
-        self.set_stylesheet(sheet, 1)
+        self.set_stylesheet(sheet, 0)
         workbook.save(filepath)  # save file
 
 
