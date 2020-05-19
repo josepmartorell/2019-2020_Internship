@@ -48,6 +48,7 @@ class App:
         self.cheap = []
         self.index = ""
         self.data = {}
+        self.shift = 0
         self.position = 0
         self.driver.get(self.main_url)
         sleep(1)
@@ -130,19 +131,6 @@ class App:
 
     def scroll_down(self):
         self.driver.implicitly_wait(20)
-
-        try:
-            # fixme: screen:
-            no_of_pages = self.driver.find_element_by_xpath('//pagination-template/ul/li[9]/a/span[2]').text
-            print("Quantity of pages: " + no_of_pages)
-
-            no_of_results = self.driver.find_element_by_xpath(
-                '//iboosy-accommodations-filter/div/div[1]/div[2]/h5').text
-            no_of_results = no_of_results.replace(' RESULTADOS ENCONTRADOS', '')
-            print("Quantity of results: " + no_of_results)
-
-        except:
-            pass
 
         try:
             # self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')  # fixme: scroll
@@ -241,13 +229,13 @@ class App:
             ranking = sorted(display_list, key=operator.itemgetter(2))
             for j, k, v, w in ranking:
                 if v < 100.00:
-                    print("   ", "{0:.2f}".format(v), k)
+                    print("   ", "{0:.2f}".format(v), "-", j, k)
                 if 99.00 < v < 1000.00:
-                    print("  ", "{0:.2f}".format(v), k)
+                    print("  ", "{0:.2f}".format(v), "-", j, k)
                 if 999.00 < v < 10000.00:
-                    print(" ", "{0:.2f}".format(v), k)
+                    print(" ", "{0:.2f}".format(v), "-", j, k)
                 if v > 9999.00:
-                    print("", "{0:.2f}".format(v), k)
+                    print("", "{0:.2f}".format(v), "-", j, k)
 
             self.display = display_list
             self.data = ranking
@@ -280,7 +268,7 @@ class App:
         if not os.path.exists(bookings_folder_path):
             os.mkdir(bookings_folder_path)
         if self.error is False:
-            self.write_bookings_to_excel_file(bookings_folder_path)
+            self.write_bookings_to_excel_file(bookings_folder_path, self.shift)
         # if self.error is False:
         #     self.read_bookings_from_excel_file(self.path + '/bookings/bookings.xlsx')
 
@@ -304,10 +292,10 @@ class App:
             sheet.column_dimensions['B'].width = 9
             sheet.column_dimensions['C'].width = 9
             sheet.column_dimensions['D'].width = 4
-            sheet.column_dimensions['E'].width = 50
-            sheet.column_dimensions['F'].width = 16
+            sheet.column_dimensions['E'].width = 60
+            sheet.column_dimensions['F'].width = 50
             # set bar title style:
-            for col_range in range(1, 10):
+            for col_range in range(1, 7):
                 cell_title = sheet.cell(1, col_range)
                 cell_title.fill = PatternFill(
                     start_color="00c0c0c0", end_color="00c0c0c0", fill_type="solid")
@@ -362,7 +350,7 @@ class App:
                 bd = Side(style='thick', color="000000")
                 cell_title.border = Border(left=bd, top=bd, right=bd, bottom=bd)
 
-    def write_bookings_to_excel_file(self, booking_path):
+    def write_bookings_to_excel_file(self, booking_path, shift):
         filepath = os.path.join(booking_path, 'bookings.xlsx')
         print('Writing to excel ...')
 
@@ -373,7 +361,50 @@ class App:
             workbook = load_workbook(filepath)
 
         sheet = workbook.active
-        self.set_stylesheet(sheet, 1)
+        self.set_stylesheet(sheet, self.shift)
+        if shift != 1:
+            # write snap sheet
+            c = '1.374'
+            i = 2
+            for row in self.data:
+                cell_reference = sheet.cell(row=i, column=1)
+                cell_reference.value = row[2]
+                sheet['B{}'.format(i)] = '=PRODUCT(A{},{}'.format(i, c)
+                sheet['C{}'.format(i)] = '=SUM(B{},-A{}'.format(i, i)
+                cell_reference = sheet.cell(row=i, column=4)
+                cell_reference.value = row[0]
+                cell_reference = sheet.cell(row=i, column=5)
+                cell_reference.value = row[1]
+                cell_reference = sheet.cell(row=i, column=6)
+                cell_reference.value = row[3]
+                i += 1
+        else:
+            # write turbo sheet
+            c = '1.374'
+            i = 2
+            for row in self.data:
+                cell_reference = worksheet_1.cell(row=i, column=1)
+                cell_reference.value = row[0]
+                cell_reference = worksheet_1.cell(row=i, column=2)
+                cell_reference.value = row[2]
+                cell_reference = worksheet_1.cell(row=i, column=3)
+                cell_reference.value = row[1]
+                cell_reference = worksheet_1.cell(row=i, column=4)
+                cell_reference.value = row[3]
+                # REF:
+                # https://stackoverflow.com/questions/51044736/openpyxl-iterate-through-rows-and-apply-formula
+                # fixme CODE:
+                #  for row_num in range(2, max_row_num):
+                #     sheet['E{}'.format(row_num)] = '=CLEAN(D{})'.format(row_num)
+                worksheet_1['E{}'.format(i)] = '=PRODUCT(B{},{}'.format(i, c)
+                worksheet_1['F{}'.format(i)] = '=SUM(E{},-B{}'.format(i, i)
+                i += 1
+
+                # select target row
+                target = 1
+                while worksheet_2.cell(row=target, column=1).value is not None:
+                    target += 1
+
         workbook.save(filepath)  # save file
 
 
