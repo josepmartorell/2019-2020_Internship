@@ -286,10 +286,6 @@ class App:
             sheet.cell(row=1, column=4).value = header[3]
             sheet.cell(row=1, column=5).value = header[4]
             sheet.cell(row=1, column=6).value = header[5]
-            # set number format:
-            sheet.column_dimensions['A'].number_format = '#,##0.00'
-            sheet.column_dimensions['B'].number_format = '#,##0.00'
-            sheet.column_dimensions['C'].number_format = '#,##0.00'
             # set column width:
             sheet.column_dimensions['A'].width = 9
             sheet.column_dimensions['B'].width = 9
@@ -297,6 +293,10 @@ class App:
             sheet.column_dimensions['D'].width = 4
             sheet.column_dimensions['E'].width = 60
             sheet.column_dimensions['F'].width = 50
+            # fixme: set number format: (only works in white sheets)
+            sheet.column_dimensions['A'].number_format = '#,##0.00'
+            sheet.column_dimensions['B'].number_format = '#,##0.00'
+            sheet.column_dimensions['C'].number_format = '#,##0.00'
             # set bar title style:
             for col_range in range(1, 7):
                 cell_title = sheet.cell(1, col_range)
@@ -306,6 +306,26 @@ class App:
                 cell_title.font = Font(bold=True, size=11)
                 bd = Side(style='thick', color="000000")
                 cell_title.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+            # unwrap curtain
+            for raw_range in range(len(self.all_positions)):
+                for col_range in range(1, 7):
+                    # fixme REF: https://stackoverrun.com/es/q/3321778
+                    #  run number format with styles!
+                    # _cell = ws.cell('A1')
+                    # _cell.number_format = '0.00E+00'
+                    _cell = sheet.cell(raw_range + 2, 1)
+                    _cell.number_format = '#,##0.00'
+                    _cell = sheet.cell(raw_range + 2, 2)
+                    _cell.number_format = '#,##0.00'
+                    _cell = sheet.cell(raw_range + 2, 3)
+                    _cell.number_format = '#,##0.00'
+                    cell_title = sheet.cell(raw_range + 2, col_range)
+                    cell_title.fill = PatternFill(
+                        start_color="00eaeaea", end_color="00eaeaea", fill_type="solid")
+                    cell_title = sheet.cell(raw_range + 2, col_range)
+                    cell_title.font = Font(bold=True, size=11)
+                    bd = Side(style='thin', color="000000")
+                    cell_title.border = Border(left=bd, top=bd, right=bd, bottom=bd)
         # turbo style sheet:
         else:
             # time frame:
