@@ -35,9 +35,7 @@ git clone https://github.com/josepmartorell/Scrapy.git :smiley:
 
 # Credits
 
-*Scrapy architecture image source*
-REF: 
-https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=0ahUKEwjatpCi1aPlAhUTilwKHZWMCbcQMwiGASgiMCI&url=https%3A%2F%2Fwww.pinterest.co.uk%2Famp%2Fpin%2F112590059407856919%2F&psig=AOvVaw3CwLR9YyCns442oUggMRSP&ust=1571414484262626&ictx=3&uact=3
+*Scrapy architecture image source* REF: [scrapy architecture from *www.pinterest.co* site](https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=0ahUKEwjatpCi1aPlAhUTilwKHZWMCbcQMwiGASgiMCI&url=https%3A%2F%2Fwww.pinterest.co.uk%2Famp%2Fpin%2F112590059407856919%2F&psig=AOvVaw3CwLR9YyCns442oUggMRSP&ust=1571414484262626&ictx=3&uact=3)
 
 # License
 
