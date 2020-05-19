@@ -285,8 +285,9 @@ class App:
         #     self.read_bookings_from_excel_file(self.path + '/bookings/bookings.xlsx')
 
     def set_stylesheet(self, sheet, shift):
-
+        # snap style sheet:
         if shift == 0:
+            # set title header:
             header = ('Price', 'Retail', 'Profit', 'No', 'Hotel', 'Zone')
             sheet.cell(row=1, column=1).value = header[0]
             sheet.cell(row=1, column=2).value = header[1]
@@ -314,18 +315,29 @@ class App:
                 cell_title.font = Font(bold=True, size=11)
                 bd = Side(style='thick', color="000000")
                 cell_title.border = Border(left=bd, top=bd, right=bd, bottom=bd)
-
+        # turbo style sheet:
         else:
+            # time frame:
+            sheet.merge_cells('A1:I1')
+            time_frame = sheet['A1']
+            time_frame.fill = PatternFill(
+                start_color="00FF0000", end_color="00FF0000", fill_type="solid")
+            time_frame.font = Font(bold=True, size=11)
+            bd = Side(style='thick', color="000000")
+            time_frame.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+            time_label = 'Snapshoot:'
+            sheet.cell(row=1, column=1).value = time_label
+            # set title header:
             header = ('Code', 'Price', 'Retail', 'Profit', 'CC', 'City', 'No', 'Hotel', 'Zone')
-            sheet.cell(row=1, column=1).value = header[0]
-            sheet.cell(row=1, column=2).value = header[1]
-            sheet.cell(row=1, column=3).value = header[2]
-            sheet.cell(row=1, column=4).value = header[3]
-            sheet.cell(row=1, column=5).value = header[4]
-            sheet.cell(row=1, column=6).value = header[5]
-            sheet.cell(row=1, column=7).value = header[6]
-            sheet.cell(row=1, column=8).value = header[7]
-            sheet.cell(row=1, column=9).value = header[8]
+            sheet.cell(row=2, column=1).value = header[0]
+            sheet.cell(row=2, column=2).value = header[1]
+            sheet.cell(row=2, column=3).value = header[2]
+            sheet.cell(row=2, column=4).value = header[3]
+            sheet.cell(row=2, column=5).value = header[4]
+            sheet.cell(row=2, column=6).value = header[5]
+            sheet.cell(row=2, column=7).value = header[6]
+            sheet.cell(row=2, column=8).value = header[7]
+            sheet.cell(row=2, column=9).value = header[8]
             # set number format:
             sheet.column_dimensions['D'].number_format = '#,##0.00'
             sheet.column_dimensions['E'].number_format = '#,##0.00'
@@ -342,10 +354,10 @@ class App:
             sheet.column_dimensions['I'].width = 16
             # set bar title style:
             for col_range in range(1, 10):
-                cell_title = sheet.cell(1, col_range)
+                cell_title = sheet.cell(2, col_range)
                 cell_title.fill = PatternFill(
                     start_color="00c0c0c0", end_color="00c0c0c0", fill_type="solid")
-                cell_title = sheet.cell(1, col_range)
+                cell_title = sheet.cell(2, col_range)
                 cell_title.font = Font(bold=True, size=11)
                 bd = Side(style='thick', color="000000")
                 cell_title.border = Border(left=bd, top=bd, right=bd, bottom=bd)
