@@ -121,8 +121,8 @@ class App:
             element.click()
             login_button = self.driver.find_element_by_xpath('//*[@id="searchbtn"]')
             # instead of submit it works with click
-            login_button.click()
             print('Loading page ...')
+            login_button.click()
             sleep(1)
 
         except Exception:
@@ -141,14 +141,16 @@ class App:
             # FIXME 2:
             #  2) Descend from item to item to the bottom of the page.
             # in this example and item is the text of the button "See options":
-            print('Scrolling page ...')
             read_mores = self.driver.find_elements_by_xpath('//div[text()="Precio desde"]')
+            screen = 0
             for read_more in read_mores:
+                if screen == 4:
+                    print('Scrolling page ...')
                 self.driver.execute_script("arguments[0].scrollIntoView();", read_more)
+                screen += 1
                 # read_more.click()
 
             try:
-                print("Scraping page ...")
                 soup = BeautifulSoup(self.driver.page_source, 'lxml')  # todo: bs4
                 hotel_list = soup.find_all('div', {'class': 'row result-option'})
                 # fixme: name mechanism:
@@ -171,6 +173,7 @@ class App:
                     hotel_address = address.find('span', {'_ngcontent-c18': ""}).getText()
                     hotel_address = ' '.join(hotel_address.split())
                     self.all_addresses.append(hotel_address)
+                print("Scraping page ...")
             except IOError as e:
                 print("I/O error occurred: ", os.strerror(e.errno))
                 print("Error loading addresses ")
@@ -229,13 +232,13 @@ class App:
             ranking = sorted(display_list, key=operator.itemgetter(2))
             for j, k, v, w in ranking:
                 if v < 100.00:
-                    print("   ", "{0:.2f}".format(v), "-", j, k)
+                    print("   ", "{0:.2f}".format(v), k)
                 if 99.00 < v < 1000.00:
-                    print("  ", "{0:.2f}".format(v), "-", j, k)
+                    print("  ", "{0:.2f}".format(v), k)
                 if 999.00 < v < 10000.00:
-                    print(" ", "{0:.2f}".format(v), "-", j, k)
+                    print(" ", "{0:.2f}".format(v), k)
                 if v > 9999.00:
-                    print("", "{0:.2f}".format(v), "-", j, k)
+                    print("", "{0:.2f}".format(v), k)
 
             self.display = display_list
             self.data = ranking
