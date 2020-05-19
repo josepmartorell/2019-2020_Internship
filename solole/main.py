@@ -48,7 +48,7 @@ class App:
         self.cheap = []
         self.index = ""
         self.data = {}
-        self.shift = 0
+        self.shift = 1
         self.position = 0
         self.driver.get(self.main_url)
         sleep(1)
@@ -61,7 +61,8 @@ class App:
             if not os.path.exists(path):
                 os.mkdir(path)
             self.file_manager()
-        sleep(10)
+        if self.shift != 1:
+            sleep(10)
         self.driver.close()
 
     def log_in(self, ):
@@ -350,9 +351,10 @@ class App:
             sheet.cell(row=2, column=8).value = header[7]
             sheet.cell(row=2, column=9).value = header[8]
             # set number format:
+            # fixme: set number format: (only for in white sheets)
+            sheet.column_dimensions['B'].number_format = '#,##0.00'
+            sheet.column_dimensions['C'].number_format = '#,##0.00'
             sheet.column_dimensions['D'].number_format = '#,##0.00'
-            sheet.column_dimensions['E'].number_format = '#,##0.00'
-            sheet.column_dimensions['F'].number_format = '#,##0.00'
             # set column width:
             sheet.column_dimensions['A'].width = 6
             sheet.column_dimensions['B'].width = 9
@@ -361,8 +363,8 @@ class App:
             sheet.column_dimensions['E'].width = 4
             sheet.column_dimensions['F'].width = 16
             sheet.column_dimensions['G'].width = 4
-            sheet.column_dimensions['H'].width = 50
-            sheet.column_dimensions['I'].width = 16
+            sheet.column_dimensions['H'].width = 60
+            sheet.column_dimensions['I'].width = 50
             # set bar title style:
             for col_range in range(1, 10):
                 cell_title = sheet.cell(2, col_range)
@@ -372,6 +374,22 @@ class App:
                 cell_title.font = Font(bold=True, size=11)
                 bd = Side(style='thick', color="000000")
                 cell_title.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+            # unwrap curtain
+            for raw_range in range(len(self.all_positions)):
+                for col_range in range(1, 10):
+                    _cell = sheet.cell(raw_range + 3, 2)
+                    _cell.number_format = '#,##0.00'
+                    _cell = sheet.cell(raw_range + 3, 3)
+                    _cell.number_format = '#,##0.00'
+                    _cell = sheet.cell(raw_range + 3, 4)
+                    _cell.number_format = '#,##0.00'
+                    cell_title = sheet.cell(raw_range + 3, col_range)
+                    cell_title.fill = PatternFill(
+                        start_color="00eaeaea", end_color="00eaeaea", fill_type="solid")
+                    cell_title = sheet.cell(raw_range + 3, col_range)
+                    cell_title.font = Font(bold=True, size=11)
+                    bd = Side(style='thin', color="000000")
+                    cell_title.border = Border(left=bd, top=bd, right=bd, bottom=bd)
 
     def write_bookings_to_excel_file(self, booking_path, shift):
         filepath = os.path.join(booking_path, 'bookings.xlsx')
@@ -404,29 +422,29 @@ class App:
         else:
             # write turbo sheet
             c = '1.374'
-            i = 2
+            i = 3
             for row in self.data:
-                cell_reference = worksheet_1.cell(row=i, column=1)
-                cell_reference.value = row[0]
-                cell_reference = worksheet_1.cell(row=i, column=2)
+                cell_reference = sheet.cell(row=i, column=2)
                 cell_reference.value = row[2]
-                cell_reference = worksheet_1.cell(row=i, column=3)
-                cell_reference.value = row[1]
-                cell_reference = worksheet_1.cell(row=i, column=4)
-                cell_reference.value = row[3]
                 # REF:
                 # https://stackoverflow.com/questions/51044736/openpyxl-iterate-through-rows-and-apply-formula
                 # fixme CODE:
                 #  for row_num in range(2, max_row_num):
                 #     sheet['E{}'.format(row_num)] = '=CLEAN(D{})'.format(row_num)
-                worksheet_1['E{}'.format(i)] = '=PRODUCT(B{},{}'.format(i, c)
-                worksheet_1['F{}'.format(i)] = '=SUM(E{},-B{}'.format(i, i)
+                sheet['C{}'.format(i)] = '=PRODUCT(B{},{}'.format(i, c)
+                sheet['D{}'.format(i)] = '=SUM(C{},-B{}'.format(i, i)
+                cell_reference = sheet.cell(row=i, column=7)
+                cell_reference.value = row[0]
+                cell_reference = sheet.cell(row=i, column=8)
+                cell_reference.value = row[1]
+                cell_reference = sheet.cell(row=i, column=9)
+                cell_reference.value = row[3]
                 i += 1
 
                 # select target row
-                target = 1
-                while worksheet_2.cell(row=target, column=1).value is not None:
-                    target += 1
+                # target = 1
+                # while sheet.cell(row=target, column=1).value is not None:
+                #     target += 1
 
         workbook.save(filepath)  # save file
 
