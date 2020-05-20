@@ -92,9 +92,12 @@ localtime = time.localtime(time.time())
 print("Current local time: ", localtime)
 
 print("\n\tsnap:\n")  # Todo: input time_frame calendar search engine management:
+
+# input 4 digits
 enter = input('Input time frame: \n')
+
+# process data
 split = list(enter)
-print(split)
 check_type = split[0]
 check = int(check_type)
 if check == 0:
@@ -107,25 +110,53 @@ if check == 0:
     check_out = split[3]
 else:
     check_out = split[2] + split[3]
+
+# print data
 print("check in: ", check_in, " - check out: ", check_out)
-print("type check in: ", type(check_in))
+
+# cast data
 start = int(check_in)
 end = int(check_out)
-print("end - start: ", end - start)
-if end < start:
-    depart_month = 1
-    return_month = 2
-else:
-    depart_month = 1
-    return_month = 1
-print("month_vars: ", depart_month, " - ", return_month)
+
+# verify cast
+print("cast validation ->\tstart - end: ", start - end)
+
+# todo: SET GMT CURRENT DAY!
 # today = time.localtime()  # fixme CURRENT DAY
 # both localtime() and gmtime() returns an struct object, but but there is a time
 # difference between them, here we must use gmtime () to get the correct day :)
 today = time.gmtime()
-print(today.tm_year)
-print(today.tm_mon)
-print("day: ", today.tm_mday)
-print(today.tm_hour)
 t = today.tm_mday
-print("type of t: ", type(t))
+print("GMT CURRENT DAY: ", t)
+
+# todo: mandatory to depart/return next month...
+if t > start < end:
+    depart_month = 2
+    return_month = 2
+    print("next month departure & return!")
+    print("\nhappy holidays!\n")
+
+# todo: impossible!
+if t > start > end:
+    print("wrong date, the day of departure cannot be less than ", t)
+
+# todo: mandatory to depart/return using both months...
+if t < start > end:
+    depart_month = 1
+    return_month = 2
+    print("current month departure & next month return!")
+    print("\nhappy holidays!\n")
+
+# todo: possible either of months _REQUIRES CHOICE!
+if t < start < end:
+    answer = input("Are you going to travel next month? (y/n)")
+    if answer != 'y':
+        depart_month = 1
+        return_month = 1
+        print("current month departure!")
+        print("\nhappy holidays!\n")
+    else:
+        depart_month = 2
+        return_month = 2
+        print("next month departure!")
+        print("\nhappy holidays!\n")
