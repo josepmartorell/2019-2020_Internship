@@ -1,3 +1,4 @@
+import time
 import operator
 from time import sleep
 from bs4 import BeautifulSoup
@@ -18,6 +19,7 @@ from openpyxl.styles import PatternFill, Border, Side, Font
 from openpyxl.styles import Alignment, Protection
 from openpyxl import load_workbook
 from openpyxl import Workbook
+import datetime
 import requests
 import shutil
 import os
@@ -51,7 +53,6 @@ class App:
         self.shift = 1
         self.position = 0
         self.driver.get(self.main_url)
-        sleep(1)
         self.log_in()
         if self.error is False:
             self.search_target_profile()
@@ -280,7 +281,7 @@ class App:
         # snap style sheet:
         if shift == 0:
             # set title header:
-            header = ('Price', 'Retail', 'Profit', 'No', 'Hotel', 'Zone')
+            header = ('Price', 'Retail', 'Profit', 'No', 'Hotel', 'Address')
             sheet.cell(row=1, column=1).value = header[0]
             sheet.cell(row=1, column=2).value = header[1]
             sheet.cell(row=1, column=3).value = header[2]
@@ -337,10 +338,14 @@ class App:
             time_frame.font = Font(bold=True, size=11)
             bd = Side(style='thick', color="000000")
             time_frame.border = Border(left=bd, top=bd, right=bd, bottom=bd)
-            time_label = 'Snapshoot:'
+            # timestamp
+            time_label = 'Snapshoot:        %s                       Time Frame:        %s  -  %s' \
+                         % (time.ctime(),
+                            datetime.datetime.today().strftime("%A %d de %B de %Y"),
+                            datetime.datetime.today().strftime("%A %d de %B de %Y"))
             sheet.cell(row=1, column=1).value = time_label
             # set title header:
-            header = ('Code', 'Price', 'Retail', 'Profit', 'CC', 'City', 'No', 'Hotel', 'Zone')
+            header = ('Code', 'Price', 'Retail', 'Profit', 'CC', 'City', 'No', 'Hotel', 'Address')
             sheet.cell(row=2, column=1).value = header[0]
             sheet.cell(row=2, column=2).value = header[1]
             sheet.cell(row=2, column=3).value = header[2]
