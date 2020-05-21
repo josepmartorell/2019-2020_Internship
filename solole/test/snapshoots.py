@@ -190,6 +190,7 @@ print('\n\tSNAP!\n')  # todo No. WEEK MONTH & WEEK DAY
 #      week_of_month = np.where(x == day)[0][0] + 1
 #      return week_of_month
 
+# fixme _DEPART:
 # set current month number
 calendar.setfirstweekday(6)
 start_month = datetime.datetime.now().strftime("%m")
@@ -200,29 +201,47 @@ start_month = int(start_month)
 # switch nex month in case
 if depart_month != 1:
     start_month = start_month + 1
-print("TRACE month 2: ", start_month)
 # set current month
-m = start_month
+m1 = start_month
 # set start day
-d = start
+d1 = start
+
+# fixme _RETURN:
+# set current month number
+calendar.setfirstweekday(6)
+end_month = datetime.datetime.now().strftime("%m")
+# zero out left
+end_month = end_month.lstrip('+-0')
+# cast int type
+end_month = int(end_month)
+# switch nex month in case
+if return_month != 1:
+    end_month = end_month + 1
+# set current month
+m2 = end_month
+# set start day
+d2 = end
 
 
-def get_week_of_month(year, month, day):
-    x = np.array(calendar.monthcalendar(year, month))
-    week_of_month = np.where(x == day)[0][0]
-    return week_of_month
+# it's OK!
+def week(year, month, day):
+    first_week_month = datetime.datetime(year, month, 1).isocalendar()[1]
+    if month == 1 and first_week_month > 10:
+        first_week_month = 0
+    user_date = datetime.datetime(year, month, day).isocalendar()[1]
+    if month == 1 and user_date > 10:
+        user_date = 0
+    return user_date - first_week_month + 1
 
 
 print("No depart month: ", depart_month)
-print("No depart week: ", get_week_of_month(2020, m, d))
-day = datetime.datetime(2020, m, d).weekday()
-print("No depart day: ", day + 1)
+print("No depart week: ", week(2020, m1, d1))
+depart_day = datetime.datetime(2020, m1, d1).weekday()
+print("No depart day: ", depart_day + 1)
 
-# TODO: RETURN VARIABLES
-
-d = end # ...
 
 print("\nNo return month: ", return_month)
-# print("No return week: ", get_week_of_month(2020, m, d))
-# day = datetime.datetime(2020, m, d).weekday()
-# print("No return day: ", day + 1)
+print("No return week: ", week(2020, m2, d2))
+return_day = datetime.datetime(2020, m2, d2).weekday()
+print("No return day: ", return_day + 1)
+
