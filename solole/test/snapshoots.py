@@ -5,10 +5,22 @@ from datetime import date
 import calendar
 import numpy as np
 
+global depart_month
+global return_month
+
 # todo vademecum:
 # time, time(), localtime(), asctime(), ctime(), mktime(), altzone, sleep(), tzset(), strftime()
 # datetime, timedelta(),
 # datetime.datetime, utcnow()
+
+print('\n\tsnap!\n')
+my_date = date.today()
+
+d = datetime.datetime.today().weekday()
+print("today's weekday: ", d)
+
+d = calendar.day_name[my_date.weekday()]
+print(d)
 
 print("\n\tsnap:\n")
 t = time.localtime()
@@ -56,7 +68,7 @@ ticks = time.time()
 print("Tick number from 12:00 am, January 1, 1970:", ticks)
 
 print("\n\tsnap:\n")  # todo: CALENDAR
-cal = calendar.month(2018, 2)
+cal = calendar.month(2020, 5)
 print("Here is the calendar: ", cal)  # CALENDAR #
 
 print("\n\tsnap:\n")
@@ -97,80 +109,75 @@ print("gmtime STRUCT object: ", gtmtime)
 
 print("\n\tSNAP!:\n")  # Todo No. MONTH -> input time_frame calendar search engine management:
 
+# input 4 digits
+enter = input('Input time frame: \n')
 
-def timeFrame():
-    # input 4 digits
-    enter = input('Input time frame: \n')
+# process data
+split = list(enter)
+check_type = split[0]
+check = int(check_type)
+if check == 0:
+    check_in = split[1]
+else:
+    check_in = split[0] + split[1]
+check_type = split[2]
+check = int(check_type)
+if check == 0:
+    check_out = split[3]
+else:
+    check_out = split[2] + split[3]
 
-    # process data
-    split = list(enter)
-    check_type = split[0]
-    check = int(check_type)
-    if check == 0:
-        check_in = split[1]
+# print data
+print("check in: ", check_in, " - check out: ", check_out)
+
+# cast data
+start = int(check_in)
+end = int(check_out)
+
+# verify cast
+print("cast validation ->\tstart - end: ", start - end)
+
+# todo: SET GMT CURRENT DAY!
+# today = time.localtime()  # fixme CURRENT DAY
+# both localtime() and gmtime() returns an struct object, but but there is a time
+# difference between them, here we must use gmtime () to get the correct day :)
+today = time.gmtime()
+t = today.tm_mday
+print("GMT CURRENT DAY: ", t)
+
+# todo: mandatory to depart/return next month...
+if t > start < end:
+    depart_month = 2
+    return_month = 2
+    print("next month departure & return!")
+    print("\nhappy holidays!\n")
+
+# todo: impossible!
+elif t > start > end:
+    print("wrong date, the day of departure cannot be less than ", t)
+
+# todo: mandatory to depart/return using both months...
+elif t < start > end:
+    depart_month = 1
+    return_month = 2
+    print("current month departure & next month return!")
+    print("\nhappy holidays!\n")
+
+# todo: possible either of months _REQUIRES CHOICE!
+elif t < start < end:
+    answer = input("Are you going to travel next month? (y/n)")
+    if answer != 'y':
+        depart_month = 1
+        return_month = 1
+        print("current month departure!")
+        print("\nhappy holidays!\n")
     else:
-        check_in = split[0] + split[1]
-    check_type = split[2]
-    check = int(check_type)
-    if check == 0:
-        check_out = split[3]
-    else:
-        check_out = split[2] + split[3]
-
-    # print data
-    print("check in: ", check_in, " - check out: ", check_out)
-
-    # cast data
-    start = int(check_in)
-    end = int(check_out)
-
-    # verify cast
-    print("cast validation ->\tstart - end: ", start - end)
-
-    # todo: SET GMT CURRENT DAY!
-    # today = time.localtime()  # fixme CURRENT DAY
-    # both localtime() and gmtime() returns an struct object, but but there is a time
-    # difference between them, here we must use gmtime () to get the correct day :)
-    today = time.gmtime()
-    t = today.tm_mday
-    print("GMT CURRENT DAY: ", t)
-
-    # todo: mandatory to depart/return next month...
-    if t > start < end:
         depart_month = 2
         return_month = 2
-        print("next month departure & return!")
+        print("next month departure!")
         print("\nhappy holidays!\n")
 
-    # todo: impossible!
-    if t > start > end:
-        print("wrong date, the day of departure cannot be less than ", t)
-
-    # todo: mandatory to depart/return using both months...
-    if t < start > end:
-        depart_month = 1
-        return_month = 2
-        print("current month departure & next month return!")
-        print("\nhappy holidays!\n")
-
-    # todo: possible either of months _REQUIRES CHOICE!
-    if t < start < end:
-        answer = input("Are you going to travel next month? (y/n)")
-        if answer != 'y':
-            depart_month = 1
-            return_month = 1
-            print("current month departure!")
-            print("\nhappy holidays!\n")
-        else:
-            depart_month = 2
-            return_month = 2
-            print("next month departure!")
-            print("\nhappy holidays!\n")
-
-
-timeFrame()
-
-print('\nSNAP!\n')  # todo No. WEEK MONTH
+print('\n\tSNAP!\n')  # todo No. WEEK MONTH & WEEK DAY
 
 # no week month function
 
@@ -190,24 +197,32 @@ start_month = datetime.datetime.now().strftime("%m")
 start_month = start_month.lstrip('+-0')
 # cast int type
 start_month = int(start_month)
-print("TRACE month 1: ", start_month)
-start_month = int(start_month + 1)
+# switch nex month in case
+if depart_month != 1:
+    start_month = start_month + 1
 print("TRACE month 2: ", start_month)
+# set current month
+m = start_month
+# set start day
+d = start
 
 
-def get_week_of_month(year, month, start):
+def get_week_of_month(year, month, day):
     x = np.array(calendar.monthcalendar(year, month))
-    week_of_month = np.where(x == start)[0][0] + 1
+    week_of_month = np.where(x == day)[0][0]
     return week_of_month
 
 
-print("No of week: ", get_week_of_month(2020, 5, 7))
+print("No depart month: ", depart_month)
+print("No depart week: ", get_week_of_month(2020, m, d))
+day = datetime.datetime(2020, m, d).weekday()
+print("No depart day: ", day + 1)
 
-print('\nSNAP!\n')  # todo No. WEEK DAY
-my_date = date.today()
+# TODO: RETURN VARIABLES
 
-d = datetime.datetime.today().weekday()
-print("No of weekday", d)
+d = end # ...
 
-d = calendar.day_name[my_date.weekday()]
-print(d)
+print("\nNo return month: ", return_month)
+# print("No return week: ", get_week_of_month(2020, m, d))
+# day = datetime.datetime(2020, m, d).weekday()
+# print("No return day: ", day + 1)
