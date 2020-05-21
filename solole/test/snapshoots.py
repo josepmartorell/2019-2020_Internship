@@ -1,7 +1,9 @@
 import os
 import time
 import datetime
+from datetime import date
 import calendar
+import numpy as np
 
 # todo vademecum:
 # time, time(), localtime(), asctime(), ctime(), mktime(), altzone, sleep(), tzset(), strftime()
@@ -89,74 +91,123 @@ print("snapshoot4 ", datetime.datetime.today().strftime("%A %d de %B de %Y"))
 
 print("\n\tsnap:\n")  # todo: STRUCT
 localtime = time.localtime(time.time())
-print("Current local time: ", localtime)
+print("localtim STRUCT object: ", localtime)
+gtmtime = time.gmtime(time.time())
+print("gmtime STRUCT object: ", gtmtime)
 
-print("\n\tsnap:\n")  # Todo: input time_frame calendar search engine management:
+print("\n\tSNAP!:\n")  # Todo No. MONTH -> input time_frame calendar search engine management:
 
-# input 4 digits
-enter = input('Input time frame: \n')
 
-# process data
-split = list(enter)
-check_type = split[0]
-check = int(check_type)
-if check == 0:
-    check_in = split[1]
-else:
-    check_in = split[0] + split[1]
-check_type = split[2]
-check = int(check_type)
-if check == 0:
-    check_out = split[3]
-else:
-    check_out = split[2] + split[3]
+def timeFrame():
+    # input 4 digits
+    enter = input('Input time frame: \n')
 
-# print data
-print("check in: ", check_in, " - check out: ", check_out)
-
-# cast data
-start = int(check_in)
-end = int(check_out)
-
-# verify cast
-print("cast validation ->\tstart - end: ", start - end)
-
-# todo: SET GMT CURRENT DAY!
-# today = time.localtime()  # fixme CURRENT DAY
-# both localtime() and gmtime() returns an struct object, but but there is a time
-# difference between them, here we must use gmtime () to get the correct day :)
-today = time.gmtime()
-t = today.tm_mday
-print("GMT CURRENT DAY: ", t)
-
-# todo: mandatory to depart/return next month...
-if t > start < end:
-    depart_month = 2
-    return_month = 2
-    print("next month departure & return!")
-    print("\nhappy holidays!\n")
-
-# todo: impossible!
-if t > start > end:
-    print("wrong date, the day of departure cannot be less than ", t)
-
-# todo: mandatory to depart/return using both months...
-if t < start > end:
-    depart_month = 1
-    return_month = 2
-    print("current month departure & next month return!")
-    print("\nhappy holidays!\n")
-
-# todo: possible either of months _REQUIRES CHOICE!
-if t < start < end:
-    answer = input("Are you going to travel next month? (y/n)")
-    if answer != 'y':
-        depart_month = 1
-        return_month = 1
-        print("current month departure!")
-        print("\nhappy holidays!\n")
+    # process data
+    split = list(enter)
+    check_type = split[0]
+    check = int(check_type)
+    if check == 0:
+        check_in = split[1]
     else:
+        check_in = split[0] + split[1]
+    check_type = split[2]
+    check = int(check_type)
+    if check == 0:
+        check_out = split[3]
+    else:
+        check_out = split[2] + split[3]
+
+    # print data
+    print("check in: ", check_in, " - check out: ", check_out)
+
+    # cast data
+    start = int(check_in)
+    end = int(check_out)
+
+    # verify cast
+    print("cast validation ->\tstart - end: ", start - end)
+
+    # todo: SET GMT CURRENT DAY!
+    # today = time.localtime()  # fixme CURRENT DAY
+    # both localtime() and gmtime() returns an struct object, but but there is a time
+    # difference between them, here we must use gmtime () to get the correct day :)
+    today = time.gmtime()
+    t = today.tm_mday
+    print("GMT CURRENT DAY: ", t)
+
+    # todo: mandatory to depart/return next month...
+    if t > start < end:
         depart_month = 2
         return_month = 2
-        print("next month departure!")
+        print("next month departure & return!")
         print("\nhappy holidays!\n")
+
+    # todo: impossible!
+    if t > start > end:
+        print("wrong date, the day of departure cannot be less than ", t)
+
+    # todo: mandatory to depart/return using both months...
+    if t < start > end:
+        depart_month = 1
+        return_month = 2
+        print("current month departure & next month return!")
+        print("\nhappy holidays!\n")
+
+    # todo: possible either of months _REQUIRES CHOICE!
+    if t < start < end:
+        answer = input("Are you going to travel next month? (y/n)")
+        if answer != 'y':
+            depart_month = 1
+            return_month = 1
+            print("current month departure!")
+            print("\nhappy holidays!\n")
+        else:
+            depart_month = 2
+            return_month = 2
+            print("next month departure!")
+            print("\nhappy holidays!\n")
+
+
+timeFrame()
+
+print('\nSNAP!\n')  # todo No. WEEK MONTH
+
+# no week month function
+
+
+# fixme: pattern REF:
+#  https://stackoverflow.com/questions/3806473/python-week-number-of-the-month
+#  calendar.setfirstweekday(6)
+#  def get_week_of_month(year, month, day):
+#      x = np.array(calendar.monthcalendar(year, month))
+#      week_of_month = np.where(x == day)[0][0] + 1
+#      return week_of_month
+
+# set current month number
+calendar.setfirstweekday(6)
+start_month = datetime.datetime.now().strftime("%m")
+# zero out left
+start_month = start_month.lstrip('+-0')
+# cast int type
+start_month = int(start_month)
+print("TRACE month 1: ", start_month)
+start_month = int(start_month + 1)
+print("TRACE month 2: ", start_month)
+
+
+def get_week_of_month(year, month, start):
+    x = np.array(calendar.monthcalendar(year, month))
+    week_of_month = np.where(x == start)[0][0] + 1
+    return week_of_month
+
+
+print("No of week: ", get_week_of_month(2020, 5, 7))
+
+print('\nSNAP!\n')  # todo No. WEEK DAY
+my_date = date.today()
+
+d = datetime.datetime.today().weekday()
+print("No of weekday", d)
+
+d = calendar.day_name[my_date.weekday()]
+print(d)
