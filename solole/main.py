@@ -19,7 +19,7 @@ from openpyxl.styles import PatternFill, Border, Side, Font
 from openpyxl.styles import Alignment, Protection
 from openpyxl import load_workbook
 from openpyxl import Workbook
-from targets import snapshoot
+import target as t
 import datetime
 import requests
 import shutil
@@ -28,11 +28,18 @@ import os
 
 class App:
 
-    def __init__(self, username='BUSINESSTRAVEL', password='Trav567RT', target_city='new york',
+    def __init__(self, username='BUSINESSTRAVEL', password='Trav567RT', target_city='new york', depart_m='2', depart_w='3',
+                 depart_d='1', return_m='2', return_w='3', return_d='7',
                  path='/home/jmartorell/Booking'):  # Change this to your Target details and desired booking path
         self.username = username
         self.password = password
         self.target_city = target_city
+        self.depart_m = depart_m
+        self.depart_w = depart_w
+        self.depart_d = depart_d
+        self.return_m = return_m
+        self.return_w = return_w
+        self.return_d = return_d
         self.path = path
         # self.driver = webdriver.Firefox(capabilities=cap, executable_path='/usr/local/bin/geckodriver')  # Change
         # this to your FirefoxDriver path. todo: the expresion "executable_path=' was missed in the original version
@@ -65,7 +72,7 @@ class App:
             self.file_manager()
         if self.shift != 1:
             sleep(10)
-        self.driver.close()
+        # self.driver.close()
 
     def log_in(self, ):
         try:
@@ -108,12 +115,12 @@ class App:
             # todo: Within <div class = "ngb-dp-week ..."> the seven days of that week are stored each in a <div
             #  class = "ngb-dp-day ...">. Secondary click on the inspector on the day that interests you and copy the
             #  css selector, which you will use to click on in the calendar picker
-            self.driver.find_element_by_css_selector('div.ngb-dp-month:nth-child(2) > '
-                                                     'ngb-datepicker-month-view:nth-child(1) > div:nth-child(3) > '
-                                                     'div:nth-child(1)').click()
-            self.driver.find_element_by_css_selector('div.ngb-dp-month:nth-child(2) > '
-                                                     'ngb-datepicker-month-view:nth-child(1) > div:nth-child(3) > '
-                                                     'div:nth-child(7)').click()
+            self.driver.find_element_by_css_selector('div.ngb-dp-month:nth-child( ' + self.depart_m + ' ) > '
+                                                     'ngb-datepicker-month-view:nth-child(1) > div:nth-child( ' + self.depart_w + ' ) > '
+                                                     'div:nth-child( ' + self.depart_d + ' )').click()
+            self.driver.find_element_by_css_selector('div.ngb-dp-month:nth-child( ' + self.return_m + ' ) > '
+                                                     'ngb-datepicker-month-view:nth-child(1) > div:nth-child( ' + self.return_w + ' ) > '
+                                                     'div:nth-child( ' + self.return_d + ' )').click()
 
             user_name_input = self.driver.find_element_by_xpath('//*[@id="nationalityPred"]')
             user_name_input.send_keys('espa')
@@ -456,5 +463,11 @@ class App:
 
 
 if __name__ == '__main__':
-    snapshoot()
-    app = App()
+    app = App(depart_m=t.depart_month,
+              depart_w=t.depart_week,
+              depart_d=t.depart_day,
+              return_m=t.return_month,
+              return_w=t.return_week,
+              return_d=t.return_day,
+              )
+
