@@ -23,6 +23,7 @@ from openpyxl.styles import PatternFill, Border, Side, Font
 from openpyxl.styles import Alignment, Protection
 from openpyxl import load_workbook
 from openpyxl import Workbook
+from os import remove
 import target as t
 import data as d
 import datetime
@@ -66,6 +67,7 @@ class App:
         self.index = ""
         self.data = {}
         self.shift = 1
+        self.fork = 0
         self.position = 0
         self.driver.get(self.main_url)
         self.log_in()
@@ -422,6 +424,9 @@ class App:
         filepath = os.path.join(booking_path, 'bookings.xlsx')
         print('Writing to excel ...')
 
+        if os.path.exists and self.fork != 1:
+            remove(filepath)
+            self.fork = 1
         if not os.path.exists(filepath):
             workbook = Workbook()
             workbook.save(filepath)
@@ -475,8 +480,9 @@ class App:
 
         workbook.save(filepath)  # save file
 
-        spreadsheet = '//home/jmartorell/Booking/bookings/bookings.xlsx'
-        self.send_attachment(spreadsheet)
+        if shift != 1:
+            spreadsheet = '//home/jmartorell/Booking/bookings/bookings.xlsx'
+            self.send_attachment(spreadsheet)
 
     def send_attachment(self, file):
         subject = "An email with attachment from Python"
@@ -527,7 +533,7 @@ class App:
 
 
 if __name__ == '__main__':
-    switch = 0
+    switch = 1
     if switch != 0:
         x = 0
         while x < 25:
