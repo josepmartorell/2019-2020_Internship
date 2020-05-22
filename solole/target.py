@@ -62,9 +62,8 @@ elif t < start < end:
         depart_month = 2
         return_month = 2
         print("next month departure!")
-        print("\nhappy holidays!\n")
 
-print('\n\tSNAP!\n')  # todo No. WEEK MONTH & WEEK DAY
+print('\nACTIVATING SPIDER!\n')  # todo No. WEEK MONTH & WEEK DAY
 
 # fixme: pattern REF:
 #  https://stackoverflow.com/questions/3806473/python-week-number-of-the-month
