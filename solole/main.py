@@ -20,6 +20,7 @@ from openpyxl.styles import Alignment, Protection
 from openpyxl import load_workbook
 from openpyxl import Workbook
 import target as t
+import data as d
 import datetime
 import requests
 import shutil
@@ -72,7 +73,7 @@ class App:
             self.file_manager()
         if self.shift != 1:
             sleep(10)
-        # self.driver.close()
+        self.driver.close()
 
     def log_in(self, ):
         try:
@@ -271,10 +272,16 @@ class App:
             self.error = True
 
     def target_button(self, index):
-        target_button = self.driver.find_element_by_xpath(
-            '//div[ ' + index + ' ]/div/div[1]/div[2]/div[2]/div[1]/div[2]/span')
-        self.driver.execute_script("arguments[0].scrollIntoView();", target_button)
-        # target_button.click()
+        if index != '1':
+            target_button = self.driver.find_element_by_xpath(
+                '//div[ ' + index + ' ]/div/div[1]/div[2]/div[2]/div[1]/div[2]/span')
+            self.driver.execute_script("arguments[0].scrollIntoView();", target_button)
+            # target_button.click()
+        else:
+            target_button = self.driver.find_element_by_xpath(
+                '//ng-component/div/div[1]/iboosy-navigation-bar/nav/div[2]/div[1]/a/div')
+            self.driver.execute_script("arguments[0].scrollIntoView();", target_button)
+            # target_button.click()
 
     def file_manager(self, ):
         bookings_folder_path = os.path.join(self.path, 'bookings')
@@ -284,6 +291,7 @@ class App:
             self.write_bookings_to_excel_file(bookings_folder_path, self.shift)
         # if self.error is False:
         #     self.read_bookings_from_excel_file(self.path + '/bookings/bookings.xlsx')
+        return self.shift
 
     def set_stylesheet(self, sheet, shift):
         # snap style sheet:
@@ -463,11 +471,25 @@ class App:
 
 
 if __name__ == '__main__':
-    app = App(depart_m=t.depart_month,
-              depart_w=t.depart_week,
-              depart_d=t.depart_day,
-              return_m=t.return_month,
-              return_w=t.return_week,
-              return_d=t.return_day,
-              )
+    switch = 1
+    if switch != 0:
+        x = 0
+        while x < 25:
+            app = App(depart_m=t.depart_month,
+                      depart_w=t.depart_week,
+                      depart_d=t.depart_day,
+                      return_m=t.return_month,
+                      return_w=t.return_week,
+                      return_d=t.return_day,
+                      target_city=d.tour_en[x]
+                      )
+            x += 1
+    else:
+        app = App(depart_m=t.depart_month,
+                  depart_w=t.depart_week,
+                  depart_d=t.depart_day,
+                  return_m=t.return_month,
+                  return_w=t.return_week,
+                  return_d=t.return_day,
+                  )
 
