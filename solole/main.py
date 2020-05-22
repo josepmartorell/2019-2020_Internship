@@ -19,6 +19,7 @@ from openpyxl.styles import PatternFill, Border, Side, Font
 from openpyxl.styles import Alignment, Protection
 from openpyxl import load_workbook
 from openpyxl import Workbook
+from targets import snapshoot
 import datetime
 import requests
 import shutil
@@ -455,4 +456,5 @@ class App:
 
 
 if __name__ == '__main__':
+    snapshoot()
     app = App()
