@@ -68,6 +68,7 @@ class App:
         self.data = {}
         self.shift = 1
         self.fork = 0
+        self.switch = 1
         self.position = 0
         self.driver.get(self.main_url)
         self.log_in()
@@ -79,7 +80,7 @@ class App:
             if not os.path.exists(path):
                 os.mkdir(path)
             self.file_manager()
-        if self.shift != 1:
+        if self.switch != 1:
             sleep(10)
         self.driver.close()
 
@@ -132,7 +133,7 @@ class App:
                                                      'div:nth-child( ' + self.return_d + ' )').click()
 
             user_name_input = self.driver.find_element_by_xpath('//*[@id="nationalityPred"]')
-            user_name_input.send_keys('espa')
+            user_name_input.send_keys('España')
             sleep(1)
             # todo: accessing a drop-down menu item directly with xpath
             element = self.driver.find_element_by_xpath(
@@ -424,7 +425,7 @@ class App:
         filepath = os.path.join(booking_path, 'bookings.xlsx')
         print('Writing to excel ...')
 
-        if os.path.exists and self.fork != 1:
+        if os.path.exists(filepath) and self.fork != 1:
             remove(filepath)
             self.fork = 1
         if not os.path.exists(filepath):
@@ -480,7 +481,7 @@ class App:
 
         workbook.save(filepath)  # save file
 
-        if shift != 1:
+        if switch != 1:
             spreadsheet = '//home/jmartorell/Booking/bookings/bookings.xlsx'
             self.send_attachment(spreadsheet)
 
