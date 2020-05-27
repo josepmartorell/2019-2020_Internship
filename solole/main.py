@@ -364,10 +364,8 @@ class App:
             bd = Side(style='thick', color="000000")
             time_frame.border = Border(left=bd, top=bd, right=bd, bottom=bd)
             # timestamp
-            time_label = 'Snapshoot:        %s                       Time Frame:        %s  -  %s' \
-                         % (time.ctime(),
-                            datetime.datetime.today().strftime("%A %d de %B de %Y"),
-                            datetime.datetime.today().strftime("%A %d de %B de %Y"))
+            time_label = 'Snapshoot:        %s                       Time Frame:        %s%s/2020  -  %s%s/2020' \
+                         % (time.ctime(), t.dep + "/", t.start_month, t.ret + "/", t.end_month)
             sheet.cell(row=1, column=1).value = time_label
             # set title header:
             header = ('Code', 'Price', 'Retail', 'Profit', 'CC', 'City', 'No', 'Hotel', 'Address')
