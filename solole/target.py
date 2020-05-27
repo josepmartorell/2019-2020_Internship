@@ -13,6 +13,10 @@ enter = input('\nINPUT TIME FRAME: \n')
 
 # process data
 split = list(enter)
+# time frame variables
+dep = split[0] + split [1]
+ret = split[2] + split [3]
+# process goes on
 check_type = split[0]
 check = int(check_type)
 if check == 0:
