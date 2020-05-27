@@ -2,9 +2,14 @@ import time
 import datetime
 import calendar
 
+# spider run mode selector
+switch = int(input('\nSWITCH SPIDER RUN MODE:\n\t'
+                   '- DEMO........(0 + enter)\n\t'
+                   '- AUTOMATIC...(1 + enter)\n'))
+
 # input 4 digits
 global depart_month, return_month
-enter = input('\nInput time frame: \n')
+enter = input('\nINPUT TIME FRAME: \n')
 
 # process data
 split = list(enter)
