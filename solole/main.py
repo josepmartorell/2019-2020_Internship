@@ -37,7 +37,7 @@ import os
 class App:
 
     def __init__(self, username='BUSINESSTRAVEL', password='Trav567RT', target_city='new york', depart_m='2', depart_w='3',
-                 depart_d='1', return_m='2', return_w='3', return_d='7',
+                 depart_d='1', return_m='2', return_w='3', return_d='7', cell_city='New York', cell_cc='US',
                  path='/home/jmartorell/Booking'):  # Change this to your Target details and desired booking path
         self.username = username
         self.password = password
@@ -48,6 +48,8 @@ class App:
         self.return_m = return_m
         self.return_w = return_w
         self.return_d = return_d
+        self.cell_city = cell_city
+        self.cell_cc = cell_cc
         self.path = path
         # self.driver = webdriver.Firefox(capabilities=cap, executable_path='/usr/local/bin/geckodriver')  # Change
         # this to your FirefoxDriver path. todo: the expresion "executable_path=' was missed in the original version
@@ -464,6 +466,10 @@ class App:
                 #     sheet['E{}'.format(row_num)] = '=CLEAN(D{})'.format(row_num)
                 sheet['C{}'.format(i)] = '=PRODUCT(B{},{}'.format(i, c)
                 sheet['D{}'.format(i)] = '=SUM(C{},-B{}'.format(i, i)
+                cell_reference = sheet.cell(row=i, column=5)
+                cell_reference.value = self.cell_cc
+                cell_reference = sheet.cell(row=i, column=6)
+                cell_reference.value = self.cell_city
                 cell_reference = sheet.cell(row=i, column=7)
                 cell_reference.value = row[0]
                 cell_reference = sheet.cell(row=i, column=8)
@@ -542,7 +548,9 @@ if __name__ == '__main__':
                       return_m=t.return_month,
                       return_w=t.return_week,
                       return_d=t.return_day,
-                      target_city=d.tour_en[x]
+                      target_city=d.tour_en[x][0],
+                      cell_city=d.tour_en[x][0],
+                      cell_cc=d.tour_en[x][1]
                       )
             x += 1
     else:
