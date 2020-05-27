@@ -534,7 +534,7 @@ class App:
 
 
 if __name__ == '__main__':
-    switch = 1
+    switch = t.switch
     if switch != 0:
         x = 0
         while x < 25:
