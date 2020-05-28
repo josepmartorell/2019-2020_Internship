@@ -440,12 +440,13 @@ class App:
         filepath = os.path.join(booking_path, 'bookings.xlsx')
         print('Writing to excel ...')
 
-        if os.path.exists(filepath) and self.fork != 1:
-            remove(filepath)
-            self.fork = 1
+        # if os.path.exists(filepath) and self.fork != 1:
+        #     remove(filepath)
+        #     self.fork = 1
         if not os.path.exists(filepath):
             workbook = Workbook()
             workbook.save(filepath)
+            workbook.create_sheet("Display", 1)
         else:
             workbook = load_workbook(filepath)
 
@@ -497,10 +498,44 @@ class App:
                 cell_reference.value = row[3]
                 i += 1
 
-                # select target row
-                # target = 1
-                # while sheet.cell(row=target, column=1).value is not None:
-                #     target += 1
+            workbook.active = 1
+            display_sheet = workbook.active
+
+            # select target row
+            # target = 1
+            # while sheet.cell(row=target, column=1).value is not None:
+            #     target += 1
+            c = '1.374'
+            target = 3
+            while display_sheet.cell(row=target, column=6).value is not None:
+                target += 1
+
+            booking = self.data[0]
+            # cell_reference = sheet.cell(row=target, column=1)
+            # update_code = t.code_builder(self.read_code())
+            # self.write_code(update_code)
+            # cell_reference.value = update_code
+            cell_reference = display_sheet.cell(row=target, column=2)
+            cell_reference.value = booking[2]
+            display_sheet['C{}'.format(target)] = '=PRODUCT(B{},{}'.format(target, c)
+            display_sheet['D{}'.format(target)] = '=SUM(C{},-B{}'.format(target, target)
+            cell_reference = display_sheet.cell(row=target, column=5)
+            cell_reference.value = self.cell_cc
+            cell_reference = display_sheet.cell(row=target, column=6)
+            cell_reference.value = self.cell_city
+            cell_reference = display_sheet.cell(row=target, column=7)
+            cell_reference.value = booking[0]
+            cell_reference = display_sheet.cell(row=target, column=8)
+            cell_reference.value = booking[1]
+            cell_reference = display_sheet.cell(row=target, column=9)
+            cell_reference.value = booking[3]
+
+            # switch sheet
+            workbook.active = 0
+
+            sheet = workbook.active
+            self.set_stylesheet(sheet, 1)
+            self.set_stylesheet(display_sheet, 1)
 
         workbook.save(filepath)  # save file
 
