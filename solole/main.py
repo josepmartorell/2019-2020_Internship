@@ -295,6 +295,9 @@ class App:
             # target_button.click()
 
     def file_manager(self, ):
+        f = open("trip_code.txt", "w+")
+        f.write("LM30")
+        f.close()
         bookings_folder_path = os.path.join(self.path, 'bookings')
         if not os.path.exists(bookings_folder_path):
             os.mkdir(bookings_folder_path)
@@ -303,6 +306,18 @@ class App:
         # if self.error is False:
         #     self.read_bookings_from_excel_file(self.path + '/bookings/bookings.xlsx')
         return self.shift
+
+    def read_code(self):
+        global trip_code
+        f = open("trip_code.txt", "r")
+        if f.mode == 'r':
+            trip_code = f.read()
+        return trip_code
+    def write_code(self, input_code):
+        f = open("trip_code.txt", "w")
+        f.write(input_code)
+        f.close()
+        pass
 
     def set_stylesheet(self, sheet, shift):
         # snap style sheet:
@@ -457,6 +472,10 @@ class App:
             c = '1.374'
             i = 3
             for row in self.data:
+                cell_reference = sheet.cell(row=i, column=1)
+                update_code = t.code_builder(self.read_code())
+                self.write_code(update_code)
+                cell_reference.value = update_code
                 cell_reference = sheet.cell(row=i, column=2)
                 cell_reference.value = row[2]
                 # REF:

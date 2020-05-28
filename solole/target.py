@@ -136,3 +136,53 @@ ret_w = week(2020, m2, d2)
 return_week = str(ret_w + 1)
 ret_d = datetime.datetime(2020, m2, d2).weekday()
 return_day = str(ret_d + 1)
+
+# cryptography
+alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZA'
+number = '01234567890'
+def code_builder(chunk):
+    global skip
+    split = list(chunk)
+    char1 = split[0]
+    char2 = split[1]
+    char3 = split[2]
+    char4 = split[3]
+    skip = True
+    i = 0
+    while skip:
+        if alpha[i] == char1:
+            char1 = alpha[i + 1]
+            skip = False
+        else:
+            skip += 1
+        i += 1
+    skip = True
+    i = 0
+    while skip:
+        if alpha[i] == char2:
+            char2 = alpha[i + 1]
+            skip = False
+        else:
+            skip += 1
+        i += 1
+    skip = True
+    i = 0
+    while skip:
+        if number[i] == char3:
+            char3 = number[i + 1]
+            skip = False
+        else:
+            skip += 1
+        i += 1
+    skip = True
+    i = 0
+    while skip:
+        if number[i] == char4:
+            char4 = number[i + 1]
+            skip = False
+        else:
+            skip += 1
+        i += 1
+
+    code = char1 + char2 + char3 + char4
+    return code
