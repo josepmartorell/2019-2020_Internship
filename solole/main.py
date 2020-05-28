@@ -446,10 +446,15 @@ class App:
         if not os.path.exists(filepath):
             workbook = Workbook()
             workbook.save(filepath)
+            workbook.create_sheet("Spapshoot", 0)
             workbook.create_sheet("Display", 1)
         else:
             workbook = load_workbook(filepath)
 
+        # fixme: delete the default sheet:
+        if "Sheet" in workbook.sheetnames:
+            std = workbook["Sheet"]
+            workbook.remove(std)
         sheet = workbook.active
         self.set_stylesheet(sheet, self.shift)
         if shift != 1:
@@ -511,10 +516,10 @@ class App:
                 target += 1
 
             booking = self.data[0]
-            # cell_reference = sheet.cell(row=target, column=1)
-            # update_code = t.code_builder(self.read_code())
-            # self.write_code(update_code)
-            # cell_reference.value = update_code
+            cell_reference = display_sheet.cell(row=target, column=1)
+            update_code = t.code_builder(self.read_code())
+            self.write_code(update_code)
+            cell_reference.value = update_code
             cell_reference = display_sheet.cell(row=target, column=2)
             cell_reference.value = booking[2]
             display_sheet['C{}'.format(target)] = '=PRODUCT(B{},{}'.format(target, c)
