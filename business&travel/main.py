@@ -5,7 +5,6 @@
 import operator
 import os
 from time import sleep
-
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -29,10 +28,8 @@ class App:
         self.all_hotels = []
         self.all_prices = []
         self.browser.get(self.url)
-        sleep(1)
         self.log_in()
         if self.error is False:
-            # self.close_dialog_box()
             self.search_engine_insert()
         if self.error is False:
             self.scroll_down()
@@ -41,8 +38,8 @@ class App:
                 os.mkdir(path)
             # todo: self.reach_target()
         # close the browser
-        sleep(6)
-        # self.browser.quit()
+        sleep(1)
+        self.browser.quit()
 
     def log_in(self, ):
         try:
@@ -51,24 +48,34 @@ class App:
             input_element.send_keys("business.travel")
             input_element = self.browser.find_element_by_id("password")
             input_element.clear()
+            print('Logging in with username and password ...')
             input_element.send_keys("Busi2016")
             input_element.submit()
+
+            # print(self.browser.current_url)
         except Exception:
             print('Some exception occurred while trying to find username or password field')
             self.error = True
 
+    def cookies_popup(self):
+        print('closing cookies window ...')
+        WebDriverWait(self.browser, 100).until(EC.visibility_of_element_located((
+            By.CSS_SELECTOR,
+            '.cookie-policy__close'))).click()
+        sleep(1)
+
     def search_engine_insert(self):
         # wait to load the search engine
-        element = WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((
             By.XPATH,
             '//*[@id="hotel-searcher-_ctl1__ctl1__ctl1_pageBody_pageBody_searcher__ctl0_ctlZoneSelector-input"]'))).click()
+        self.cookies_popup()
         element = self.browser.find_element_by_xpath(
             '//*[@id="hotel-searcher-_ctl1__ctl1__ctl1_pageBody_pageBody_searcher__ctl0_ctlZoneSelector-input"]')
         element.clear()
 
         # check access
-        assert "Hoteles | W2M" in self.browser.title
-        print(self.browser.current_url)
+        # assert "Hoteles | W2M" in self.browser.title
 
         # enter data in input field
         element.send_keys(self.target_destination)
@@ -76,18 +83,19 @@ class App:
         # TODO:
         # drop-down item selection
         actions = ActionChains(self.browser)
-        for _ in range(3):
+        for _ in range(1):
             actions.send_keys(Keys.ARROW_DOWN).perform()
             sleep(1)
 
         # enter destination city
         target_city = element.find_element_by_xpath(
-            "//header/div[2]/div/div/div[2]/div[1]/div[1]/div[1]/div[2]/div/span[2]/div/div[3]/div[1]")
+            "//div[3]/div[1]")
         target_city.click()
 
         # press the search button
         login_attempt = element.find_element_by_xpath(
-            "/html/body/form/div[1]/header/div[2]/div/div/div[2]/div[2]/button")
+            "//div[2]/div[2]/button")
+        print('loading page ...')
         login_attempt.click()
 
     # todo: def reach_target(self):
