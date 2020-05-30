@@ -51,7 +51,7 @@ class App:
             # todo: self.reach_target()
         # close the browser
         sleep(1)
-        # self.browser.quit()
+        self.browser.quit()
 
     # 2) log in method allows us to log in to access the provider's services
     def log_in(self, ):
@@ -205,20 +205,31 @@ class App:
             print(e)
             print('Some error occurred while trying to scroll down')
 
-    def set_stylesheet(self, sheet, shift):
+    def set_stylesheet(self, sheet):
+
+        header = ('Code', 'Price', 'Retail', 'Profit', 'CC', 'City', 'No', 'Hotel', 'Address')
+        sheet.cell(row=2, column=1).value = header[0]
+        sheet.cell(row=2, column=2).value = header[1]
+        sheet.cell(row=2, column=3).value = header[2]
+        sheet.cell(row=2, column=4).value = header[3]
+        sheet.cell(row=2, column=5).value = header[4]
+        sheet.cell(row=2, column=6).value = header[5]
+        sheet.cell(row=2, column=7).value = header[6]
+        sheet.cell(row=2, column=8).value = header[7]
+        sheet.cell(row=2, column=9).value = header[8]
 
         sheet.column_dimensions['B'].number_format = '#,##0.00'
-        sheet.column_dimensions['E'].number_format = '#,##0.00'
-        sheet.column_dimensions['F'].number_format = '#,##0.00'
-        if shift != 2:
-            sheet.column_dimensions['A'].width = 3
-        else:
-            sheet.column_dimensions['A'].width = 3
+        sheet.column_dimensions['C'].number_format = '#,##0.00'
+        sheet.column_dimensions['D'].number_format = '#,##0.00'
+        sheet.column_dimensions['A'].width = 6
         sheet.column_dimensions['B'].width = 9
-        sheet.column_dimensions['C'].width = 50
-        sheet.column_dimensions['D'].width = 16
-        sheet.column_dimensions['E'].width = 9
-        sheet.column_dimensions['F'].width = 9
+        sheet.column_dimensions['C'].width = 9
+        sheet.column_dimensions['D'].width = 9
+        sheet.column_dimensions['E'].width = 4
+        sheet.column_dimensions['F'].width = 16
+        sheet.column_dimensions['G'].width = 4
+        sheet.column_dimensions['H'].width = 60
+        sheet.column_dimensions['I'].width = 50
 
         format = sheet.column_dimensions['A']
         format.font = Font(bold=True, italic=True, name='Arial')
@@ -232,12 +243,18 @@ class App:
         format.font = Font(bold=True, italic=True, name='Arial')
         format = sheet.column_dimensions['F']
         format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['G']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['H']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['I']
+        format.font = Font(bold=True, italic=True, name='Arial')
 
         # fixme REF:
         # https://stackoverflow.com/questions/35918504/adding-a-background-color-to-cell-openpyxl
-        for col_range in range(1, 7):
+        for col_range in range(1, 10):
             cell_title = sheet.cell(1, col_range)
-            cell_title.fill = PatternFill(start_color="00c0c0c0", end_color="00c0c0c0", fill_type="solid")
+            cell_title.fill = PatternFill(start_color="0007147A", end_color="0007147A", fill_type="solid")
 
     def write_bookings_to_excel_file(self, booking_path):
 
@@ -247,6 +264,23 @@ class App:
         if not os.path.exists(filepath):
             workbook = Workbook()
             workbook.save(filepath)
+            workbook.create_sheet("Spapshoot", 0)
+            workbook.create_sheet("Display", 1)
+        else:
+            workbook = load_workbook(filepath)
+
+        # fixme: delete the default sheet:
+        if "Sheet" in workbook.sheetnames:
+            std = workbook["Sheet"]
+            workbook.remove(std)
+
+        # switch sheet
+        workbook.active = 0
+
+        sheet = workbook.active
+        self.set_stylesheet(sheet)
+
+        workbook.save(filepath)  # save file
 
     def file_manager(self, ):
         bookings_folder_path = os.path.join(self.path, 'bookings')
