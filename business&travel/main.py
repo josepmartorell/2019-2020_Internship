@@ -28,6 +28,12 @@ class App:
         self.all_hotels = []
         self.all_prices = []
         self.all_locations = []
+        self.all_positions = []
+        self.display = []
+        self.cheap = []
+        self.data = {}
+        self.position = 0
+        self.euro_symbol = '€'
         self.browser.get(self.url)
         self.log_in()
         if self.error is False:
@@ -123,11 +129,11 @@ class App:
         print("Scraping page ...")
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
         hotel_list = soup.find_all('div', {'class': 'results-list__item'})
-        euro_symbol = '€'
 
         print("\n\tdisplay:\n")
         try:
             for i, hotel in enumerate(hotel_list):
+                self.all_positions.append(i + 1)
                 hotel_name = hotel.find('h2', {'class': 'info-card__title'}).getText()
                 # fixme: remove whitespaces REF: https://stackoverrun.com/es/q/743639
                 hotel_name = ' '.join(hotel_name.split())
@@ -153,21 +159,21 @@ class App:
                     hotel_price = "" + hotel_price
                 self.all_hotels.append(hotel_name)
                 if i < 9:
-                    print(" %d - %s %s %s - %s" % (i + 1, hotel_price, euro_symbol, hotel_name, hotel_location))
+                    print(" %d - %s %s %s - %s" % (i + 1, hotel_price, self.euro_symbol, hotel_name, hotel_location))
                 else:
-                    print("%d - %s %s %s - %s" % (i + 1, hotel_price, euro_symbol, hotel_name, hotel_location))
+                    print("%d - %s %s %s - %s" % (i + 1, hotel_price, self.euro_symbol, hotel_name, hotel_location))
 
             print("\n\tranking:\n")
             # float cast
-            new_prices_2 = []
+            new_prices = []
             for element in self.all_prices:
                 rank = float(element)
-                new_prices_2.append(rank)
+                new_prices.append(rank)
 
             # final list
-            list = dict(zip(self.all_hotels, new_prices_2))
-            ranking_2 = sorted(list.items(), key=operator.itemgetter(1))
-            for k, v in ranking_2:
+            display_list = zip(self.all_positions, self.all_hotels, new_prices, self.all_locations)
+            ranking = sorted(display_list, key=operator.itemgetter(2))
+            for j, k, v, w in ranking:
                 if v < 100.00:
                     print("   ", "{0:.2f}".format(v), k)
                 if 99.00 < v < 1000.00:
@@ -176,6 +182,15 @@ class App:
                     print(" ", "{0:.2f}".format(v), k)
                 if v > 9999.00:
                     print("", "{0:.2f}".format(v), k)
+
+            self.display = display_list
+            self.data = ranking
+            self.cheap = ranking[0]
+            print('\nlocated booking for', self.cheap[2], self.euro_symbol, '...')
+            for i, collation in enumerate(display_list):
+                if collation[1] == self.cheap[1]:
+                    self.position = i
+            print('pointing to the target button', self.position + 1, '...')
 
             sleep(2)
         except Exception as e:
