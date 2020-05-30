@@ -15,6 +15,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 
 class App:
+    # 1) init method initializes variables that will be accessible by self from any method of the class
     def __init__(self, username='business.travel', password='Busi2016', target_destination='new york',
                  path='/home/jmartorell/Booking'):
         self.username = username
@@ -32,7 +33,6 @@ class App:
         self.display = []
         self.cheap = []
         self.data = {}
-        self.position = 0
         self.euro_symbol = '€'
         self.browser.get(self.url)
         self.log_in()
@@ -48,6 +48,7 @@ class App:
         sleep(1)
         # self.browser.quit()
 
+    # 2) log in method allows us to log in to access the provider's services
     def log_in(self, ):
         try:
             input_element = self.browser.find_element_by_id("email")
@@ -71,9 +72,10 @@ class App:
             '.cookie-policy__close'))).click()
         sleep(1)
 
+    # 3) search engine insert method fills in the search engine fields and clicks on the search button
     def search_engine_insert(self):
         # wait to load the search engine
-        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((
+        WebDriverWait(self.browser, 100).until(EC.visibility_of_element_located((
             By.XPATH,
             '//*[@id="hotel-searcher-_ctl1__ctl1__ctl1_pageBody_pageBody_searcher__ctl0_ctlZoneSelector-input"]'))).click()
         self.cookies_popup()
@@ -105,6 +107,7 @@ class App:
         print('loading page ...')
         login_attempt.click()
 
+    # 4) the reach target method systematically selects the first objective by clicking on it
     # todo: def reach_target(self):
     #     element = WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((
     #         By.XPATH,
@@ -114,12 +117,6 @@ class App:
         self.browser.implicitly_wait(15)
 
         # todo REF: https://stackoverflow.com/questions/48006078/how-to-scroll-down-in-python-selenium-step-by-step
-        # FIXME 1: two ways to scroll down,
-        #  1) go down to the bottom of the page at once.
-        # self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-        # FIXME 2:
-        #  2) Descend from item to item to the bottom of the page.
-        # in this example and item is the text of the button "See options":
         read_mores = self.browser.find_elements_by_xpath('//div[text()="Best stay price"]')
         print('Scrolling page ...')
         for read_more in read_mores:
@@ -187,10 +184,7 @@ class App:
             self.data = ranking
             self.cheap = ranking[0]
             print('\nlocated booking for', self.cheap[2], self.euro_symbol, '...')
-            for i, collation in enumerate(display_list):
-                if collation[1] == self.cheap[1]:
-                    self.position = i
-            print('pointing to the target button', self.position + 1, '...')
+            print('pointing to the target button', self.cheap[0], '...')
 
             sleep(2)
         except Exception as e:
@@ -202,8 +196,6 @@ class App:
 if __name__ == '__main__':
     app = App()
 
-# FIXME: descending design
-# 1) init method initializes variables that will be accessible by self from any method of the class
-# 2) log in method allows us to log in to access the provider's services
-# 3) search engine insert method fills in the search engine fields and clicks on the search button
-# 4) the reach target method systematically selects the first objective by clicking on it
+
+
+
