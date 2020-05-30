@@ -140,13 +140,17 @@ class App:
                 self.all_prices.append(hotel_price)
 
                 hotel_location = hotel.find('div', {'class': 'info-card__location'}).getText().strip(',')
-                hotel_location = ' '.join(hotel_location.split())
+                hotel_location = ' '.join(hotel_location.split()).rstrip("View the map")
                 self.all_locations.append(hotel_location)
 
+                if len(hotel_price) == 5:
+                    hotel_price = "   " + hotel_price
                 if len(hotel_price) == 6:
                     hotel_price = "  " + hotel_price
                 if len(hotel_price) == 7:
                     hotel_price = " " + hotel_price
+                if len(hotel_price) == 8:
+                    hotel_price = "" + hotel_price
                 self.all_hotels.append(hotel_name)
                 if i < 9:
                     print(" %d - %s %s %s - %s" % (i + 1, hotel_price, euro_symbol, hotel_name, hotel_location))
@@ -164,7 +168,9 @@ class App:
             list = dict(zip(self.all_hotels, new_prices_2))
             ranking_2 = sorted(list.items(), key=operator.itemgetter(1))
             for k, v in ranking_2:
-                if v < 1000.00:
+                if v < 100.00:
+                    print("   ", "{0:.2f}".format(v), k)
+                if 99.00 < v < 1000.00:
                     print("  ", "{0:.2f}".format(v), k)
                 if 999.00 < v < 10000.00:
                     print(" ", "{0:.2f}".format(v), k)
