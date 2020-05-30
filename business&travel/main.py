@@ -27,6 +27,7 @@ class App:
         self.url = 'https://pro.w2m.travel'
         self.all_hotels = []
         self.all_prices = []
+        self.all_locations = []
         self.browser.get(self.url)
         self.log_in()
         if self.error is False:
@@ -39,7 +40,7 @@ class App:
             # todo: self.reach_target()
         # close the browser
         sleep(1)
-        self.browser.quit()
+        # self.browser.quit()
 
     def log_in(self, ):
         try:
@@ -113,11 +114,13 @@ class App:
         # FIXME 2:
         #  2) Descend from item to item to the bottom of the page.
         # in this example and item is the text of the button "See options":
-        read_mores = self.browser.find_elements_by_xpath('//button[text()="Ver más opciones"]')
+        read_mores = self.browser.find_elements_by_xpath('//div[text()="Best stay price"]')
+        print('Scrolling page ...')
         for read_more in read_mores:
             self.browser.execute_script("arguments[0].scrollIntoView();", read_more)
             # read_more.click()
 
+        print("Scraping page ...")
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
         hotel_list = soup.find_all('div', {'class': 'results-list__item'})
         euro_symbol = '€'
@@ -136,15 +139,19 @@ class App:
                 hotel_price = "{0:.2f}".format(hotel_price)
                 self.all_prices.append(hotel_price)
 
+                hotel_location = hotel.find('div', {'class': 'info-card__location'}).getText().strip(',')
+                hotel_location = ' '.join(hotel_location.split())
+                self.all_locations.append(hotel_location)
+
                 if len(hotel_price) == 6:
                     hotel_price = "  " + hotel_price
                 if len(hotel_price) == 7:
                     hotel_price = " " + hotel_price
                 self.all_hotels.append(hotel_name)
                 if i < 9:
-                    print(" %d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
+                    print(" %d - %s %s %s - %s" % (i + 1, hotel_price, euro_symbol, hotel_name, hotel_location))
                 else:
-                    print("%d - %s %s %s" % (i + 1, hotel_price, euro_symbol, hotel_name))
+                    print("%d - %s %s %s - %s" % (i + 1, hotel_price, euro_symbol, hotel_name, hotel_location))
 
             print("\n\tranking:\n")
             # float cast
