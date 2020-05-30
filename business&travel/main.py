@@ -207,7 +207,7 @@ class App:
 
     def set_stylesheet(self, sheet):
 
-        header = ('Code', 'Price', 'Retail', 'Profit', 'CC', 'City', 'No', 'Hotel', 'Address')
+        header = ('Code', 'Price', 'Retail', 'Profit', 'CC', 'City', 'No', 'Hotel', 'Co', 'Gr', 'Location', 'Density')
         sheet.cell(row=2, column=1).value = header[0]
         sheet.cell(row=2, column=2).value = header[1]
         sheet.cell(row=2, column=3).value = header[2]
@@ -217,6 +217,9 @@ class App:
         sheet.cell(row=2, column=7).value = header[6]
         sheet.cell(row=2, column=8).value = header[7]
         sheet.cell(row=2, column=9).value = header[8]
+        sheet.cell(row=2, column=10).value = header[9]
+        sheet.cell(row=2, column=11).value = header[10]
+        sheet.cell(row=2, column=12).value = header[11]
 
         sheet.column_dimensions['B'].number_format = '#,##0.00'
         sheet.column_dimensions['C'].number_format = '#,##0.00'
@@ -229,7 +232,11 @@ class App:
         sheet.column_dimensions['F'].width = 16
         sheet.column_dimensions['G'].width = 4
         sheet.column_dimensions['H'].width = 60
-        sheet.column_dimensions['I'].width = 50
+        sheet.column_dimensions['I'].width = 4
+        sheet.column_dimensions['J'].width = 4
+        sheet.column_dimensions['K'].width = 50
+        sheet.column_dimensions['L'].width = 18
+
 
         format = sheet.column_dimensions['A']
         format.font = Font(bold=True, italic=True, name='Arial')
@@ -249,10 +256,16 @@ class App:
         format.font = Font(bold=True, italic=True, name='Arial')
         format = sheet.column_dimensions['I']
         format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['J']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['K']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['L']
+        format.font = Font(bold=True, italic=True, name='Arial')
 
         # fixme REF:
         # https://stackoverflow.com/questions/35918504/adding-a-background-color-to-cell-openpyxl
-        for col_range in range(1, 10):
+        for col_range in range(1, 13):
             cell_title = sheet.cell(1, col_range)
             cell_title.fill = PatternFill(start_color="0007147A", end_color="0007147A", fill_type="solid")
 
