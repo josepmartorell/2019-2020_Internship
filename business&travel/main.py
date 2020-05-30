@@ -33,6 +33,7 @@ class App:
         self.display = []
         self.cheap = []
         self.data = {}
+        self.index = ""
         self.euro_symbol = '€'
         self.browser.get(self.url)
         self.log_in()
@@ -112,6 +113,11 @@ class App:
     #     element = WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((
     #         By.XPATH,
     #         '//main/div[1]/div/div[1]/article/div[1]/div[2]/h2'))).click()
+    def reach_target(self, index):
+        target_button = self.browser.find_element_by_xpath(
+             '//div[ ' + index + ' ]/article/div[1]/div[2]/div[2]/div/div[2]/span/a')
+        self.browser.execute_script("arguments[0].scrollIntoView();", target_button)
+        # target_button.click()
 
     def scroll_down(self):
         self.browser.implicitly_wait(15)
@@ -185,6 +191,9 @@ class App:
             self.cheap = ranking[0]
             print('\nlocated booking for', self.cheap[2], self.euro_symbol, '...')
             print('pointing to the target button', self.cheap[0], '...')
+            self.index = str(self.cheap[0])
+            if self.error is False:
+                self.reach_target(self.index)
 
             sleep(2)
         except Exception as e:
