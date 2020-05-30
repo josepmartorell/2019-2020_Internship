@@ -12,6 +12,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+from openpyxl.styles import PatternFill, Font
+from openpyxl import load_workbook
+from openpyxl import Workbook
 
 
 class App:
@@ -44,6 +47,7 @@ class App:
         if self.error is False:
             if not os.path.exists(path):
                 os.mkdir(path)
+            self.file_manager()
             # todo: self.reach_target()
         # close the browser
         sleep(1)
@@ -115,7 +119,7 @@ class App:
     #         '//main/div[1]/div/div[1]/article/div[1]/div[2]/h2'))).click()
     def reach_target(self, index):
         target_button = self.browser.find_element_by_xpath(
-             '//div[ ' + index + ' ]/article/div[1]/div[2]/div[2]/div/div[2]/span/a')
+            '//div[ ' + index + ' ]/article/div[1]/div[2]/div[2]/div/div[2]/span/a')
         self.browser.execute_script("arguments[0].scrollIntoView();", target_button)
         # target_button.click()
 
@@ -201,10 +205,56 @@ class App:
             print(e)
             print('Some error occurred while trying to scroll down')
 
+    def set_stylesheet(self, sheet, shift):
+
+        sheet.column_dimensions['B'].number_format = '#,##0.00'
+        sheet.column_dimensions['E'].number_format = '#,##0.00'
+        sheet.column_dimensions['F'].number_format = '#,##0.00'
+        if shift != 2:
+            sheet.column_dimensions['A'].width = 3
+        else:
+            sheet.column_dimensions['A'].width = 3
+        sheet.column_dimensions['B'].width = 9
+        sheet.column_dimensions['C'].width = 50
+        sheet.column_dimensions['D'].width = 16
+        sheet.column_dimensions['E'].width = 9
+        sheet.column_dimensions['F'].width = 9
+
+        format = sheet.column_dimensions['A']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['B']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['C']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['D']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['E']
+        format.font = Font(bold=True, italic=True, name='Arial')
+        format = sheet.column_dimensions['F']
+        format.font = Font(bold=True, italic=True, name='Arial')
+
+        # fixme REF:
+        # https://stackoverflow.com/questions/35918504/adding-a-background-color-to-cell-openpyxl
+        for col_range in range(1, 7):
+            cell_title = sheet.cell(1, col_range)
+            cell_title.fill = PatternFill(start_color="00c0c0c0", end_color="00c0c0c0", fill_type="solid")
+
+    def write_bookings_to_excel_file(self, booking_path):
+
+        # FIXME: openpyxl -> https://openpyxl.readthedocs.io/en/stable/index.html
+        filepath = os.path.join(booking_path, 'bookings.xlsx')
+        print('Writing to excel ...')
+        if not os.path.exists(filepath):
+            workbook = Workbook()
+            workbook.save(filepath)
+
+    def file_manager(self, ):
+        bookings_folder_path = os.path.join(self.path, 'bookings')
+        if not os.path.exists(bookings_folder_path):
+            os.mkdir(bookings_folder_path)
+        if self.error is False:
+            self.write_bookings_to_excel_file(bookings_folder_path)
+
 
 if __name__ == '__main__':
     app = App()
-
-
-
-
