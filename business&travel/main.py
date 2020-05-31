@@ -17,16 +17,26 @@ from openpyxl.styles import Side, Border
 from openpyxl import load_workbook
 from openpyxl import Workbook
 import targetX as t
+import dataset as d
 import os
 
 
 class App:
     # 1) init method initializes variables that will be accessible by self from any method of the class
-    def __init__(self, username='business.travel', password='Busi2016', target_destination='new york',
+    def __init__(self, username='business.travel', password='Busi2016', target_destination='New york', depart_m='2', depart_w='3',
+                 depart_d='1', return_m='2', return_w='3', return_d='7', cell_city='New York', cell_cc='US',
                  path='/home/jmartorell/Booking'):
         self.username = username
         self.password = password
         self.target_destination = target_destination
+        self.depart_m = depart_m
+        self.depart_w = depart_w
+        self.depart_d = depart_d
+        self.return_m = return_m
+        self.return_w = return_w
+        self.return_d = return_d
+        self.cell_city = cell_city
+        self.cell_cc = cell_cc
         self.path = path
         self.browser = webdriver.Firefox(
             executable_path='/usr/local/bin/geckodriver')
@@ -325,10 +335,10 @@ class App:
             cell_reference.value = row[2]
             sheet['C{}'.format(i)] = '=PRODUCT(B{},{}'.format(i, self.coefficient)
             sheet['D{}'.format(i)] = '=SUM(C{},-B{}'.format(i, i)
-            # cell_reference = sheet.cell(row=i, column=5)
-            # cell_reference.value = self.cell_cc
-            # cell_reference = sheet.cell(row=i, column=6)
-            # cell_reference.value = self.cell_city
+            cell_reference = sheet.cell(row=i, column=5)
+            cell_reference.value = self.cell_cc
+            cell_reference = sheet.cell(row=i, column=6)
+            cell_reference.value = self.cell_city
             cell_reference = sheet.cell(row=i, column=7)
             cell_reference.value = row[0]
             cell_reference = sheet.cell(row=i, column=8)
@@ -354,4 +364,26 @@ class App:
 
 
 if __name__ == '__main__':
-    app = App()
+    switch = t.switch
+    if switch != 0:
+        x = 0
+        while x < 25:
+            app = App(depart_m=t.depart_month,
+                      depart_w=t.depart_week,
+                      depart_d=t.depart_day,
+                      return_m=t.return_month,
+                      return_w=t.return_week,
+                      return_d=t.return_day,
+                      target_destination=d.tour_en[x][0],
+                      cell_city=d.tour_en[x][0],
+                      cell_cc=d.tour_en[x][1]
+                      )
+            x += 1
+    else:
+        app = App(depart_m=t.depart_month,
+                  depart_w=t.depart_week,
+                  depart_d=t.depart_day,
+                  return_m=t.return_month,
+                  return_w=t.return_week,
+                  return_d=t.return_day,
+                  )
