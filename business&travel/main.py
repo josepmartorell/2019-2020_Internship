@@ -2,8 +2,8 @@
 """
 @author: jmartorell
 """
+import time
 import operator
-import os
 from time import sleep
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -13,9 +13,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from openpyxl.styles import PatternFill, Font
+from openpyxl.styles import Side, Border
 from openpyxl import load_workbook
 from openpyxl import Workbook
-
+import targetX as t
+import os
 
 class App:
     # 1) init method initializes variables that will be accessible by self from any method of the class
@@ -207,6 +209,30 @@ class App:
 
     def set_stylesheet(self, sheet):
 
+        # time frame:
+        sheet.merge_cells('A1:L1')
+        time_frame = sheet['A1']
+        time_frame.fill = PatternFill(
+            start_color="0007147A", end_color="0007147A", fill_type="solid")
+        time_frame.font = Font(bold=True, size=11)
+        bd = Side(style='thick', color="000000")
+        time_frame.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+        # timestamp
+        time_label = 'Busines&Travel:        %s                       Time Frame:        %s%s/2020  -  %s%s/2020' \
+                     % (time.ctime(), t.dep + "/", t.start_month, t.ret + "/", t.end_month)
+        sheet.cell(row=1, column=1).value = time_label
+
+        # title bar
+        # fixme REF:
+        # https://stackoverflow.com/questions/35918504/adding-a-background-color-to-cell-openpyxl
+        for col_range in range(1, 13):
+            cell_title = sheet.cell(2, col_range)
+            cell_title.fill = PatternFill(start_color="00f4f4f7", end_color="00f4f4f7", fill_type="solid")
+            cell_title = sheet.cell(2, col_range)
+            cell_title.font = Font(bold=True, size=11)
+            bd = Side(style='thick', color="000000")
+            cell_title.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+
         header = ('Code', 'Price', 'Retail', 'Profit', 'CC', 'City', 'No', 'Hotel', 'Co', 'Gr', 'Location', 'Density')
         sheet.cell(row=2, column=1).value = header[0]
         sheet.cell(row=2, column=2).value = header[1]
@@ -237,7 +263,6 @@ class App:
         sheet.column_dimensions['K'].width = 50
         sheet.column_dimensions['L'].width = 18
 
-
         format = sheet.column_dimensions['A']
         format.font = Font(bold=True, italic=True, name='Arial')
         format = sheet.column_dimensions['B']
@@ -262,12 +287,6 @@ class App:
         format.font = Font(bold=True, italic=True, name='Arial')
         format = sheet.column_dimensions['L']
         format.font = Font(bold=True, italic=True, name='Arial')
-
-        # fixme REF:
-        # https://stackoverflow.com/questions/35918504/adding-a-background-color-to-cell-openpyxl
-        for col_range in range(1, 13):
-            cell_title = sheet.cell(1, col_range)
-            cell_title.fill = PatternFill(start_color="0007147A", end_color="0007147A", fill_type="solid")
 
     def write_bookings_to_excel_file(self, booking_path):
 
