@@ -23,8 +23,7 @@ import os
 
 class App:
     # 1) init method initializes variables that will be accessible by self from any method of the class
-    def __init__(self, username='business.travel', password='Busi2016', target_destination='New york', depart_m='2',
-                 depart_w='3',
+    def __init__(self, username='business.travel', password='Busi2016', target_destination='New york', depart_m='2', depart_w='3',
                  depart_d='1', return_m='2', return_w='3', return_d='7', cell_city='New York', cell_cc='US',
                  path='/home/jmartorell/Booking'):
         self.username = username
@@ -275,18 +274,6 @@ class App:
         sheet.column_dimensions['J'].width = 4
         sheet.column_dimensions['K'].width = 50
         sheet.column_dimensions['L'].width = 18
-
-        def read_code(self):
-            global trip_code
-            f = open("trip_code.txt", "r")
-            if f.mode == 'r':
-                trip_code = f.read()
-            return trip_code
-
-        def write_code(self, input_code):
-            f = open("trip_code.txt", "w")
-            f.write(input_code)
-            f.close()
 
         format = sheet.column_dimensions['A']
         format.font = Font(bold=True, italic=True, name='Arial')
