@@ -402,22 +402,22 @@ class App:
             bd = Side(style='thin', color="000000")
             cell_reference.border = Border(left=bd, top=bd, right=bd, bottom=bd)
 
-            if 16 > grades >= 0:
+            if grades > 19:
+                covid_green = PatternFill(
+                    start_color='0000FF00',
+                    end_color='0000FF00',
+                    fill_type='solid')
+                sheet.cell(row=i, column=11).fill = covid_green
+            if 20 > grades > 14:
+                covid_blue = PatternFill(
+                    start_color='000000FF',
+                    end_color='000000FF',
+                    fill_type='solid')
+                sheet.cell(row=i, column=11).fill = covid_blue
+            else:
                 covid = PatternFill(
                     start_color='00FF0000',
                     end_color='00FF0000',
-                    fill_type='solid')
-                sheet.cell(row=i, column=11).fill = covid
-            if grades > 19:
-                covid = PatternFill(
-                    start_color='0000FF00',
-                    end_color='0000FF00',
-                    fill_type='solid')
-                sheet.cell(row=i, column=11).fill = covid
-            else:
-                covid = PatternFill(
-                    start_color='0000FF00',
-                    end_color='0000FF00',
                     fill_type='solid')
                 sheet.cell(row=i, column=11).fill = covid
             # cell_reference.value = covid
