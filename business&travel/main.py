@@ -23,7 +23,8 @@ import os
 
 class App:
     # 1) init method initializes variables that will be accessible by self from any method of the class
-    def __init__(self, username='business.travel', password='Busi2016', target_destination='New york', depart_m='2', depart_w='3',
+    def __init__(self, username='business.travel', password='Busi2016', target_destination='New york', depart_m='2',
+                 depart_w='3',
                  depart_d='1', return_m='2', return_w='3', return_d='7', cell_city='New York', cell_cc='US',
                  path='/home/jmartorell/Booking'):
         self.username = username
@@ -275,6 +276,18 @@ class App:
         sheet.column_dimensions['K'].width = 50
         sheet.column_dimensions['L'].width = 18
 
+        def read_code(self):
+            global trip_code
+            f = open("trip_code.txt", "r")
+            if f.mode == 'r':
+                trip_code = f.read()
+            return trip_code
+
+        def write_code(self, input_code):
+            f = open("trip_code.txt", "w")
+            f.write(input_code)
+            f.close()
+
         format = sheet.column_dimensions['A']
         format.font = Font(bold=True, italic=True, name='Arial')
         format = sheet.column_dimensions['B']
@@ -299,6 +312,18 @@ class App:
         format.font = Font(bold=True, italic=True, name='Arial')
         format = sheet.column_dimensions['L']
         format.font = Font(bold=True, italic=True, name='Arial')
+
+    def read_code(self):
+        global trip_code
+        f = open("trip_code.txt", "r")
+        if f.mode == 'r':
+            trip_code = f.read()
+        return trip_code
+
+    def write_code(self, input_code):
+        f = open("trip_code.txt", "w")
+        f.write(input_code)
+        f.close()
 
     def write_bookings_to_excel_file(self, booking_path):
 
@@ -328,9 +353,9 @@ class App:
         i = 3
         for row in self.data:
             cell_reference = sheet.cell(row=i, column=1)
-            # update_code = t.code_builder(self.read_code())
-            # self.write_code(update_code)
-            # cell_reference.value = update_code
+            update_code = t.code_builder(self.read_code())
+            self.write_code(update_code)
+            cell_reference.value = update_code
             cell_reference = sheet.cell(row=i, column=2)
             cell_reference.value = row[2]
             sheet['C{}'.format(i)] = '=PRODUCT(B{},{}'.format(i, self.coefficient)
@@ -356,6 +381,9 @@ class App:
         workbook.save(filepath)  # save file
 
     def file_manager(self, ):
+        f = open("trip_code.txt", "w+")
+        f.write("LM30")
+        f.close()
         bookings_folder_path = os.path.join(self.path, 'bookings')
         if not os.path.exists(bookings_folder_path):
             os.mkdir(bookings_folder_path)
@@ -367,7 +395,7 @@ if __name__ == '__main__':
     switch = t.switch
     if switch != 0:
         x = 0
-        while x < 25:
+        while x < 24:
             app = App(depart_m=t.depart_month,
                       depart_w=t.depart_week,
                       depart_d=t.depart_day,
