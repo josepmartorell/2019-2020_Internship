@@ -16,6 +16,7 @@ from openpyxl.styles import PatternFill, Font
 from openpyxl.styles import Side, Border
 from openpyxl import load_workbook
 from openpyxl import Workbook
+import RESTful_api as api
 import targetX as t
 import dataset as d
 import os
@@ -245,7 +246,7 @@ class App:
             bd = Side(style='thick', color="000000")
             cell_title.border = Border(left=bd, top=bd, right=bd, bottom=bd)
 
-        header = ('Code', 'Price', 'Retail', 'Profit', 'CC', 'City', 'No', 'Hotel', 'Gr', 'Co', 'Location', 'Density')
+        header = ('Code', 'Price', 'Retail', 'Profit', 'CC', 'City', 'No', 'Hotel', 'Hu', 'Gr', 'Co', 'Location')
         sheet.cell(row=2, column=1).value = header[0]
         sheet.cell(row=2, column=2).value = header[1]
         sheet.cell(row=2, column=3).value = header[2]
@@ -272,8 +273,8 @@ class App:
         sheet.column_dimensions['H'].width = 60
         sheet.column_dimensions['I'].width = 4
         sheet.column_dimensions['J'].width = 4
-        sheet.column_dimensions['K'].width = 50
-        sheet.column_dimensions['L'].width = 18
+        sheet.column_dimensions['K'].width = 4
+        sheet.column_dimensions['L'].width = 50
 
         format = sheet.column_dimensions['A']
         format.font = Font(bold=True, italic=True, name='Arial')
@@ -338,6 +339,7 @@ class App:
 
         # write sheet
         i = 3
+        w = 0
         for row in self.data:
             cell_reference = sheet.cell(row=i, column=1)
             update_code = t.code_builder(self.read_code())
@@ -355,14 +357,17 @@ class App:
             cell_reference.value = row[0]
             cell_reference = sheet.cell(row=i, column=8)
             cell_reference.value = row[1]
-            # cell_reference = sheet.cell(row=i, column=6)
-            # cell_reference.value = self.cell_gr
-            # cell_reference = sheet.cell(row=i, column=6)
-            # cell_reference.value = self.cell_co
-            cell_reference = sheet.cell(row=i, column=11)
+            # weather rates
+            humidity = api.get_humidity(d.tour_en[w][0])
+            cell_reference = sheet.cell(row=i, column=9)
+            cell_reference.value = humidity
+            grades = api.get_temperature(d.tour_en[w][0])
+            cell_reference = sheet.cell(row=i, column=10)
+            cell_reference.value = grades
+            # cell_reference = sheet.cell(row=i, column=11)
+            # cell_reference.value = covid
+            cell_reference = sheet.cell(row=i, column=12)
             cell_reference.value = row[3]
-            # cell_reference = sheet.cell(row=i, column=6)
-            # cell_reference.value = self.cell_density
             i += 1
 
         workbook.save(filepath)  # save file
