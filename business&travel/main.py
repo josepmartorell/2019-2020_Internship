@@ -365,6 +365,24 @@ class App:
             cell_reference = sheet.cell(row=i, column=10)
             cell_reference.value = grades
             # cell_reference = sheet.cell(row=i, column=11)
+            if 16 > grades >= 0:
+                covid = PatternFill(
+                    start_color='00FF0000',
+                    end_color='00FF0000',
+                    fill_type='solid')
+                sheet.cell(row=i, column=11).fill = covid
+            if grades > 19:
+                covid = PatternFill(
+                    start_color='0000FF00',
+                    end_color='0000FF00',
+                    fill_type='solid')
+                sheet.cell(row=i, column=11).fill = covid
+            else:
+                covid = PatternFill(
+                    start_color='0000FF00',
+                    end_color='0000FF00',
+                    fill_type='solid')
+                sheet.cell(row=i, column=11).fill = covid
             # cell_reference.value = covid
             cell_reference = sheet.cell(row=i, column=12)
             cell_reference.value = row[3]
