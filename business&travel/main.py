@@ -19,6 +19,7 @@ from openpyxl import Workbook
 import targetX as t
 import os
 
+
 class App:
     # 1) init method initializes variables that will be accessible by self from any method of the class
     def __init__(self, username='business.travel', password='Busi2016', target_destination='new york',
@@ -40,6 +41,7 @@ class App:
         self.data = {}
         self.index = ""
         self.euro_symbol = '€'
+        self.coefficient = '1.374'
         self.browser.get(self.url)
         self.log_in()
         if self.error is False:
@@ -218,7 +220,7 @@ class App:
         bd = Side(style='thick', color="000000")
         time_frame.border = Border(left=bd, top=bd, right=bd, bottom=bd)
         # timestamp
-        time_label = 'Busines&Travel:        %s                       Time Frame:        %s%s/2020  -  %s%s/2020' \
+        time_label = 'Business&Travel:        %s                       Time Frame:        %s%s/2020  -  %s%s/2020' \
                      % (time.ctime(), t.dep + "/", t.start_month, t.ret + "/", t.end_month)
         sheet.cell(row=1, column=1).value = time_label
 
@@ -233,7 +235,7 @@ class App:
             bd = Side(style='thick', color="000000")
             cell_title.border = Border(left=bd, top=bd, right=bd, bottom=bd)
 
-        header = ('Code', 'Price', 'Retail', 'Profit', 'CC', 'City', 'No', 'Hotel', 'Co', 'Gr', 'Location', 'Density')
+        header = ('Code', 'Price', 'Retail', 'Profit', 'CC', 'City', 'No', 'Hotel', 'Gr', 'Co', 'Location', 'Density')
         sheet.cell(row=2, column=1).value = header[0]
         sheet.cell(row=2, column=2).value = header[1]
         sheet.cell(row=2, column=3).value = header[2]
@@ -311,6 +313,35 @@ class App:
 
         sheet = workbook.active
         self.set_stylesheet(sheet)
+
+        # write sheet
+        i = 3
+        for row in self.data:
+            cell_reference = sheet.cell(row=i, column=1)
+            # update_code = t.code_builder(self.read_code())
+            # self.write_code(update_code)
+            # cell_reference.value = update_code
+            cell_reference = sheet.cell(row=i, column=2)
+            cell_reference.value = row[2]
+            sheet['C{}'.format(i)] = '=PRODUCT(B{},{}'.format(i, self.coefficient)
+            sheet['D{}'.format(i)] = '=SUM(C{},-B{}'.format(i, i)
+            # cell_reference = sheet.cell(row=i, column=5)
+            # cell_reference.value = self.cell_cc
+            # cell_reference = sheet.cell(row=i, column=6)
+            # cell_reference.value = self.cell_city
+            cell_reference = sheet.cell(row=i, column=7)
+            cell_reference.value = row[0]
+            cell_reference = sheet.cell(row=i, column=8)
+            cell_reference.value = row[1]
+            # cell_reference = sheet.cell(row=i, column=6)
+            # cell_reference.value = self.cell_gr
+            # cell_reference = sheet.cell(row=i, column=6)
+            # cell_reference.value = self.cell_co
+            cell_reference = sheet.cell(row=i, column=11)
+            cell_reference.value = row[3]
+            # cell_reference = sheet.cell(row=i, column=6)
+            # cell_reference.value = self.cell_density
+            i += 1
 
         workbook.save(filepath)  # save file
 
