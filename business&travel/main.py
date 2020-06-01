@@ -19,6 +19,7 @@ from openpyxl import Workbook
 import RESTful_api as api
 import targetX as t
 import dataset as d
+import xlrd
 import os
 
 
@@ -53,6 +54,7 @@ class App:
         self.index = ""
         self.euro_symbol = '€'
         self.coefficient = '1.374'
+        self.target_recharge = ""
         self.browser.get(self.url)
         self.log_in()
         if self.error is False:
@@ -86,7 +88,7 @@ class App:
             self.error = True
 
     def cookies_popup(self):
-        print('closing cookies window ...')
+        print('Closing cookies window ...')
         WebDriverWait(self.browser, 100).until(EC.visibility_of_element_located((
             By.CSS_SELECTOR,
             '.cookie-policy__close'))).click()
@@ -124,7 +126,7 @@ class App:
         # press the search button
         login_attempt = element.find_element_by_xpath(
             "//div[2]/div[2]/button")
-        print('loading page ...')
+        print('Loading page ...')
         login_attempt.click()
 
     # 4) the reach target method systematically selects the first objective by clicking on it
@@ -149,7 +151,7 @@ class App:
         soup = BeautifulSoup(self.browser.page_source, 'lxml')
         hotel_list = soup.find_all('div', {'class': 'results-list__item'})
 
-        print("\n\tdisplay:\n")
+        print("\n\tDisplay:\n")
         try:
             for i, hotel in enumerate(hotel_list):
                 self.all_positions.append(i + 1)
@@ -182,7 +184,7 @@ class App:
                 else:
                     print("%d - %s %s %s - %s" % (i + 1, hotel_price, self.euro_symbol, hotel_name, hotel_location))
 
-            print("\n\tranking:\n")
+            print("\n\tRanking:\n")
             # float cast
             new_prices = []
             for element in self.all_prices:
@@ -205,8 +207,8 @@ class App:
             self.display = display_list
             self.data = ranking
             self.cheap = ranking[0]
-            print('\nlocated booking for', self.cheap[2], self.euro_symbol, '...')
-            print('pointing to the target button', self.cheap[0], '...')
+            print('\nLocated booking for', self.cheap[2], self.euro_symbol, '...')
+            print('Pointing to the target button', self.cheap[0], '...')
             self.index = str(self.cheap[0])
             if self.error is False:
                 self.reach_target(self.index)
@@ -309,6 +311,12 @@ class App:
         f = open("trip_code.txt", "w")
         f.write(input_code)
         f.close()
+
+    def read_bookings_from_excel_file(self, excel_path):
+        workbook = xlrd.open_workbook(excel_path)
+        worksheet = workbook.sheet_by_index(0)
+        cell_h3 = worksheet.cell_value(2, 7)
+        return cell_h3
 
     def write_bookings_to_excel_file(self, booking_path):
 
@@ -528,6 +536,9 @@ class App:
             os.mkdir(bookings_folder_path)
         if self.error is False:
             self.write_bookings_to_excel_file(bookings_folder_path)
+        if self.error is False:
+            self.target_recharge = self.read_bookings_from_excel_file(self.path + '/bookings/bookings.xlsx')
+        print("Writing reservation", self.target_recharge, "in sheet Display ...")
 
 
 if __name__ == '__main__':
