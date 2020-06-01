@@ -129,9 +129,6 @@ class App:
 
     # 4) the reach target method systematically selects the first objective by clicking on it
     # todo: def reach_target(self):
-    #     element = WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((
-    #         By.XPATH,
-    #         '//main/div[1]/div/div[1]/article/div[1]/div[2]/h2'))).click()
     def reach_target(self, index):
         target_button = self.browser.find_element_by_xpath(
             '//div[ ' + index + ' ]/article/div[1]/div[2]/div[2]/div/div[2]/span/a')
@@ -420,10 +417,105 @@ class App:
                     end_color='00FF0000',
                     fill_type='solid')
                 sheet.cell(row=i, column=11).fill = covid
-            # cell_reference.value = covid
             cell_reference = sheet.cell(row=i, column=12)
             cell_reference.value = row[3]
             i += 1
+        # todo START recharger
+        workbook.active = 1
+        display_sheet = workbook.active
+        self.set_stylesheet(display_sheet)
+
+        # automatic recharger
+        target = 3
+        while display_sheet.cell(row=target, column=8).value is not None:
+            target += 1
+
+        recharger = self.data[0]
+        cell_reference = display_sheet.cell(row=target, column=1)
+        update_code = t.code_builder(self.read_code())
+        self.write_code(update_code)
+        cell_reference.value = update_code
+        cell_reference = display_sheet.cell(row=target, column=2)
+        cell_reference.value = recharger[2]
+        display_sheet['C{}'.format(target)] = '=PRODUCT(B{},{}'.format(target, self.coefficient)
+        display_sheet['D{}'.format(target)] = '=SUM(C{},-B{}'.format(target, target)
+        cell_reference = display_sheet.cell(row=target, column=5)
+        cell_reference.value = self.cell_cc
+        cell_reference = display_sheet.cell(row=target, column=6)
+        cell_reference.value = self.cell_city
+        cell_reference = display_sheet.cell(row=target, column=7)
+        cell_reference.value = recharger[0]
+        cell_reference = display_sheet.cell(row=target, column=8)
+        cell_reference.value = recharger[1]
+        # weather rates
+        humidity = api.get_humidity(d.tour_en[w][0])
+        cell_reference = display_sheet.cell(row=target, column=9)
+        cell_reference.value = humidity
+        grades = api.get_temperature(d.tour_en[w][0])
+        cell_reference = display_sheet.cell(row=target, column=10)
+        cell_reference.value = grades
+
+        cell_reference = display_sheet.cell(row=target, column=1)
+        bd = Side(style='thin', color="000000")
+        cell_reference.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+        cell_reference = display_sheet.cell(row=target, column=2)
+        bd = Side(style='thin', color="000000")
+        cell_reference.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+        cell_reference = display_sheet.cell(row=target, column=3)
+        bd = Side(style='thin', color="000000")
+        cell_reference.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+        cell_reference = display_sheet.cell(row=target, column=4)
+        bd = Side(style='thin', color="000000")
+        cell_reference.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+        cell_reference = display_sheet.cell(row=target, column=5)
+        bd = Side(style='thin', color="000000")
+        cell_reference.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+        cell_reference = display_sheet.cell(row=target, column=6)
+        bd = Side(style='thin', color="000000")
+        cell_reference.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+        cell_reference = display_sheet.cell(row=target, column=7)
+        bd = Side(style='thin', color="000000")
+        cell_reference.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+        cell_reference = display_sheet.cell(row=target, column=8)
+        bd = Side(style='thin', color="000000")
+        cell_reference.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+        cell_reference = display_sheet.cell(row=target, column=9)
+        bd = Side(style='thick', color="000000")
+        cell_reference.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+        cell_reference = display_sheet.cell(row=target, column=10)
+        bd = Side(style='thick', color="000000")
+        cell_reference.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+        cell_reference = display_sheet.cell(row=target, column=11)
+        bd = Side(style='thick', color="000000")
+        cell_reference.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+        cell_reference = display_sheet.cell(row=target, column=12)
+        bd = Side(style='thin', color="000000")
+        cell_reference.border = Border(left=bd, top=bd, right=bd, bottom=bd)
+
+        if grades > 19:
+            covid_green = PatternFill(
+                start_color='0000FF00',
+                end_color='0000FF00',
+                fill_type='solid')
+            display_sheet.cell(row=target, column=11).fill = covid_green
+        if 20 > grades > 14:
+            covid_blue = PatternFill(
+                start_color='000000FF',
+                end_color='000000FF',
+                fill_type='solid')
+            display_sheet.cell(row=target, column=11).fill = covid_blue
+        else:
+            covid_red = PatternFill(
+                start_color='00FF0000',
+                end_color='00FF0000',
+                fill_type='solid')
+            display_sheet.cell(row=target, column=11).fill = covid_red
+        cell_reference = display_sheet.cell(row=target, column=12)
+        cell_reference.value = recharger[3]
+
+        # switch sheet
+        workbook.active = 0
+        # todo STOP recharger
 
         workbook.save(filepath)  # save file
 
