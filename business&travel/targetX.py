@@ -4,8 +4,8 @@ import calendar
 
 # spider run mode selector
 switch = int(input('\nSWITCH SPIDER RUN MODE:\n\t'
-                   '- DEMO........(0 + enter)\n\t'
-                   '- AUTOMATIC...(1 + enter)\n'))
+                   '- DEMO........(0 + Enter)\n\t'
+                   '- AUTOMATIC...(1 + Enter)\n'))
 
 # input 4 digits
 global depart_month, return_month
@@ -31,7 +31,7 @@ else:
     check_out = split[2] + split[3]
 
 # print data
-print("check in: ", check_in, " - check out: ", check_out)
+print("Check in: ", check_in, " - Check out: ", check_out)
 
 # cast data
 start = int(check_in)
@@ -48,17 +48,17 @@ t = today.tm_mday
 if t > start < end:
     depart_month = 2
     return_month = 2
-    print("next month departure & return!")
+    print("Next month departure & return!")
 
 # todo: impossible!
 elif t > start > end:
-    print("wrong date, the day of departure cannot be less than ", t)
+    print("Wrong date, the day of departure cannot be less than ", t)
 
 # todo: mandatory to depart/return using both months...
 elif t < start > end:
     depart_month = 1
     return_month = 2
-    print("current month departure & next month return!")
+    print("Current month departure & next month return!")
 
 # todo: possible either of months _REQUIRES CHOICE!
 elif t < start < end:
@@ -66,11 +66,11 @@ elif t < start < end:
     if answer != 'y':
         depart_month = 1
         return_month = 1
-        print("current month departure!")
+        print("Current month departure!")
     else:
         depart_month = 2
         return_month = 2
-        print("next month departure!")
+        print("Next month departure!")
 
 print('\nACTIVATING SPIDER!\n')  # todo No. WEEK MONTH & WEEK DAY
 
