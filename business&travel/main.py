@@ -6,6 +6,7 @@ import os
 import ssl
 import time
 import xlrd
+import json
 import smtplib
 import operator
 import targetX as t
@@ -30,12 +31,15 @@ from email import encoders
 
 
 def send_attachment():
+    with open('../../../Documents/keys.json', 'r') as a:
+        keys_dict = json.loads(a.read())
     subject = "An email with attachment from Python"
     body = "This is an email with attachment sent from Python"
-    sender_email = "jetro4100@gmail.com"
-    receiver_email = "martorelljosep@gmail.com"
+    sender_email = keys_dict['mailAddress'][0]
+    receiver_email = keys_dict['mailAddress'][1]
     # password = input("Type your password and press enter:")
-    password = 'ZXspectrum5128$}_'
+    password = keys_dict['mailPassword'][0]
+    a.close()
 
     # Create a multipart message and set headers
     message = MIMEMultipart()
@@ -80,11 +84,10 @@ def send_attachment():
 
 class App:
     # 1) init method initializes variables that will be accessible by self from any method of the class
-    def __init__(self, username='business.travel', password='Busi2016', target_destination='New york', depart_m='2', depart_w='3',
+    def __init__(self, keys='../../../Documents/keys.json', target_destination='New york', depart_m='2', depart_w='3',
                  depart_d='1', return_m='2', return_w='3', return_d='7', cell_city='New York', cell_cc='US',
-                 path='/home/jmartorell/Booking'):
-        self.username = username
-        self.password = password
+                 path='../../../Booking'):
+        self.keys = keys
         self.target_destination = target_destination
         self.depart_m = depart_m
         self.depart_w = depart_w
@@ -128,14 +131,17 @@ class App:
     # 2) log in method allows us to log in to access the provider's services
     def log_in(self, ):
         try:
+            with open(self.keys, 'r') as a:
+                keys_dict = json.loads(a.read())
             input_element = self.browser.find_element_by_id("email")
             input_element.clear()
-            input_element.send_keys("business.travel")
+            input_element.send_keys(keys_dict['username'][3])
             input_element = self.browser.find_element_by_id("password")
             input_element.clear()
             print('Logging in with username and password ...')
-            input_element.send_keys("Busi2016")
+            input_element.send_keys(keys_dict['password'][3])
             input_element.submit()
+            a.close()
 
             # print(self.browser.current_url)
         except Exception:
