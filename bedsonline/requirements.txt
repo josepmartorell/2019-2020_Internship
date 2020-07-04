@@ -2,6 +2,6 @@ lxml
 selenium
 bs4
 requests
-shutil
 openpyxl
 xlrd
+json
