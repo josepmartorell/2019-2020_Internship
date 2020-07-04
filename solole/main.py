@@ -1,3 +1,4 @@
+import json
 import time
 import operator
 from time import sleep
@@ -36,11 +37,10 @@ import os
 
 class App:
 
-    def __init__(self, username='BUSINESSTRAVEL', password='Trav567RT', target_city='new york', depart_m='2', depart_w='3',
+    def __init__(self, keys='../../../Documents/keys.json', target_city='new york', depart_m='2', depart_w='3',
                  depart_d='1', return_m='2', return_w='3', return_d='7', cell_city='New York', cell_cc='US',
-                 path='/home/jmartorell/Booking'):  # Change this to your Target details and desired booking path
-        self.username = username
-        self.password = password
+                 path='../../../Booking'):  # Change this to your Target details and desired booking path
+        self.keys = keys
         self.target_city = target_city
         self.depart_m = depart_m
         self.depart_w = depart_w
@@ -88,21 +88,25 @@ class App:
 
     def log_in(self, ):
         try:
+            with open(self.keys, 'r') as a:
+                keys_dict = json.loads(a.read())
+            self.driver.implicitly_wait(10)
             print('\nLogging in with username and password ...')
             user_name_input = self.driver.find_element_by_xpath('//input[@placeholder="Nombre de usuario"]')
-            user_name_input.send_keys(self.username)
+            user_name_input.send_keys(keys_dict['username'][2])
             sleep(1)
 
             password_input = self.driver.find_element_by_xpath('//input[@placeholder="Contraseña"]')
-            password_input.send_keys(self.password)
+            password_input.send_keys(keys_dict['password'][2])
             sleep(1)
 
             password_input.submit()
             sleep(1)
+            a.close()
 
             # self.close_settings_window_if_there()
-        except Exception:
-            print('Some exception occurred while trying to find username or password field')
+        except Exception as e:
+            print('Some exception occurred while trying to find username or password field\n', e)
             self.error = True
 
     def search_target_profile(self):
@@ -135,6 +139,7 @@ class App:
                                                      'div:nth-child( ' + self.return_d + ' )').click()
 
             user_name_input = self.driver.find_element_by_xpath('//*[@id="nationalityPred"]')
+            user_name_input.clear()
             user_name_input.send_keys('España')
             sleep(1)
             # todo: accessing a drop-down menu item directly with xpath
@@ -147,9 +152,9 @@ class App:
             login_button.click()
             sleep(1)
 
-        except Exception:
+        except Exception as e:
             self.error = True
-            print('Could not find search bar')
+            print('Could not find search bar\n', e)
 
     def scroll_down(self):
         self.driver.implicitly_wait(20)
@@ -549,12 +554,15 @@ class App:
             self.send_attachment(spreadsheet)
 
     def send_attachment(self, file):
+        with open(self.keys, 'r') as a:
+            keys_dict = json.loads(a.read())
         subject = "An email with attachment from Python"
         body = "This is an email with attachment sent from Python"
-        sender_email = "jetro4100@gmail.com"
-        receiver_email = "martorelljosep@gmail.com"
+        sender_email = keys_dict['mailAddress'][0]
+        receiver_email = keys_dict['mailAddress'][1]
         # password = input("Type your password and press enter:")
-        password = 'ZXspectrum5128$}_'
+        password = keys_dict['mailPassword'][0]
+        a.close()
 
         # Create a multipart message and set headers
         message = MIMEMultipart()
