@@ -1,8 +1,12 @@
+import json
 import sys
 import requests
 
 base_url = 'http://api.openweathermap.org/data/2.5/weather'
-api_key = '8b40250178cc702abaa5d8e4a89cfa79'
+with open('../../../Documents/keys.json', 'r') as a:
+    keys_dict = json.loads(a.read())
+api_key = keys_dict['apiKey'][0]
+a.close()
 
 
 # cities = [i[0] for i in d.tour_en]
