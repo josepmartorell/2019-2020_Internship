@@ -1,4 +1,5 @@
 import datetime
+import json
 import operator
 import smtplib
 import ssl
@@ -15,10 +16,9 @@ from xlsxwriter import Workbook
 
 
 class App:
-    def __init__(self, username='BUSINESS', password='459116RS', target_city='new york', stay=7,
-                 path='//home/jmartorell/Booking'):
-        self.username = username
-        self.password = password
+    def __init__(self, keys='../../../Documents/keys.json', target_city='new york', stay=7,
+                 path='../../../Booking'):
+        self.keys = keys
         self.target_city = target_city
         self.stay = stay
         self.path = path
@@ -56,19 +56,22 @@ class App:
 
     def log_in(self, ):
         try:
+            with open(self.keys, 'r') as a:
+                keys_dict = json.loads(a.read())
             # fixme: the xpath did not work selected with the right mouse button (neither with the css selector). The
             #  solution has been to use the variable "placeholder" as xpath, taking it from the same script used in
             #  solole.
             user_name_input = self.driver.find_element_by_xpath('//form/div[1]/div/input')
-            user_name_input.send_keys(self.username)
+            user_name_input.send_keys(keys_dict['username'][0])
             sleep(1)
 
             password_input = self.driver.find_element_by_xpath('//form/div[2]/div/input')
-            password_input.send_keys(self.password)
+            password_input.send_keys(keys_dict['password'][0])
             sleep(1)
 
             user_name_input.submit()
             sleep(1)
+            a.close()
 
         except Exception:
             print('Some exception occurred while trying to find username or password field')
@@ -85,6 +88,7 @@ class App:
 
     def search_target_profile(self):
         try:
+            self.driver.implicitly_wait(10)
             search_bar = self.driver.find_element_by_css_selector('#filterHotels')
             search_bar.send_keys(self.target_city)
             # fixme: WARNING: immediately after entering the city in the field, in this case, we need an
@@ -118,9 +122,9 @@ class App:
             # instead of submit it works with click
             login_button.click()
             sleep(3)
-        except Exception:
+        except Exception as e:
             self.error = True
-            print('Could not find search bar')
+            print('Could not find search bar\n', e)
 
     def scroll_down(self):
         global position
@@ -147,7 +151,7 @@ class App:
             self.driver.implicitly_wait(20)
             for i, hotel in enumerate(hotel_list):
 
-                hotel_price = hotel.find('span', {'class': 'final-price'}).getText().strip('€')
+                hotel_price = hotel.find('span', {'class': 'final-price'}).getText().strip(' €')
                 hotel_price = hotel_price.replace('.', '')
                 hotel_price = hotel_price.replace(',', '.')
                 hotel_price = float(hotel_price)
@@ -205,15 +209,15 @@ class App:
                 if collation[0] == self.cheap[0]:
                     position = i
             print('position of the target button: ', position + 1)
-            self.index = str(position - 1)
+            self.index = str(position + 1)
             if self.error is False:
                 self.target_button(self.index)
 
             sleep(2)
         except Exception as e:
             self.error = True
-            print(e)
             print('Some error occurred while trying to scroll down')
+            print(e)
 
     def target_button(self, index):
         target_button = self.driver.find_element_by_xpath(
@@ -286,12 +290,15 @@ class App:
         self.send_attachment(spreadsheet)
 
     def send_attachment(self, file):
+        with open(self.keys, 'r') as a:
+            keys_dict = json.loads(a.read())
         subject = "An email with attachment from Python"
         body = "This is an email with attachment sent from Python"
-        sender_email = "jetro4100@gmail.com"
-        receiver_email = "martorelljosep@gmail.com"
+        sender_email = keys_dict['mailAddress'][0]
+        receiver_email = keys_dict['mailAddress'][1]
         # password = input("Type your password and press enter:")
-        password = 'ZXspectrum5128$}_'
+        password = keys_dict['mailPassword'][0]
+        a.close()
 
         # Create a multipart message and set headers
         message = MIMEMultipart()
