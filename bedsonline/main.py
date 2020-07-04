@@ -1,3 +1,4 @@
+import json
 import operator
 from time import sleep
 from telnetlib import EC
@@ -28,10 +29,9 @@ global mode
 
 
 class App:
-    def __init__(self, username='BUSIN95C', password='020906Sm', target_continent='2', target_country_col='3',
-                 target_country_row='1', target_city_col='4', target_city_row='92', path='//home/jmartorell/Booking'):
-        self.username = username
-        self.password = password
+    def __init__(self, keys='../../../Documents/keys.json', target_continent='4', target_country_col='2',
+                 target_country_row='5', target_city_col='4', target_city_row='2', path='../../../Booking'):
+        self.keys = keys
         self.target_continent = target_continent
         self.target_country_col = target_country_col
         self.target_country_row = target_country_row
@@ -82,6 +82,8 @@ class App:
             print('Unable to close popup window')
         else:
             try:
+                with open(self.keys, 'r') as a:
+                    keys_dict = json.loads(a.read())
                 # Press button to access the login fields
                 sleep(1)
                 login_button = self.driver.find_element_by_xpath(
@@ -98,14 +100,15 @@ class App:
                 WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((
                     By.XPATH, '//*[@id="username"]')))
                 user_name_input = self.driver.find_element_by_xpath('//*[@id="username"]')
-                user_name_input.send_keys(self.username)
+                user_name_input.send_keys(keys_dict['username'][1])
                 sleep(1)
 
                 WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((
                     By.XPATH, '//*[@id="password"]')))
                 password_input = self.driver.find_element_by_xpath('//*[@id="password"]')
-                password_input.send_keys(self.password)
+                password_input.send_keys(keys_dict['password'][1])
                 sleep(1)
+                a.close()
 
                 # user_name_input.submit()
                 self.driver.find_element_by_xpath('//form/div[3]/button').submit()
@@ -468,12 +471,15 @@ class App:
             cell_title.fill = PatternFill(start_color="00c0c0c0", end_color="00c0c0c0", fill_type="solid")
 
     def send_attachment(self, file):
+        with open(self.keys, 'r') as a:
+            keys_dict = json.loads(a.read())
         subject = "An email with attachment from Python"
         body = "This is an email with attachment sent from Python"
-        sender_email = "jetro4100@gmail.com"
-        receiver_email = "martorelljosep@gmail.com"
+        sender_email = keys_dict['mailAddress'][0]
+        receiver_email = keys_dict['mailAddress'][1]
         # password = input("Type your password and press enter:")
-        password = 'ZXspectrum5128$}_'
+        password = keys_dict['mailPassword'][0]
+        a.close()
 
         # Create a multipart message and set headers
         message = MIMEMultipart()
