@@ -12,7 +12,7 @@ First year of internship with Python at the travel agency "Business and Travel".
 
 # How to Install
 
-git clone https://github.com/josepmartorell/Scrapy.git :smiley:
+git clone https://github.com/josepmartorell/2019-2020_Internship.git :smiley:
 
  
 # Links to tutorials
