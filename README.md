@@ -6,7 +6,6 @@ Internship with Python at the travel agency "Business and Travel".
 
 - How to intall
 - Links to tutorials
-- Credits
 - License
 
 
@@ -22,11 +21,6 @@ git clone https://github.com/josepmartorell/2019-2020_Internship.git :smiley:
 - [ ] https://requests.readthedocs.io/en/master
 - [x] https://docs.scrapy.org/en/xpath-tutorial/topics/xpath-tutorial.html :+1:
 - [ ] https://realpython.com/python-send-email
-
-
-# Credits
-
-*Scrapy architecture image source* REF: [scrapy architecture from *www.pinterest.co* site](https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=0ahUKEwjatpCi1aPlAhUTilwKHZWMCbcQMwiGASgiMCI&url=https%3A%2F%2Fwww.pinterest.co.uk%2Famp%2Fpin%2F112590059407856919%2F&psig=AOvVaw3CwLR9YyCns442oUggMRSP&ust=1571414484262626&ictx=3&uact=3)
 
 
 # License
