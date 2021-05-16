@@ -1,4 +1,4 @@
-# 2019-2020 Internship :shipit:
+# Internship :shipit:
 First year of internship with Python at the travel agency "Business and Travel".
 
 
