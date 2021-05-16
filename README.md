@@ -1,5 +1,5 @@
-# 2019_Internship :shipit:
-First year of internship with Python at the travel agency "Business and Travel".
+# Selenium_Beautifulsoup4 :shipit:
+Internship with Python at the travel agency "Business and Travel".
 
 
 # Table of Contents
