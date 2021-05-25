@@ -11,6 +11,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from webdriver_manager.firefox import GeckoDriverManager
 from time import sleep
 from xlsxwriter import Workbook
 
@@ -22,8 +23,7 @@ class App:
         self.target_city = target_city
         self.stay = stay
         self.path = path
-        self.driver = webdriver.Firefox(
-            executable_path='/usr/local/bin/geckodriver')  # Change this to your FirefoxDriver path.
+        self.driver = webdriver.Firefox(executable_path=GeckoDriverManager().install())
         self.error = False
         self.main_url = 'http://www.restel.es'
         self.all_hotels = []
