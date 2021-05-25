@@ -12,6 +12,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 # The import from telnetlib import EC. You need to import expected_conditions and use it as EC
 # from selenium.webdriver.support import expected_conditions as EC...
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.firefox import GeckoDriverManager
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
@@ -46,8 +47,7 @@ class App:
         self.index = ""
         self.data = {}
         self.path = path
-        self.driver = webdriver.Firefox(
-            executable_path="/usr/local/bin/geckodriver")  # Change this to your FirefoxDriver path.
+        self.driver = webdriver.Firefox(executable_path=GeckoDriverManager().install())
         self.error = False
         self.main_url = 'https://www.bedsonline.com/home/es-es'
         self.all_images = []
