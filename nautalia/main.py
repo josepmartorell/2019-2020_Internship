@@ -12,6 +12,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.firefox import GeckoDriverManager
 
 # TODO: screen all steps to control the process...
 
@@ -21,7 +22,7 @@ os.system('python -c "import selenium; print(selenium.__version__)"')
 
 # url access
 url = "https://www.nautaliaviajes.com/"
-driver = webdriver.Firefox(executable_path="/usr/local/bin/geckodriver")
+driver = webdriver.Firefox(executable_path=GeckoDriverManager().install())
 driver.get(url)
 assert "NAUTALIA VIAJES" in driver.title
 currentTime = datetime.datetime.now()
