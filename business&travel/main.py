@@ -19,6 +19,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+from webdriver_manager.firefox import GeckoDriverManager
 from email.mime.multipart import MIMEMultipart
 from openpyxl.styles import PatternFill, Font
 from openpyxl.styles import Side, Border
@@ -98,8 +99,7 @@ class App:
         self.cell_city = cell_city
         self.cell_cc = cell_cc
         self.path = path
-        self.browser = webdriver.Firefox(
-            executable_path='/usr/local/bin/geckodriver')
+        self.browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())
         self.error = False
         self.url = 'https://pro.w2m.travel'
         self.all_hotels = []
