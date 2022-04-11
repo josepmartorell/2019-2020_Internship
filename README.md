@@ -1,5 +1,5 @@
 # Selenium_Beautifulsoup4 :shipit:
-Internship with Python at the travel agency "Business and Travel".
+Internship with Python at the travel agency "Business and Travel" (19/09/2018-18/09/2019).
 
 _"Basically it is a complete automation of various web applications of room reservation providers in tourist hotels. Through the automation of browsers using the correct drivers, the web browsers of these providers are automated, automatically executing operations as complex as the display of calendars and automatic selection following criteria of entry and exit dates. The most economical offers of each destination of a tour of Europe, America or Asia are selected as configured and a report is automatically prepared by automating a spreadsheet.
 Basically the practices for the most part turn out to be very recyclable and useful for developing powerful scripts to test web applications of any level. Although several additional topics have been addressed in these practices, such as web scraping or automated spreadsheets, the most notable objective and the one that has reached a farther point in the world of web applications is the use of python for testing purposes."_
